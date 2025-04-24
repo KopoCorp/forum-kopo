@@ -1,0 +1,161 @@
+/* Hero Section */
+.hero {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    background-color: #1A1A1A;
+    background-image: linear-gradient(135deg, #4ABAF5 25%, transparent 25%, transparent 50%, #4ABAF5 50%, #4ABAF5 75%, transparent 75%, transparent);
+    background-size: 50px 50px;
+}
+
+.overlay {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 50px;
+    text-align: center;
+    max-width: 90%;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+}
+
+.overlay h1 {
+    font-size: 2.5em;
+    color: #FFFFFF;
+    margin-bottom: 20px;
+}
+
+.highlight {
+    color: #FF4B4B;
+}
+
+.overlay p {
+    font-size: 1.2em;
+    color: #E0E0E0;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #FF4B4B, #4ABAF5);
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.5s ease;
+}
+
+.cta-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #4ABAF5, #FF4B4B);
+}
+
+.activity-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.activity-card {
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+}
+
+/* Section Recrutement */
+.recruitment .section-content {
+    text-align: center;
+    background-color: #FFFFFF;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.recruitment .section-content:hover {
+    transform: scale(1.02);
+}
+
+.recruitment h2 {
+    font-size: 2.2em;
+    color: #4ABAF5;
+    margin-bottom: 10px;
+}
+
+.recruitment p {
+    font-size: 1.1em;
+    color: #555555;
+    margin-bottom: 20px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9em;
+    color: #999999;
+    background-color: #FFFFFF;
+}
+
+/* Mode sombre spécifique à home.html */
+.dark-mode .hero {
+    background-color: #121212;
+}
+
+.dark-mode .highlight {
+    color: #fd5151;
+}
+
+.dark-mode .cta-button {
+    background: linear-gradient(135deg, #FF4B4B, #4ABAF5);
+    color: #FFFFFF;
+}
+
+.dark-mode .activity-card {
+    background-color: #333333;
+    color: #CCCCCC;
+}
+
+.dark-mode footer {
+    background-color: #282828;
+    color: #CCCCCC;
+    border-color: #444444;
+}
+
+.discord-button {
+    background: linear-gradient(135deg, #7289DA, #4ABAF5);
+    margin-left: 10px; 
+}
+
+.discord-button:hover {
+    background: linear-gradient(135deg, #4ABAF5, #7289DA);
+}
+
+/* Responsive Hero Section */
+@media screen and (max-width: 768px) {
+    .hero {
+        height: 50vh;
+    }
+    .overlay {
+        padding: 20px;
+    }
+    .overlay h1 {
+        font-size: 1.8em;
+    }
+    .overlay p {
+        font-size: 1em;
+    }
+    .cta-button {
+        font-size: 0.9em;
+        padding: 10px 20px;
+        font-size: 1em;
+        margin-top: 5px;
+        display: inline-block;
+    }
+}

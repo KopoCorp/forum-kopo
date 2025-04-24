@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kopo - Page non trouvée</title>
+<link rel="stylesheet" type="text/css" href="/css/styles.css">
+<link rel="icon" type="image/png" href="/assets/kopologo.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #57b8ff;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            text-align: center;
+        }
+        .image-container {
+            width: 70%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        h1 {
+            font-size: 3em;
+            margin: 0.2em;
+        }
+        p {
+            font-size: 1.5em;
+            margin: 0.5em 0;
+        }
+        /* Media query to override dark theme preferences */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #57b8ff;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+    <img src="/assets/kobotload1.gif" alt="Animation de chargement, veuillez patienter">
+    </div>
+
+    <!-- En-tête -->
+    <header id="main-header">
+        <div class="logo" id="logo-container" data-name="Kobot">
+            <a href="/">
+                <img src="/assets/kopologo.png" alt="Logo de Kopo" id="logo-img" class="logo-image">    
+            </a>
+            <div class="cursor-point"></div>
+        </div>
+        <nav id="navbar">
+            <ul>
+                <li><a href="/#about">À propos</a></li>
+                <li><a href="/#activities">Activités</a></li>
+                <li><a href="/#news">Actualités</a></li>
+                <li><a href="/#recruitment">Recrutement</a></li>
+            </ul>
+        </nav>
+        <button id="dark-mode-toggle">
+            <span id="toggle-icon" class="sun">🌙</span>
+        </button>
+    </header>
+
+    <h1>Oups! Page non trouvée</h1>
+    <p>Désolé, la page que vous cherchez semble introuvable.</p>
+    <div class="image-container">
+        <img src="/assets/kobotfail.gif" alt="kobotload">
+    </div>
+
+    <script src="/script.js"></script>
+
+</body>
+</html>
