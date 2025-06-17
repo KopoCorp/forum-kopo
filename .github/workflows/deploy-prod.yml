@@ -1,0 +1,25 @@
+name: Deploy on PROD
+
+on:
+  push:
+    branches: [PROD]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Déployer via rsync sur le conteneur
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROXMOX_SSH_KEY }}
+          HOST: ${{ secrets.PROXMOX_HOST }}
+          USER: ${{ secrets.PROXMOX_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          rsync -avz --delete ./ "$USER@$HOST:/chemin/destination/"
+
+      - name: (Optionnel) Redémarrer le service
+        run: ssh -i ~/.ssh/id_rsa "$USER@$HOST" 'sudo systemctl restart nginx'
