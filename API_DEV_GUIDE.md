@@ -57,11 +57,11 @@ curl http://localhost:8000/users/1/profile
 ```
 
 ### PUT /users/{id}/profile
-Mettre a jour un profil utilisateur (`full_name`, `website`, `location`, `about_me`).
+Mettre a jour un profil utilisateur (`display_name`, `website`, `location`, `birth_date`, `gender`).
 
 ```bash
 curl -X PUT -H "Content-Type: application/json" \
-     -d '{"full_name":"John Doe"}' \
+    -d '{"display_name":"John"}' \
      http://localhost:8000/users/1/profile
 ```
 
@@ -105,11 +105,11 @@ curl http://localhost:8000/users/1/profile
 ```
 
 ### PUT /users/{id}/profile
-Mettre a jour un profil utilisateur (`full_name`, `website`, `location`, `about_me`).
+Mettre a jour un profil utilisateur (`display_name`, `website`, `location`, `birth_date`, `gender`).
 
 ```bash
 curl -X PUT -H "Content-Type: application/json" \
-     -d '{"full_name":"John Doe"}' \
+    -d '{"display_name":"John"}' \
      http://localhost:8000/users/1/profile
 ```
 

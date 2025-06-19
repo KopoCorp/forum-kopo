@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey, func, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, Date, ForeignKey, UniqueConstraint, JSON, func
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -10,25 +10,91 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    password_hash = Column(Text, nullable=False)
+    pass_hash = Column(Text, nullable=False)
     bio = Column(Text)
     avatar_url = Column(Text)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
 
+    profile = relationship('UserProfile', uselist=False, back_populates='user')
     articles = relationship('Article', back_populates='author')
     comments = relationship('Comment', back_populates='user')
     threads = relationship('ForumThread', back_populates='user')
     replies = relationship('ForumReply', back_populates='user')
-    profile = relationship('UserProfile', uselist=False, back_populates='user')
     reset_tokens = relationship('PasswordResetToken', back_populates='user')
+    messages_sent = relationship('Message', foreign_keys='Message.sender_id', back_populates='sender')
+    messages_received = relationship('Message', foreign_keys='Message.receiver_id', back_populates='receiver')
+    sessions = relationship('Session', back_populates='user')
+
+
+class UserProfile(Base):
+    __tablename__ = 'user_profiles'
+
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    display_name = Column(String(100))
+    location = Column(String(100))
+    website = Column(Text)
+    birth_date = Column(Date)
+    gender = Column(String(20))
+    joined_at = Column(DateTime, server_default=func.now())
+
+    user = relationship('User', back_populates='profile')
+
+
+class Role(Base):
+    __tablename__ = 'roles'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, nullable=False)
+    description = Column(Text)
+
+    user_roles = relationship('UserRole', back_populates='role')
+    role_permissions = relationship('RolePermission', back_populates='role')
+
+
+class Permission(Base):
+    __tablename__ = 'permissions'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), unique=True, nullable=False)
+    description = Column(Text)
+
+    role_permissions = relationship('RolePermission', back_populates='permission')
+
+
+class UserRole(Base):
+    __tablename__ = 'user_roles'
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    role_id = Column(Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True)
+
+    user = relationship('User')
+    role = relationship('Role', back_populates='user_roles')
+
+
+class RolePermission(Base):
+    __tablename__ = 'role_permissions'
+    role_id = Column(Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True)
+    permission_id = Column(Integer, ForeignKey('permissions.id', ondelete='CASCADE'), primary_key=True)
+
+    role = relationship('Role', back_populates='role_permissions')
+    permission = relationship('Permission', back_populates='role_permissions')
+
+
+class Admin(Base):
+    __tablename__ = 'admin'
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False)
+    pass_hash = Column(Text, nullable=False)
+    bio = Column(Text)
+    avatar_url = Column(Text)
 
 
 class Article(Base):
     __tablename__ = 'articles'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     is_pub = Column(Boolean, default=False)
@@ -40,14 +106,32 @@ class Article(Base):
     article_tags = relationship('ArticleTag', back_populates='article')
 
 
+class Tag(Base):
+    __tablename__ = 'tags'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    article_tags = relationship('ArticleTag', back_populates='tag')
+
+
+class ArticleTag(Base):
+    __tablename__ = 'article_tags'
+    article_id = Column(Integer, ForeignKey('articles.id', ondelete='CASCADE'), primary_key=True)
+    tag_id = Column(Integer, ForeignKey('tags.id', ondelete='CASCADE'), primary_key=True)
+
+    article = relationship('Article', back_populates='article_tags')
+    tag = relationship('Tag', back_populates='article_tags')
+
+
 class Comment(Base):
     __tablename__ = 'comments'
 
     id = Column(Integer, primary_key=True, index=True)
-    post_id = Column(Integer, ForeignKey('articles.id'))
-    user_id = Column(Integer, ForeignKey('users.id'))
+    post_id = Column(Integer, ForeignKey('articles.id', ondelete='CASCADE'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     content = Column(Text, nullable=False)
-    parent_id = Column(Integer, ForeignKey('comments.id'))
+    parent_id = Column(Integer, ForeignKey('comments.id', ondelete='CASCADE'))
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship('User', back_populates='comments')
@@ -70,8 +154,8 @@ class ForumThread(Base):
     __tablename__ = 'forum_threads'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    category_id = Column(Integer, ForeignKey('forum_categories.id'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+    category_id = Column(Integer, ForeignKey('forum_categories.id', ondelete='SET NULL'))
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     is_locked = Column(Boolean, default=False)
@@ -88,10 +172,10 @@ class ForumReply(Base):
     __tablename__ = 'forum_replies'
 
     id = Column(Integer, primary_key=True, index=True)
-    thread_id = Column(Integer, ForeignKey('forum_threads.id'))
-    user_id = Column(Integer, ForeignKey('users.id'))
+    thread_id = Column(Integer, ForeignKey('forum_threads.id', ondelete='CASCADE'))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     content = Column(Text, nullable=False)
-    parent_id = Column(Integer, ForeignKey('forum_replies.id'))
+    parent_id = Column(Integer, ForeignKey('forum_replies.id', ondelete='CASCADE'))
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -104,7 +188,7 @@ class Like(Base):
     __tablename__ = 'likes'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     target_type = Column(String(50), nullable=False)
     target_id = Column(Integer, nullable=False)
 
@@ -115,96 +199,12 @@ class Like(Base):
     user = relationship('User')
 
 
-class Report(Base):
-    __tablename__ = 'reports'
+class Message(Base):
+    __tablename__ = 'messages'
 
     id = Column(Integer, primary_key=True, index=True)
-    reporter_id = Column(Integer, ForeignKey('users.id'))
-    target_type = Column(String(50), nullable=False)
-    target_id = Column(Integer, nullable=False)
-    reason = Column(Text, nullable=False)
-    is_resolved = Column(Boolean, default=False)
-    created_at = Column(DateTime, server_default=func.now())
-
-    reporter = relationship('User')
-
-
-class Ban(Base):
-    __tablename__ = 'bans'
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    reason = Column(Text, nullable=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, server_default=func.now())
-
-    user = relationship('User')
-
-
-class AuditLog(Base):
-    __tablename__ = 'audit_logs'
-
-    id = Column(Integer, primary_key=True, index=True)
-    action = Column(String(100), nullable=False)
-    performed_by = Column(Integer, ForeignKey('users.id'))
-    target_type = Column(String(50))
-    target_id = Column(Integer)
-    details = Column(Text)
-    created_at = Column(DateTime, server_default=func.now())
-
-    user = relationship('User')
-    
-class Tag(Base):
-    __tablename__ = 'tags'
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, nullable=False)
-
-    article_tags = relationship('ArticleTag', back_populates='tag')
-
-
-class ArticleTag(Base):
-    __tablename__ = 'article_tags'
-
-    id = Column(Integer, primary_key=True, index=True)
-    article_id = Column(Integer, ForeignKey('articles.id'))
-    tag_id = Column(Integer, ForeignKey('tags.id'))
-
-    __table_args__ = (UniqueConstraint('article_id', 'tag_id'),)
-
-    article = relationship('Article', back_populates='article_tags')
-    tag = relationship('Tag', back_populates='article_tags')
-    
-class UserProfile(Base):
-    __tablename__ = 'user_profiles'
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), unique=True)
-    full_name = Column(String(100))
-    website = Column(String(255))
-    location = Column(String(100))
-    about_me = Column(Text)
-
-    user = relationship('User', back_populates='profile')
-
-
-class PasswordResetToken(Base):
-    __tablename__ = 'password_reset_tokens'
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    token = Column(String(100), unique=True, nullable=False, index=True)
-    is_used = Column(Boolean, default=False)
-    created_at = Column(DateTime, server_default=func.now())
-
-    user = relationship('User', back_populates='reset_tokens')
-    
-class DirectMessage(Base):
-    __tablename__ = 'direct_messages'
-
-    id = Column(Integer, primary_key=True, index=True)
-    sender_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    receiver_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    sender_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    receiver_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
     content = Column(Text, nullable=False)
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
@@ -212,67 +212,116 @@ class DirectMessage(Base):
     sender = relationship('User', foreign_keys=[sender_id])
     receiver = relationship('User', foreign_keys=[receiver_id])
 
+
+class Report(Base):
+    __tablename__ = 'reports'
+
+    id = Column(Integer, primary_key=True, index=True)
+    reporter_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+    target_type = Column(String(50), nullable=False)
+    target_id = Column(Integer, nullable=False)
+    reason = Column(Text, nullable=False)
+    status = Column(String(20), default='en attente')
+    created_at = Column(DateTime, server_default=func.now())
+
+    reporter = relationship('User')
+
+
 class Notification(Base):
     __tablename__ = 'notifications'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    message = Column(Text, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    type = Column(String(50))
+    message = Column(Text)
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
+
     user = relationship('User')
-    
-class Attachment(Base):
-    __tablename__ = 'attachments'
-    
+
+
+class Ban(Base):
+    __tablename__ = 'bans'
+
     id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String(255), nullable=False)
-    path = Column(String(255), nullable=False)
-    content_type = Column(String(100))
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    reason = Column(Text, nullable=False)
+    banned_by = Column(Integer, ForeignKey('admin.id'))
+    expires_at = Column(DateTime)
     created_at = Column(DateTime, server_default=func.now())
 
+    user = relationship('User')
 
-class Role(Base):
-    __tablename__ = 'roles'
+
+class PasswordResetToken(Base):
+    __tablename__ = 'password_reset_tokens'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    token = Column(String(255), unique=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    user = relationship('User', back_populates='reset_tokens')
+
+
+class Attachment(Base):
+    __tablename__ = 'attachments'
+
+    id = Column(Integer, primary_key=True, index=True)
+    uploaded_by = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+    file_url = Column(Text, nullable=False)
+    file_type = Column(String(100))
+    file_size = Column(Integer)
+    attached_to_type = Column(String(50))
+    attached_to_id = Column(Integer)
+    uploaded_at = Column(DateTime, server_default=func.now())
+
+
+class Session(Base):
+    __tablename__ = 'sessions'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
+    session_token = Column(String(255), unique=True, nullable=False)
+    ip_address = Column(String(45))
+    user_agent = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+    expires_at = Column(DateTime)
+
+    user = relationship('User', back_populates='sessions')
+
+
+class AuditLog(Base):
+    __tablename__ = 'audit_logs'
+
+    id = Column(Integer, primary_key=True, index=True)
+    actor_id = Column(Integer, ForeignKey('users.id'))
+    action_type = Column(String(100))
+    target_type = Column(String(50))
+    target_id = Column(Integer)
     description = Column(Text)
-    user_roles = relationship('UserRole', back_populates='role')
-    role_permissions = relationship('RolePermission', back_populates='role')
+    created_at = Column(DateTime, server_default=func.now())
+
+    actor = relationship('User')
 
 
-class Permission(Base):
-    __tablename__ = 'permissions'
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, nullable=False)
-    description = Column(Text)
-    role_permissions = relationship('RolePermission', back_populates='permission')
-
-
-class UserRole(Base):
-    __tablename__ = 'user_roles'
+class ActivityLog(Base):
+    __tablename__ = 'activity_logs'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    role_id = Column(Integer, ForeignKey('roles.id'))
-
-    __table_args__ = (UniqueConstraint('user_id', 'role_id'),)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+    action = Column(String(100))
+    metadata = Column(JSON)
+    created_at = Column(DateTime, server_default=func.now())
 
     user = relationship('User')
-    role = relationship('Role', back_populates='user_roles')
 
 
-class RolePermission(Base):
-    __tablename__ = 'role_permissions'
+class Setting(Base):
+    __tablename__ = 'settings'
 
-    id = Column(Integer, primary_key=True, index=True)
-    role_id = Column(Integer, ForeignKey('roles.id'))
-    permission_id = Column(Integer, ForeignKey('permissions.id'))
-
-    __table_args__ = (UniqueConstraint('role_id', 'permission_id'),)
-
-    role = relationship('Role', back_populates='role_permissions')
-    permission = relationship('Permission', back_populates='role_permissions')
-    
+    key = Column(String(100), primary_key=True)
+    value = Column(Text)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

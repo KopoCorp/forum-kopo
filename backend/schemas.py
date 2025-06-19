@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from pydantic import BaseModel
 
@@ -183,7 +183,7 @@ class ReportCreate(ReportBase):
 class ReportOut(ReportBase):
     id: int
     reporter_id: Optional[int]
-    is_resolved: bool
+    status: str
     created_at: datetime
 
     class Config:
@@ -193,6 +193,8 @@ class ReportOut(ReportBase):
 class BanBase(BaseModel):
     user_id: int
     reason: str
+    banned_by: Optional[int] = None
+    expires_at: Optional[datetime] = None
 
 
 class BanCreate(BanBase):
@@ -201,8 +203,8 @@ class BanCreate(BanBase):
 
 class BanOut(BanBase):
     id: int
-    is_active: bool
-      
+    created_at: datetime
+
 
 class TagBase(BaseModel):
     name: str
@@ -214,12 +216,14 @@ class TagCreate(TagBase):
 
 class TagOut(TagBase):
     id: int
-        
+
+
 class UserProfileBase(BaseModel):
-    full_name: Optional[str] = None
-    website: Optional[str] = None
+    display_name: Optional[str] = None
     location: Optional[str] = None
-    about_me: Optional[str] = None
+    website: Optional[str] = None
+    birth_date: Optional[date] = None
+    gender: Optional[str] = None
 
 
 class UserProfileUpdate(UserProfileBase):
@@ -227,19 +231,20 @@ class UserProfileUpdate(UserProfileBase):
 
 
 class UserProfileOut(UserProfileBase):
-    id: int
     user_id: int
-      
-class DirectMessageBase(BaseModel):
+    joined_at: datetime
+
+
+class MessageBase(BaseModel):
     content: str
 
 
-class DirectMessageCreate(DirectMessageBase):
+class MessageCreate(MessageBase):
     sender_id: Optional[int]
     receiver_id: int
 
 
-class DirectMessageOut(DirectMessageBase):
+class MessageOut(MessageBase):
     id: int
     sender_id: Optional[int]
     receiver_id: int
@@ -252,22 +257,22 @@ class DirectMessageOut(DirectMessageBase):
 
 class AuditLogOut(BaseModel):
     id: int
-    action: str
-    performed_by: Optional[int]
+    actor_id: Optional[int]
+    action_type: Optional[str] = None
     target_type: Optional[str] = None
     target_id: Optional[int] = None
-    details: Optional[str] = None
-      
-      
+    description: Optional[str] = None
+    created_at: datetime
+
+
 class ArticleTagCreate(BaseModel):
     tag_id: int
 
 
 class ArticleTagOut(ArticleTagCreate):
-    id: int
     article_id: int
-      
-      
+
+
 class PasswordResetRequest(BaseModel):
     email: str
 
@@ -275,9 +280,11 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     token: str
     new_pass_hash: str
-      
+
+
 class NotificationBase(BaseModel):
-    message: str
+    type: Optional[str] = None
+    message: Optional[str] = None
 
 
 class NotificationCreate(NotificationBase):
@@ -288,12 +295,14 @@ class NotificationOut(NotificationBase):
     id: int
     user_id: Optional[int]
     is_read: bool
-      
+
+
 class AttachmentOut(BaseModel):
     id: int
-    filename: str
-    content_type: Optional[str] = None
-    created_at: datetime
+    file_url: str
+    file_type: Optional[str] = None
+    file_size: Optional[int] = None
+    uploaded_at: datetime
 
     class Config:
         orm_mode = True
