@@ -12,29 +12,25 @@ Cette base utilise **PostgreSQL**. Les instructions ci-dessous expliquent commen
 
 ## Installation pas à pas
 
-1. Connectez-vous au conteneur :
-   ```bash
-   pct exec <ID_CONTENEUR> -- bash
-   ```
-2. Installez PostgreSQL :
+1. Installez PostgreSQL :
    ```bash
    apt update && apt install -y postgresql
    ```
-3. Démarrez le service PostgreSQL (si ce n'est pas déjà le cas) :
+2. Démarrez le service PostgreSQL (si ce n'est pas déjà le cas) :
    ```bash
    pg_ctlcluster 16 main start
    ```
    Ou utilisez `systemctl start postgresql` selon la version.
-4. Créez une base de données nommée `forum` :
+3. Créez une base de données nommée `forum` :
    ```bash
    sudo -u postgres createdb forum
    ```
-5. Copiez le fichier `forum.sql` dans le conteneur (via `scp` ou `pct push`).
-6. Importez le schéma dans la base :
+4. Copiez le fichier `forum.sql` dans le conteneur (via `scp` ou `pct push`).
+5. Importez le schéma dans la base :
    ```bash
    sudo -u postgres psql -d forum -f forum.sql
    ```
-7. Vérifiez la présence des tables :
+6. Vérifiez la présence des tables :
    ```bash
    sudo -u postgres psql -d forum -c '\dt'
    ```
