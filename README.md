@@ -7,7 +7,8 @@ This repository contains a static front‑end and a minimal REST API for the Kop
 - Python 3.9+
 - PostgreSQL database
 
-Install Python dependencies:
+Install Python dependencies (includes `passlib` for password hashing and
+`python-jose` for JWT handling):
 
 ```bash
 pip install -r requirements.txt
@@ -34,6 +35,7 @@ The API will be available on port **8000** of the container. Replace
 ## Endpoints
 
 - `POST /users` – create a new user
+  (passwords are hashed server-side)
 - `GET /users/{id}` – retrieve a user
 - `POST /articles` – create a new article
 - `GET /articles` – list articles
@@ -43,5 +45,10 @@ The API will be available on port **8000** of the container. Replace
 - `POST /bans` – ban a user
 - `GET /bans` – list active bans
 - `DELETE /bans/{id}` – lift a ban
+- `POST /login` – obtain a JWT access token
+- `POST /logout` – revoke the current token
+- `POST /attachments` – upload a file
+- `GET /attachments/{id}` – fetch an attachment
+- `DELETE /attachments/{id}` – delete an attachment
 
 This is only a starting point. More models and endpoints can be added following the same pattern.
