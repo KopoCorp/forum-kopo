@@ -1,6 +1,10 @@
 from typing import List
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+import os
+import uuid
+import shutil
 
 from . import models, schemas
 from .database import Base, engine, get_db
@@ -133,7 +137,6 @@ def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
     db.refresh(db_like)
     return db_like
 
-
 @app.post("/messages", response_model=schemas.DirectMessageOut)
 def send_message(message: schemas.DirectMessageCreate, db: Session = Depends(get_db)):
     db_msg = models.DirectMessage(**message.dict())
@@ -176,3 +179,41 @@ def mark_notification_read(notif_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(notif)
     return notif
+
+@app.post("/attachments", response_model=schemas.AttachmentOut)
+async def upload_attachment(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    upload_dir = "uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+    ext = os.path.splitext(file.filename)[1]
+    unique_name = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join(upload_dir, unique_name)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    db_obj = models.Attachment(filename=file.filename, path=file_path, content_type=file.content_type)
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+
+@app.get("/attachments/{attachment_id}")
+def get_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    att = db.query(models.Attachment).get(attachment_id)
+    if not att:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    return FileResponse(att.path, media_type=att.content_type, filename=att.filename)
+
+
+@app.delete("/attachments/{attachment_id}")
+def delete_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    att = db.query(models.Attachment).get(attachment_id)
+    if not att:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    try:
+        os.remove(att.path)
+    except FileNotFoundError:
+        pass
+    db.delete(att)
+    db.commit()
+    return {"detail": "Attachment deleted"}
