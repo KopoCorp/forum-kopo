@@ -140,8 +140,11 @@ def create_article(article: schemas.ArticleCreate, db: Session = Depends(get_db)
 
 
 @app.get("/articles", response_model=List[schemas.ArticleOut])
-def read_articles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.Article).offset(skip).limit(limit).all()
+def read_articles(skip: int = 0, limit: int = 10, tag: Optional[int] = None, db: Session = Depends(get_db)):
+    query = db.query(models.Article)
+    if tag is not None:
+        query = query.join(models.ArticleTag).filter(models.ArticleTag.tag_id == tag)
+    return query.offset(skip).limit(limit).all()
 
 
 @app.get("/articles/{article_id}", response_model=schemas.ArticleOut)
@@ -320,6 +323,40 @@ def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
     db.refresh(db_like)
     return db_like
 
+
+@app.post("/tags", response_model=schemas.TagOut)
+def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
+    db_tag = models.Tag(name=tag.name)
+    db.add(db_tag)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Tag already exists")
+    db.refresh(db_tag)
+    return db_tag
+
+
+@app.get("/tags", response_model=List[schemas.TagOut])
+def list_tags(db: Session = Depends(get_db)):
+    return db.query(models.Tag).all()
+
+
+@app.post("/articles/{article_id}/tags", response_model=schemas.ArticleTagOut)
+def assign_tag(article_id: int, data: schemas.ArticleTagCreate, db: Session = Depends(get_db)):
+    if not db.query(models.Article).get(article_id):
+        raise HTTPException(status_code=404, detail="Article not found")
+    if not db.query(models.Tag).get(data.tag_id):
+        raise HTTPException(status_code=404, detail="Tag not found")
+    db_at = models.ArticleTag(article_id=article_id, tag_id=data.tag_id)
+    db.add(db_at)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Tag already assigned")
+    db.refresh(db_at)
+    return db_at
 
 @app.post("/password-reset/request")
 def request_password_reset(data: schemas.PasswordResetRequest, db: Session = Depends(get_db)):
