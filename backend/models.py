@@ -114,6 +114,46 @@ class Like(Base):
 
     user = relationship('User')
 
+
+class Report(Base):
+    __tablename__ = 'reports'
+
+    id = Column(Integer, primary_key=True, index=True)
+    reporter_id = Column(Integer, ForeignKey('users.id'))
+    target_type = Column(String(50), nullable=False)
+    target_id = Column(Integer, nullable=False)
+    reason = Column(Text, nullable=False)
+    is_resolved = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    reporter = relationship('User')
+
+
+class Ban(Base):
+    __tablename__ = 'bans'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    reason = Column(Text, nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, server_default=func.now())
+
+    user = relationship('User')
+
+
+class AuditLog(Base):
+    __tablename__ = 'audit_logs'
+
+    id = Column(Integer, primary_key=True, index=True)
+    action = Column(String(100), nullable=False)
+    performed_by = Column(Integer, ForeignKey('users.id'))
+    target_type = Column(String(50))
+    target_id = Column(Integer)
+    details = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+
+    user = relationship('User')
+    
 class Tag(Base):
     __tablename__ = 'tags'
 

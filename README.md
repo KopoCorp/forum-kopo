@@ -39,6 +39,12 @@ The API will be available on port **8000** of the container. Replace
 - `GET /users/{id}` – retrieve a user
 - `POST /articles` – create a new article
 - `GET /articles` – list articles
+- `POST /reports` – submit a report
+- `GET /reports` – list reports (admin)
+- `PATCH /reports/{id}/resolve` – resolve a report
+- `POST /bans` – ban a user
+- `GET /bans` – list active bans
+- `DELETE /bans/{id}` – lift a ban
 - `POST /login` – obtain a JWT access token
 - `POST /logout` – revoke the current token
 - `POST /attachments` – upload a file
