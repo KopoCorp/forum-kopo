@@ -138,3 +138,31 @@ class LikeOut(LikeBase):
 
     class Config:
         orm_mode = True
+
+
+class UserProfileBase(BaseModel):
+    full_name: Optional[str] = None
+    website: Optional[str] = None
+    location: Optional[str] = None
+    about_me: Optional[str] = None
+
+
+class UserProfileUpdate(UserProfileBase):
+    pass
+
+
+class UserProfileOut(UserProfileBase):
+    id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class PasswordResetRequest(BaseModel):
+    email: str
+
+
+class PasswordResetConfirm(BaseModel):
+    token: str
+    new_pass_hash: str
