@@ -168,7 +168,41 @@ class LikeOut(LikeBase):
 
     class Config:
         orm_mode = True
-        
+
+
+class ReportBase(BaseModel):
+    target_type: str
+    target_id: int
+    reason: str
+
+
+class ReportCreate(ReportBase):
+    reporter_id: Optional[int]
+
+
+class ReportOut(ReportBase):
+    id: int
+    reporter_id: Optional[int]
+    is_resolved: bool
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class BanBase(BaseModel):
+    user_id: int
+    reason: str
+
+
+class BanCreate(BanBase):
+    pass
+
+
+class BanOut(BanBase):
+    id: int
+    is_active: bool
+      
 
 class TagBase(BaseModel):
     name: str
@@ -216,6 +250,15 @@ class DirectMessageOut(DirectMessageBase):
         orm_mode = True
 
 
+class AuditLogOut(BaseModel):
+    id: int
+    action: str
+    performed_by: Optional[int]
+    target_type: Optional[str] = None
+    target_id: Optional[int] = None
+    details: Optional[str] = None
+      
+      
 class ArticleTagCreate(BaseModel):
     tag_id: int
 

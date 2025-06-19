@@ -45,6 +45,21 @@ Ce document fournit une description détaillée de l'API REST proposée dans ce 
 |---------|--------|-----------------------------------|
 | POST    | `/likes` | Ajouter un "j'aime" sur un contenu |
 
+
+### Reports
+| Méthode | Chemin                     | Description                         |
+|---------|---------------------------|-------------------------------------|
+| POST    | `/reports`                | Soumettre un signalement            |
+| GET     | `/reports`                | Lister les signalements (admin)     |
+| PATCH   | `/reports/{id}/resolve`   | Marquer un signalement résolu       |
+
+### Bans
+| Méthode | Chemin        | Description                       |
+|---------|--------------|-----------------------------------|
+| POST    | `/bans`      | Bannir un utilisateur             |
+| GET     | `/bans`      | Lister les bannissements actifs   |
+| DELETE  | `/bans/{id}` | Lever un bannissement             |
+
 ### Tags
 | Méthode | Chemin | Description |
 |---------|-------|-------------|
@@ -52,6 +67,7 @@ Ce document fournit une description détaillée de l'API REST proposée dans ce 
 | GET     | `/tags` | Lister les tags |
 | POST    | `/articles/{id}/tags` | Associer un tag à un article |
 | GET     | `/articles?tag={id}` | Filtrer les articles par tag |
+
 
 ## Structures de données
 
