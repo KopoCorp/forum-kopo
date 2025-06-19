@@ -75,8 +75,26 @@ Le script force l'option `password_encryption` à `scram-sha-256` et ajoute une
 ligne correspondante dans `pg_hba.conf`.
 
 
+## Activer l'accès réseau
+
+Si la base doit être accessible depuis d'autres conteneurs, utilisez le script
+`enable_remote_access.sh`. Il configure `postgresql.conf` et `pg_hba.conf` pour
+autoriser les connexions distantes puis redémarre le service.
+
+Exemple d'usage pour autoriser tout le réseau :
+
+```bash
+sudo bash enable_remote_access.sh
+```
+
+Vous pouvez aussi spécifier un sous-réseau autorisé :
+
+```bash
+sudo bash enable_remote_access.sh 192.168.1.0/24
+```
+
+
 ## Notes
 
 - Adaptez les noms de base ou d'utilisateur selon vos besoins en modifiant le script.
-- Pensez à configurer l'accès réseau de PostgreSQL si l'application se trouve hors du conteneur.
 
