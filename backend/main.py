@@ -1,7 +1,11 @@
 from typing import List
 from uuid import uuid4
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+import os
+import uuid
+import shutil
 
 from . import models, schemas
 from .database import Base, engine, get_db
@@ -184,3 +188,84 @@ def confirm_password_reset(data: schemas.PasswordResetConfirm, db: Session = Dep
     token.is_used = True
     db.commit()
     return {"status": "password updated"}
+  
+@app.post("/messages", response_model=schemas.DirectMessageOut)
+def send_message(message: schemas.DirectMessageCreate, db: Session = Depends(get_db)):
+    db_msg = models.DirectMessage(**message.dict())
+    db.add(db_msg)
+    db.commit()
+    db.refresh(db_msg)
+    return db_msg
+
+
+@app.get("/messages/{user_id}", response_model=List[schemas.DirectMessageOut])
+def read_messages(user_id: int, db: Session = Depends(get_db)):
+    msgs = db.query(models.DirectMessage).filter(models.DirectMessage.receiver_id == user_id).all()
+    for msg in msgs:
+        if not msg.is_read:
+            msg.is_read = True
+    db.commit()
+    return msgs
+
+
+@app.post("/notifications", response_model=schemas.NotificationOut)
+def create_notification(notification: schemas.NotificationCreate, db: Session = Depends(get_db)):
+    db_notif = models.Notification(**notification.dict())
+    db.add(db_notif)
+    db.commit()
+    db.refresh(db_notif)
+    return db_notif
+
+
+@app.get("/notifications/{user_id}", response_model=List[schemas.NotificationOut])
+def list_notifications(user_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Notification).filter(models.Notification.user_id == user_id).all()
+
+
+@app.post("/notifications/{notif_id}/read", response_model=schemas.NotificationOut)
+def mark_notification_read(notif_id: int, db: Session = Depends(get_db)):
+    notif = db.query(models.Notification).get(notif_id)
+    if not notif:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    notif.is_read = True
+    db.commit()
+    db.refresh(notif)
+    return notif
+
+@app.post("/attachments", response_model=schemas.AttachmentOut)
+async def upload_attachment(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    upload_dir = "uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+    ext = os.path.splitext(file.filename)[1]
+    unique_name = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join(upload_dir, unique_name)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    db_obj = models.Attachment(filename=file.filename, path=file_path, content_type=file.content_type)
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+
+@app.get("/attachments/{attachment_id}")
+def get_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    att = db.query(models.Attachment).get(attachment_id)
+    if not att:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    return FileResponse(att.path, media_type=att.content_type, filename=att.filename)
+
+
+@app.delete("/attachments/{attachment_id}")
+def delete_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    att = db.query(models.Attachment).get(attachment_id)
+    if not att:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    try:
+        os.remove(att.path)
+    except FileNotFoundError:
+        pass
+    db.delete(att)
+    db.commit()
+    return {"detail": "Attachment deleted"}
