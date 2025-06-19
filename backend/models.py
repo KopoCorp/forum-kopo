@@ -112,11 +112,35 @@ class Like(Base):
     user = relationship('User')
 
 
+class DirectMessage(Base):
+    __tablename__ = 'direct_messages'
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    receiver_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    content = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    sender = relationship('User', foreign_keys=[sender_id])
+    receiver = relationship('User', foreign_keys=[receiver_id])
+
+class Notification(Base):
+    __tablename__ = 'notifications'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    message = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+    user = relationship('User')
+    
 class Attachment(Base):
     __tablename__ = 'attachments'
-
+    
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String(255), nullable=False)
     path = Column(String(255), nullable=False)
     content_type = Column(String(100))
     created_at = Column(DateTime, server_default=func.now())
+    
