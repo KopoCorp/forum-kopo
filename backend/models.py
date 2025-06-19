@@ -35,6 +35,7 @@ class Article(Base):
 
     author = relationship('User', back_populates='articles')
     comments = relationship('Comment', back_populates='article')
+    article_tags = relationship('ArticleTag', back_populates='article')
 
 
 class Comment(Base):
@@ -110,3 +111,25 @@ class Like(Base):
     )
 
     user = relationship('User')
+
+
+class Tag(Base):
+    __tablename__ = 'tags'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    article_tags = relationship('ArticleTag', back_populates='tag')
+
+
+class ArticleTag(Base):
+    __tablename__ = 'article_tags'
+
+    id = Column(Integer, primary_key=True, index=True)
+    article_id = Column(Integer, ForeignKey('articles.id'))
+    tag_id = Column(Integer, ForeignKey('tags.id'))
+
+    __table_args__ = (UniqueConstraint('article_id', 'tag_id'),)
+
+    article = relationship('Article', back_populates='article_tags')
+    tag = relationship('Tag', back_populates='article_tags')

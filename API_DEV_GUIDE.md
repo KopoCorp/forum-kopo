@@ -45,6 +45,14 @@ Ce document fournit une description détaillée de l'API REST proposée dans ce 
 |---------|--------|-----------------------------------|
 | POST    | `/likes` | Ajouter un "j'aime" sur un contenu |
 
+### Tags
+| Méthode | Chemin | Description |
+|---------|-------|-------------|
+| POST    | `/tags` | Créer un tag |
+| GET     | `/tags` | Lister les tags |
+| POST    | `/articles/{id}/tags` | Associer un tag à un article |
+| GET     | `/articles?tag={id}` | Filtrer les articles par tag |
+
 ## Structures de données
 
 Les schémas utilisés par l'API sont définis dans `backend/schemas.py`. Les modèles principaux contiennent les champs suivants (extraits) :
