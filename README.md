@@ -24,10 +24,12 @@ export DATABASE_URL=postgresql://user:password@localhost/forumdb
 Start the API with `uvicorn`:
 
 ```bash
-uvicorn backend.main:app --reload
+uvicorn backend.main:app --reload --host 0.0.0.0
 ```
 
-The API will be available at `http://localhost:8000`.
+The API will be available on port **8000** of the container. Replace
+`<container-ip>` with the actual address of your container, e.g.
+`http://<container-ip>:8000`.
 
 ## Endpoints
 
