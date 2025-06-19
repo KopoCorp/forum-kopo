@@ -41,7 +41,39 @@ Pour automatiser les étapes 4 à 6, un script `setup_db.sh` est fourni. Exécut
 ```bash
 bash setup_db.sh
 ```
-Il crée la base (si nécessaire) et importe `forum.sql`.
+Le script crée la base (si nécessaire) et importe `forum.sql`. Il crée aussi un
+utilisateur `kopo_user` avec le mot de passe `kopo_pass` (haché via SCRAM).
+Vous pouvez définir d'autres identifiants via les variables `DB_USER` et
+`DB_PASS` :
+
+```bash
+DB_USER=monuser DB_PASS=monpass bash setup_db.sh
+```
+Lorsqu'une base du même nom existe déjà, le script demande confirmation avant
+de la supprimer puis de la recréer.
+
+## Activer l'accès réseau
+
+Si la base doit être accessible depuis d'autres conteneurs, utilisez le script
+`enable_remote_access.sh`. Il configure `postgresql.conf` et `pg_hba.conf` pour
+autoriser les connexions distantes en activant l'authentification
+`scram-sha-256`, puis redémarre le service.
+
+Exemple d'usage pour autoriser tout le réseau :
+
+```bash
+sudo bash enable_remote_access.sh
+```
+
+Vous pouvez aussi spécifier un sous-réseau autorisé :
+
+```bash
+sudo bash enable_remote_access.sh 192.168.1.0/24
+```
+
+Le script force l'option `password_encryption` à `scram-sha-256` et ajoute une
+ligne correspondante dans `pg_hba.conf`.
+
 
 ## Activer l'accès réseau
 
