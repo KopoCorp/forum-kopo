@@ -37,5 +37,8 @@ The API will be available on port **8000** of the container. Replace
 - `GET /users/{id}` – retrieve a user
 - `POST /articles` – create a new article
 - `GET /articles` – list articles
+- `POST /attachments` – upload a file
+- `GET /attachments/{id}` – fetch an attachment
+- `DELETE /attachments/{id}` – delete an attachment
 
 This is only a starting point. More models and endpoints can be added following the same pattern.
