@@ -169,6 +169,18 @@ class LikeOut(LikeBase):
     class Config:
         orm_mode = True
         
+
+class TagBase(BaseModel):
+    name: str
+
+
+class TagCreate(TagBase):
+    pass
+
+
+class TagOut(TagBase):
+    id: int
+        
 class UserProfileBase(BaseModel):
     full_name: Optional[str] = None
     website: Optional[str] = None
@@ -204,6 +216,15 @@ class DirectMessageOut(DirectMessageBase):
         orm_mode = True
 
 
+class ArticleTagCreate(BaseModel):
+    tag_id: int
+
+
+class ArticleTagOut(ArticleTagCreate):
+    id: int
+    article_id: int
+      
+      
 class PasswordResetRequest(BaseModel):
     email: str
 
