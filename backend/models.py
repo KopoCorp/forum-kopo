@@ -10,7 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    pass_hash = Column(Text, nullable=False)
+    password_hash = Column(Text, nullable=False)
     bio = Column(Text)
     avatar_url = Column(Text)
     is_active = Column(Boolean, default=True)

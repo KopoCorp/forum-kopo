@@ -19,7 +19,7 @@ def main():
     user_payload = {
         "username": "tester",
         "email": "tester@example.com",
-        "pass_hash": "secret"
+        "password": "secret"
     }
     resp = requests.post(f"{BASE_URL}/users", json=user_payload)
     print_result("Create user", resp)
