@@ -230,4 +230,49 @@ class Attachment(Base):
     path = Column(String(255), nullable=False)
     content_type = Column(String(100))
     created_at = Column(DateTime, server_default=func.now())
+
+
+class Role(Base):
+    __tablename__ = 'roles'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, nullable=False)
+    description = Column(Text)
+    user_roles = relationship('UserRole', back_populates='role')
+    role_permissions = relationship('RolePermission', back_populates='role')
+
+
+class Permission(Base):
+    __tablename__ = 'permissions'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, nullable=False)
+    description = Column(Text)
+    role_permissions = relationship('RolePermission', back_populates='permission')
+
+
+class UserRole(Base):
+    __tablename__ = 'user_roles'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    role_id = Column(Integer, ForeignKey('roles.id'))
+
+    __table_args__ = (UniqueConstraint('user_id', 'role_id'),)
+
+    user = relationship('User')
+    role = relationship('Role', back_populates='user_roles')
+
+
+class RolePermission(Base):
+    __tablename__ = 'role_permissions'
+
+    id = Column(Integer, primary_key=True, index=True)
+    role_id = Column(Integer, ForeignKey('roles.id'))
+    permission_id = Column(Integer, ForeignKey('permissions.id'))
+
+    __table_args__ = (UniqueConstraint('role_id', 'permission_id'),)
+
+    role = relationship('Role', back_populates='role_permissions')
+    permission = relationship('Permission', back_populates='role_permissions')
     

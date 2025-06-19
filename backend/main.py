@@ -486,6 +486,125 @@ def mark_notification_read(notif_id: int, db: Session = Depends(get_db)):
     db.refresh(notif)
     return notif
 
+
+@app.post("/roles", response_model=schemas.RoleOut)
+def create_role(role: schemas.RoleCreate, db: Session = Depends(get_db)):
+    db_role = models.Role(**role.dict())
+    db.add(db_role)
+    db.commit()
+    db.refresh(db_role)
+    return db_role
+
+
+@app.get("/roles", response_model=List[schemas.RoleOut])
+def list_roles(db: Session = Depends(get_db)):
+    return db.query(models.Role).all()
+
+
+@app.get("/roles/{role_id}", response_model=schemas.RoleOut)
+def read_role(role_id: int, db: Session = Depends(get_db)):
+    role = db.query(models.Role).get(role_id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+    return role
+
+
+@app.put("/roles/{role_id}", response_model=schemas.RoleOut)
+@app.patch("/roles/{role_id}", response_model=schemas.RoleOut)
+def update_role(role_id: int, data: schemas.RoleUpdate, db: Session = Depends(get_db)):
+    role = db.query(models.Role).get(role_id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+    for key, value in data.dict(exclude_unset=True).items():
+        setattr(role, key, value)
+    db.commit()
+    db.refresh(role)
+    return role
+
+
+@app.delete("/roles/{role_id}", status_code=204)
+def delete_role(role_id: int, db: Session = Depends(get_db)):
+    role = db.query(models.Role).get(role_id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+    db.delete(role)
+    db.commit()
+
+
+@app.post("/permissions", response_model=schemas.PermissionOut)
+def create_permission(permission: schemas.PermissionCreate, db: Session = Depends(get_db)):
+    db_perm = models.Permission(**permission.dict())
+    db.add(db_perm)
+    db.commit()
+    db.refresh(db_perm)
+    return db_perm
+
+
+@app.get("/permissions", response_model=List[schemas.PermissionOut])
+def list_permissions(db: Session = Depends(get_db)):
+    return db.query(models.Permission).all()
+
+
+@app.get("/permissions/{perm_id}", response_model=schemas.PermissionOut)
+def read_permission(perm_id: int, db: Session = Depends(get_db)):
+    perm = db.query(models.Permission).get(perm_id)
+    if not perm:
+        raise HTTPException(status_code=404, detail="Permission not found")
+    return perm
+
+
+@app.put("/permissions/{perm_id}", response_model=schemas.PermissionOut)
+@app.patch("/permissions/{perm_id}", response_model=schemas.PermissionOut)
+def update_permission(perm_id: int, data: schemas.PermissionUpdate, db: Session = Depends(get_db)):
+    perm = db.query(models.Permission).get(perm_id)
+    if not perm:
+        raise HTTPException(status_code=404, detail="Permission not found")
+    for key, value in data.dict(exclude_unset=True).items():
+        setattr(perm, key, value)
+    db.commit()
+    db.refresh(perm)
+    return perm
+
+
+@app.delete("/permissions/{perm_id}", status_code=204)
+def delete_permission(perm_id: int, db: Session = Depends(get_db)):
+    perm = db.query(models.Permission).get(perm_id)
+    if not perm:
+        raise HTTPException(status_code=404, detail="Permission not found")
+    db.delete(perm)
+    db.commit()
+
+
+@app.post("/users/{user_id}/roles", status_code=204)
+def assign_role(user_id: int, data: schemas.UserRoleAssign, db: Session = Depends(get_db)):
+    if not db.query(models.User).get(user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+    if not db.query(models.Role).get(data.role_id):
+        raise HTTPException(status_code=404, detail="Role not found")
+    ur = models.UserRole(user_id=user_id, role_id=data.role_id)
+    db.add(ur)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Role already assigned")
+
+
+@app.get("/users/{user_id}/roles", response_model=List[schemas.RoleOut])
+def list_user_roles(user_id: int, db: Session = Depends(get_db)):
+    if not db.query(models.User).get(user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+    return [ur.role for ur in db.query(models.UserRole).filter(models.UserRole.user_id == user_id).all()]
+
+
+@app.delete("/users/{user_id}/roles/{role_id}", status_code=204)
+def unassign_role(user_id: int, role_id: int, db: Session = Depends(get_db)):
+    ur = db.query(models.UserRole).filter(models.UserRole.user_id == user_id, models.UserRole.role_id == role_id).first()
+    if not ur:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    db.delete(ur)
+    db.commit()
+
 @app.post("/attachments", response_model=schemas.AttachmentOut)
 async def upload_attachment(file: UploadFile = File(...), db: Session = Depends(get_db)):
     upload_dir = "uploads"
