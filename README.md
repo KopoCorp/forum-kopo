@@ -65,5 +65,4 @@ sudo bash enable_remote_access.sh 192.168.1.0/24
 ## Notes
 
 - Adaptez les noms de base ou d'utilisateur selon vos besoins en modifiant le script.
-- Pensez à configurer l'accès réseau de PostgreSQL si l'application se trouve hors du conteneur.
 
