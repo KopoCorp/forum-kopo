@@ -132,3 +132,47 @@ def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Like already exists")
     db.refresh(db_like)
     return db_like
+
+
+@app.post("/messages", response_model=schemas.DirectMessageOut)
+def send_message(message: schemas.DirectMessageCreate, db: Session = Depends(get_db)):
+    db_msg = models.DirectMessage(**message.dict())
+    db.add(db_msg)
+    db.commit()
+    db.refresh(db_msg)
+    return db_msg
+
+
+@app.get("/messages/{user_id}", response_model=List[schemas.DirectMessageOut])
+def read_messages(user_id: int, db: Session = Depends(get_db)):
+    msgs = db.query(models.DirectMessage).filter(models.DirectMessage.receiver_id == user_id).all()
+    for msg in msgs:
+        if not msg.is_read:
+            msg.is_read = True
+    db.commit()
+    return msgs
+
+
+@app.post("/notifications", response_model=schemas.NotificationOut)
+def create_notification(notification: schemas.NotificationCreate, db: Session = Depends(get_db)):
+    db_notif = models.Notification(**notification.dict())
+    db.add(db_notif)
+    db.commit()
+    db.refresh(db_notif)
+    return db_notif
+
+
+@app.get("/notifications/{user_id}", response_model=List[schemas.NotificationOut])
+def list_notifications(user_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Notification).filter(models.Notification.user_id == user_id).all()
+
+
+@app.post("/notifications/{notif_id}/read", response_model=schemas.NotificationOut)
+def mark_notification_read(notif_id: int, db: Session = Depends(get_db)):
+    notif = db.query(models.Notification).get(notif_id)
+    if not notif:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    notif.is_read = True
+    db.commit()
+    db.refresh(notif)
+    return notif
