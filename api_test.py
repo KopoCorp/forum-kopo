@@ -19,7 +19,7 @@ def main():
     user_payload = {
         "username": "tester",
         "email": "tester@example.com",
-        "pass_hash": "secret"
+        "password": "secret"
     }
     resp = requests.post(f"{BASE_URL}/users", json=user_payload)
     print_result("Create user", resp)
@@ -108,14 +108,31 @@ def main():
                     resp = requests.get(f"{BASE_URL}/forum/threads/{thread_id}/replies")
                     print_result("List replies", resp)
 
-                    # 14. Like the article
-                    like_payload = {
-                        "user_id": user_id,
-                        "target_type": "article",
-                        "target_id": article_id
-                    }
-                    resp = requests.post(f"{BASE_URL}/likes", json=like_payload)
-                    print_result("Create like", resp)
+            # 14. Like the article
+            like_payload = {
+                "user_id": user_id,
+                "target_type": "article",
+                "target_id": article_id
+            }
+            resp = requests.post(f"{BASE_URL}/likes", json=like_payload)
+            print_result("Create like", resp)
+
+            # 15. Create a tag
+            tag_payload = {"name": "news"}
+            resp = requests.post(f"{BASE_URL}/tags", json=tag_payload)
+            print_result("Create tag", resp)
+
+            if resp.ok:
+                tag_id = resp.json().get("id")
+
+                # 16. Assign tag to article
+                assign_payload = {"tag_id": tag_id}
+                resp = requests.post(f"{BASE_URL}/articles/{article_id}/tags", json=assign_payload)
+                print_result("Assign tag", resp)
+
+                # 17. Filter articles by tag
+                resp = requests.get(f"{BASE_URL}/articles", params={"tag": tag_id})
+                print_result("Filter articles", resp)
 
     # Final: list all articles
     resp = requests.get(f"{BASE_URL}/articles")

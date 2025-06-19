@@ -10,7 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    pass_hash = Column(Text, nullable=False)
+    password_hash = Column(Text, nullable=False)
     bio = Column(Text)
     avatar_url = Column(Text)
     is_active = Column(Boolean, default=True)
@@ -20,6 +20,8 @@ class User(Base):
     comments = relationship('Comment', back_populates='user')
     threads = relationship('ForumThread', back_populates='user')
     replies = relationship('ForumReply', back_populates='user')
+    profile = relationship('UserProfile', uselist=False, back_populates='user')
+    reset_tokens = relationship('PasswordResetToken', back_populates='user')
 
 
 class Article(Base):
@@ -35,6 +37,7 @@ class Article(Base):
 
     author = relationship('User', back_populates='articles')
     comments = relationship('Comment', back_populates='article')
+    article_tags = relationship('ArticleTag', back_populates='article')
 
 
 class Comment(Base):
@@ -150,3 +153,81 @@ class AuditLog(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship('User')
+    
+class Tag(Base):
+    __tablename__ = 'tags'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    article_tags = relationship('ArticleTag', back_populates='tag')
+
+
+class ArticleTag(Base):
+    __tablename__ = 'article_tags'
+
+    id = Column(Integer, primary_key=True, index=True)
+    article_id = Column(Integer, ForeignKey('articles.id'))
+    tag_id = Column(Integer, ForeignKey('tags.id'))
+
+    __table_args__ = (UniqueConstraint('article_id', 'tag_id'),)
+
+    article = relationship('Article', back_populates='article_tags')
+    tag = relationship('Tag', back_populates='article_tags')
+    
+class UserProfile(Base):
+    __tablename__ = 'user_profiles'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), unique=True)
+    full_name = Column(String(100))
+    website = Column(String(255))
+    location = Column(String(100))
+    about_me = Column(Text)
+
+    user = relationship('User', back_populates='profile')
+
+
+class PasswordResetToken(Base):
+    __tablename__ = 'password_reset_tokens'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    token = Column(String(100), unique=True, nullable=False, index=True)
+    is_used = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    user = relationship('User', back_populates='reset_tokens')
+    
+class DirectMessage(Base):
+    __tablename__ = 'direct_messages'
+
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    receiver_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    content = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    sender = relationship('User', foreign_keys=[sender_id])
+    receiver = relationship('User', foreign_keys=[receiver_id])
+
+class Notification(Base):
+    __tablename__ = 'notifications'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    message = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+    user = relationship('User')
+    
+class Attachment(Base):
+    __tablename__ = 'attachments'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String(255), nullable=False)
+    path = Column(String(255), nullable=False)
+    content_type = Column(String(100))
+    created_at = Column(DateTime, server_default=func.now())
+    
