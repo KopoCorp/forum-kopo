@@ -138,3 +138,68 @@ class LikeOut(LikeBase):
 
     class Config:
         orm_mode = True
+        
+class UserProfileBase(BaseModel):
+    full_name: Optional[str] = None
+    website: Optional[str] = None
+    location: Optional[str] = None
+    about_me: Optional[str] = None
+
+
+class UserProfileUpdate(UserProfileBase):
+    pass
+
+
+class UserProfileOut(UserProfileBase):
+    id: int
+    user_id: int
+      
+class DirectMessageBase(BaseModel):
+    content: str
+
+
+class DirectMessageCreate(DirectMessageBase):
+    sender_id: Optional[int]
+    receiver_id: int
+
+
+class DirectMessageOut(DirectMessageBase):
+    id: int
+    sender_id: Optional[int]
+    receiver_id: int
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class PasswordResetRequest(BaseModel):
+    email: str
+
+
+class PasswordResetConfirm(BaseModel):
+    token: str
+    new_pass_hash: str
+      
+class NotificationBase(BaseModel):
+    message: str
+
+
+class NotificationCreate(NotificationBase):
+    user_id: Optional[int]
+
+
+class NotificationOut(NotificationBase):
+    id: int
+    user_id: Optional[int]
+    is_read: bool
+      
+class AttachmentOut(BaseModel):
+    id: int
+    filename: str
+    content_type: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        orm_mode = True

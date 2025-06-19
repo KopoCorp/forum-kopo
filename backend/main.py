@@ -1,10 +1,18 @@
 from typing import List, Optional
 from datetime import datetime, timedelta
-from fastapi import FastAPI, Depends, HTTPException
+from uuid import uuid4
+
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
 from sqlalchemy.orm import Session
+import os
+import uuid
+import shutil
 
 from . import models, schemas
 from .database import Base, engine, get_db
@@ -95,6 +103,31 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@app.get("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
+def read_profile(user_id: int, db: Session = Depends(get_db)):
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return profile
+
+
+@app.put("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
+def update_profile(user_id: int, data: schemas.UserProfileUpdate, db: Session = Depends(get_db)):
+    user = db.query(models.User).get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    if profile:
+        for key, value in data.dict(exclude_unset=True).items():
+            setattr(profile, key, value)
+    else:
+        profile = models.UserProfile(user_id=user_id, **data.dict())
+        db.add(profile)
+    db.commit()
+    db.refresh(profile)
+    return profile
 
 
 @app.post("/articles", response_model=schemas.ArticleOut)
@@ -198,3 +231,110 @@ def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Like already exists")
     db.refresh(db_like)
     return db_like
+
+
+@app.post("/password-reset/request")
+def request_password_reset(data: schemas.PasswordResetRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    token_str = uuid4().hex
+    token = models.PasswordResetToken(user_id=user.id, token=token_str)
+    db.add(token)
+    db.commit()
+    db.refresh(token)
+    # In real app, send token via email. Here we return it for simplicity.
+    return {"token": token_str}
+
+
+@app.post("/password-reset/confirm")
+def confirm_password_reset(data: schemas.PasswordResetConfirm, db: Session = Depends(get_db)):
+    token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == data.token, models.PasswordResetToken.is_used == False).first()
+    if not token:
+        raise HTTPException(status_code=404, detail="Invalid token")
+    user = token.user
+    user.pass_hash = data.new_pass_hash
+    token.is_used = True
+    db.commit()
+    return {"status": "password updated"}
+  
+@app.post("/messages", response_model=schemas.DirectMessageOut)
+def send_message(message: schemas.DirectMessageCreate, db: Session = Depends(get_db)):
+    db_msg = models.DirectMessage(**message.dict())
+    db.add(db_msg)
+    db.commit()
+    db.refresh(db_msg)
+    return db_msg
+
+
+@app.get("/messages/{user_id}", response_model=List[schemas.DirectMessageOut])
+def read_messages(user_id: int, db: Session = Depends(get_db)):
+    msgs = db.query(models.DirectMessage).filter(models.DirectMessage.receiver_id == user_id).all()
+    for msg in msgs:
+        if not msg.is_read:
+            msg.is_read = True
+    db.commit()
+    return msgs
+
+
+@app.post("/notifications", response_model=schemas.NotificationOut)
+def create_notification(notification: schemas.NotificationCreate, db: Session = Depends(get_db)):
+    db_notif = models.Notification(**notification.dict())
+    db.add(db_notif)
+    db.commit()
+    db.refresh(db_notif)
+    return db_notif
+
+
+@app.get("/notifications/{user_id}", response_model=List[schemas.NotificationOut])
+def list_notifications(user_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Notification).filter(models.Notification.user_id == user_id).all()
+
+
+@app.post("/notifications/{notif_id}/read", response_model=schemas.NotificationOut)
+def mark_notification_read(notif_id: int, db: Session = Depends(get_db)):
+    notif = db.query(models.Notification).get(notif_id)
+    if not notif:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    notif.is_read = True
+    db.commit()
+    db.refresh(notif)
+    return notif
+
+@app.post("/attachments", response_model=schemas.AttachmentOut)
+async def upload_attachment(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    upload_dir = "uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+    ext = os.path.splitext(file.filename)[1]
+    unique_name = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join(upload_dir, unique_name)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    db_obj = models.Attachment(filename=file.filename, path=file_path, content_type=file.content_type)
+    db.add(db_obj)
+    db.commit()
+    db.refresh(db_obj)
+    return db_obj
+
+
+@app.get("/attachments/{attachment_id}")
+def get_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    att = db.query(models.Attachment).get(attachment_id)
+    if not att:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    return FileResponse(att.path, media_type=att.content_type, filename=att.filename)
+
+
+@app.delete("/attachments/{attachment_id}")
+def delete_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    att = db.query(models.Attachment).get(attachment_id)
+    if not att:
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    try:
+        os.remove(att.path)
+    except FileNotFoundError:
+        pass
+    db.delete(att)
+    db.commit()
+    return {"detail": "Attachment deleted"}

@@ -41,5 +41,8 @@ The API will be available on port **8000** of the container. Replace
 - `GET /articles` – list articles
 - `POST /login` – obtain a JWT access token
 - `POST /logout` – revoke the current token
+- `POST /attachments` – upload a file
+- `GET /attachments/{id}` – fetch an attachment
+- `DELETE /attachments/{id}` – delete an attachment
 
 This is only a starting point. More models and endpoints can be added following the same pattern.
