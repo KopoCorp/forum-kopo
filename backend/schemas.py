@@ -138,3 +138,13 @@ class LikeOut(LikeBase):
 
     class Config:
         orm_mode = True
+
+
+class AttachmentOut(BaseModel):
+    id: int
+    filename: str
+    content_type: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        orm_mode = True

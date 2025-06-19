@@ -110,3 +110,13 @@ class Like(Base):
     )
 
     user = relationship('User')
+
+
+class Attachment(Base):
+    __tablename__ = 'attachments'
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String(255), nullable=False)
+    path = Column(String(255), nullable=False)
+    content_type = Column(String(100))
+    created_at = Column(DateTime, server_default=func.now())
