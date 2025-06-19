@@ -1,26 +1,6 @@
 # Guide de l'API Kopo Forum
 
-Ce document fournit une description détaillée de l'API REST proposée dans ce dépôt. Il s'adresse aux développeurs web souhaitant intégrer les fonctionnalités du forum/blog dans leurs propres applications.
-
-## Mise en place
-
-1. **Prérequis**
-   - Python 3.9 ou supérieur
-   - Base de données PostgreSQL
-2. **Installation des dépendances**
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Configuration de la base**
-   Définissez la variable d'environnement `DATABASE_URL` avec la chaîne de connexion PostgreSQL :
-   ```bash
-   export DATABASE_URL=postgresql://user:password@localhost/forumdb
-   ```
-4. **Lancement du serveur**
-   ```bash
-   uvicorn backend.main:app --reload --host 0.0.0.0
-   ```
-   L'API sera accessible sur le port **8000**.
+Ce document fournit une description détaillée de l'API REST proposée dans ce dépôt.
 
 ## Modèles principaux
 
