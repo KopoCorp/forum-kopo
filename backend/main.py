@@ -152,6 +152,28 @@ def read_article(article_id: int, db: Session = Depends(get_db)):
     return article
 
 
+@app.put("/articles/{article_id}", response_model=schemas.ArticleOut)
+@app.patch("/articles/{article_id}", response_model=schemas.ArticleOut)
+def update_article(article_id: int, article: schemas.ArticleUpdate, db: Session = Depends(get_db)):
+    db_article = db.query(models.Article).get(article_id)
+    if not db_article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    for key, value in article.dict(exclude_unset=True).items():
+        setattr(db_article, key, value)
+    db.commit()
+    db.refresh(db_article)
+    return db_article
+
+
+@app.delete("/articles/{article_id}", status_code=204)
+def delete_article(article_id: int, db: Session = Depends(get_db)):
+    db_article = db.query(models.Article).get(article_id)
+    if not db_article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    db.delete(db_article)
+    db.commit()
+
+
 @app.post("/articles/{article_id}/comments", response_model=schemas.CommentOut)
 def create_comment(article_id: int, comment: schemas.CommentCreate, db: Session = Depends(get_db)):
     if not db.query(models.Article).get(article_id):
@@ -166,6 +188,28 @@ def create_comment(article_id: int, comment: schemas.CommentCreate, db: Session 
 @app.get("/articles/{article_id}/comments", response_model=List[schemas.CommentOut])
 def list_comments(article_id: int, db: Session = Depends(get_db)):
     return db.query(models.Comment).filter(models.Comment.post_id == article_id, models.Comment.parent_id == None).all()
+
+
+@app.put("/comments/{comment_id}", response_model=schemas.CommentOut)
+@app.patch("/comments/{comment_id}", response_model=schemas.CommentOut)
+def update_comment(comment_id: int, comment: schemas.CommentUpdate, db: Session = Depends(get_db)):
+    db_comment = db.query(models.Comment).get(comment_id)
+    if not db_comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    for key, value in comment.dict(exclude_unset=True).items():
+        setattr(db_comment, key, value)
+    db.commit()
+    db.refresh(db_comment)
+    return db_comment
+
+
+@app.delete("/comments/{comment_id}", status_code=204)
+def delete_comment(comment_id: int, db: Session = Depends(get_db)):
+    db_comment = db.query(models.Comment).get(comment_id)
+    if not db_comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    db.delete(db_comment)
+    db.commit()
 
 
 @app.post("/forum/categories", response_model=schemas.ForumCategoryOut)
@@ -204,6 +248,28 @@ def read_thread(thread_id: int, db: Session = Depends(get_db)):
     return thread
 
 
+@app.put("/forum/threads/{thread_id}", response_model=schemas.ForumThreadOut)
+@app.patch("/forum/threads/{thread_id}", response_model=schemas.ForumThreadOut)
+def update_thread(thread_id: int, thread: schemas.ForumThreadUpdate, db: Session = Depends(get_db)):
+    db_thread = db.query(models.ForumThread).get(thread_id)
+    if not db_thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    for key, value in thread.dict(exclude_unset=True).items():
+        setattr(db_thread, key, value)
+    db.commit()
+    db.refresh(db_thread)
+    return db_thread
+
+
+@app.delete("/forum/threads/{thread_id}", status_code=204)
+def delete_thread(thread_id: int, db: Session = Depends(get_db)):
+    db_thread = db.query(models.ForumThread).get(thread_id)
+    if not db_thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    db.delete(db_thread)
+    db.commit()
+
+
 @app.post("/forum/threads/{thread_id}/replies", response_model=schemas.ForumReplyOut)
 def create_reply(thread_id: int, reply: schemas.ForumReplyCreate, db: Session = Depends(get_db)):
     if not db.query(models.ForumThread).get(thread_id):
@@ -218,6 +284,28 @@ def create_reply(thread_id: int, reply: schemas.ForumReplyCreate, db: Session = 
 @app.get("/forum/threads/{thread_id}/replies", response_model=List[schemas.ForumReplyOut])
 def list_replies(thread_id: int, db: Session = Depends(get_db)):
     return db.query(models.ForumReply).filter(models.ForumReply.thread_id == thread_id, models.ForumReply.parent_id == None).all()
+
+
+@app.put("/forum/replies/{reply_id}", response_model=schemas.ForumReplyOut)
+@app.patch("/forum/replies/{reply_id}", response_model=schemas.ForumReplyOut)
+def update_reply(reply_id: int, reply: schemas.ForumReplyUpdate, db: Session = Depends(get_db)):
+    db_reply = db.query(models.ForumReply).get(reply_id)
+    if not db_reply:
+        raise HTTPException(status_code=404, detail="Reply not found")
+    for key, value in reply.dict(exclude_unset=True).items():
+        setattr(db_reply, key, value)
+    db.commit()
+    db.refresh(db_reply)
+    return db_reply
+
+
+@app.delete("/forum/replies/{reply_id}", status_code=204)
+def delete_reply(reply_id: int, db: Session = Depends(get_db)):
+    db_reply = db.query(models.ForumReply).get(reply_id)
+    if not db_reply:
+        raise HTTPException(status_code=404, detail="Reply not found")
+    db.delete(db_reply)
+    db.commit()
 
 
 @app.post("/likes", response_model=schemas.LikeOut)

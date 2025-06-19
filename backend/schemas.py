@@ -33,6 +33,13 @@ class ArticleCreate(ArticleBase):
     user_id: Optional[int]
 
 
+class ArticleUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    is_pub: Optional[bool] = None
+    user_id: Optional[int] = None
+
+
 class ArticleOut(ArticleBase):
     id: int
     user_id: Optional[int]
@@ -51,6 +58,13 @@ class CommentBase(BaseModel):
 class CommentCreate(CommentBase):
     post_id: int
     user_id: Optional[int]
+
+
+class CommentUpdate(BaseModel):
+    content: Optional[str] = None
+    parent_id: Optional[int] = None
+    post_id: Optional[int] = None
+    user_id: Optional[int] = None
 
 
 class CommentOut(CommentBase):
@@ -90,6 +104,15 @@ class ForumThreadCreate(ForumThreadBase):
     user_id: Optional[int]
 
 
+class ForumThreadUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    category_id: Optional[int] = None
+    user_id: Optional[int] = None
+    is_locked: Optional[bool] = None
+    is_pinned: Optional[bool] = None
+
+
 class ForumThreadOut(ForumThreadBase):
     id: int
     user_id: Optional[int]
@@ -110,6 +133,13 @@ class ForumReplyBase(BaseModel):
 class ForumReplyCreate(ForumReplyBase):
     thread_id: int
     user_id: Optional[int]
+
+
+class ForumReplyUpdate(BaseModel):
+    content: Optional[str] = None
+    parent_id: Optional[int] = None
+    thread_id: Optional[int] = None
+    user_id: Optional[int] = None
 
 
 class ForumReplyOut(ForumReplyBase):
