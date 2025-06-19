@@ -1,7 +1,14 @@
-from typing import List
+from typing import List, Optional
+from datetime import datetime, timedelta
 from uuid import uuid4
+
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+
 from sqlalchemy.orm import Session
 import os
 import uuid
@@ -15,17 +22,79 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Kopo Forum API")
 
+# Security configuration
+SECRET_KEY = "secret-key"  # In production use environment variable
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+revoked_tokens: set[str] = set()
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    if token in revoked_tokens:
+        raise HTTPException(status_code=401, detail="Token revoked")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    user = db.query(models.User).get(int(user_id))
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 
 @app.post("/users", response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    db_user = models.User(**user.dict())
+    db_user = models.User(
+        username=user.username,
+        email=user.email,
+        bio=user.bio,
+        avatar_url=user.avatar_url,
+        password_hash=get_password_hash(user.password),
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.username == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    token = create_access_token(data={"sub": str(user.id)}, expires_delta=access_token_expires)
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@app.post("/logout")
+def logout(token: str = Depends(oauth2_scheme)):
+    revoked_tokens.add(token)
+    return {"detail": "Logged out"}
 
 
 @app.get("/users/{user_id}", response_model=schemas.UserOut)

@@ -11,7 +11,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass_hash: str
+    password: str
 
 
 class UserOut(UserBase):
