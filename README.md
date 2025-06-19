@@ -42,7 +42,10 @@ Pour automatiser les étapes 4 à 6, un script `setup_db.sh` est fourni. Exécut
 bash setup_db.sh
 ```
 Le script crée la base (si nécessaire) et importe `forum.sql`. Il crée aussi un
-utilisateur `kopo_user` avec le mot de passe `kopo_pass` (haché via SCRAM).
+utilisateur `kopo_user` avec le mot de passe `kopo_pass` (haché via SCRAM). Ce
+compte reçoit tous les droits sur la base et sur l'ensemble des tables et
+séquences du schéma `public` afin qu'il puisse manipuler les données existantes
+et futures.
 Vous pouvez définir d'autres identifiants via les variables `DB_USER` et
 `DB_PASS` :
 
