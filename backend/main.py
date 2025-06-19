@@ -1,4 +1,5 @@
 from typing import List
+from uuid import uuid4
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -29,6 +30,31 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@app.get("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
+def read_profile(user_id: int, db: Session = Depends(get_db)):
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return profile
+
+
+@app.put("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
+def update_profile(user_id: int, data: schemas.UserProfileUpdate, db: Session = Depends(get_db)):
+    user = db.query(models.User).get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    if profile:
+        for key, value in data.dict(exclude_unset=True).items():
+            setattr(profile, key, value)
+    else:
+        profile = models.UserProfile(user_id=user_id, **data.dict())
+        db.add(profile)
+    db.commit()
+    db.refresh(profile)
+    return profile
 
 
 @app.post("/articles", response_model=schemas.ArticleOut)
@@ -132,3 +158,29 @@ def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Like already exists")
     db.refresh(db_like)
     return db_like
+
+
+@app.post("/password-reset/request")
+def request_password_reset(data: schemas.PasswordResetRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    token_str = uuid4().hex
+    token = models.PasswordResetToken(user_id=user.id, token=token_str)
+    db.add(token)
+    db.commit()
+    db.refresh(token)
+    # In real app, send token via email. Here we return it for simplicity.
+    return {"token": token_str}
+
+
+@app.post("/password-reset/confirm")
+def confirm_password_reset(data: schemas.PasswordResetConfirm, db: Session = Depends(get_db)):
+    token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == data.token, models.PasswordResetToken.is_used == False).first()
+    if not token:
+        raise HTTPException(status_code=404, detail="Invalid token")
+    user = token.user
+    user.pass_hash = data.new_pass_hash
+    token.is_used = True
+    db.commit()
+    return {"status": "password updated"}
