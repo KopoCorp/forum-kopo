@@ -11,7 +11,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    pass_hash: str
+    password: str
 
 
 class UserOut(UserBase):
@@ -33,6 +33,13 @@ class ArticleCreate(ArticleBase):
     user_id: Optional[int]
 
 
+class ArticleUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    is_pub: Optional[bool] = None
+    user_id: Optional[int] = None
+
+
 class ArticleOut(ArticleBase):
     id: int
     user_id: Optional[int]
@@ -51,6 +58,13 @@ class CommentBase(BaseModel):
 class CommentCreate(CommentBase):
     post_id: int
     user_id: Optional[int]
+
+
+class CommentUpdate(BaseModel):
+    content: Optional[str] = None
+    parent_id: Optional[int] = None
+    post_id: Optional[int] = None
+    user_id: Optional[int] = None
 
 
 class CommentOut(CommentBase):
@@ -90,6 +104,15 @@ class ForumThreadCreate(ForumThreadBase):
     user_id: Optional[int]
 
 
+class ForumThreadUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    category_id: Optional[int] = None
+    user_id: Optional[int] = None
+    is_locked: Optional[bool] = None
+    is_pinned: Optional[bool] = None
+
+
 class ForumThreadOut(ForumThreadBase):
     id: int
     user_id: Optional[int]
@@ -110,6 +133,13 @@ class ForumReplyBase(BaseModel):
 class ForumReplyCreate(ForumReplyBase):
     thread_id: int
     user_id: Optional[int]
+
+
+class ForumReplyUpdate(BaseModel):
+    content: Optional[str] = None
+    parent_id: Optional[int] = None
+    thread_id: Optional[int] = None
+    user_id: Optional[int] = None
 
 
 class ForumReplyOut(ForumReplyBase):
@@ -138,7 +168,7 @@ class LikeOut(LikeBase):
 
     class Config:
         orm_mode = True
-
+        
 
 class TagBase(BaseModel):
     name: str
@@ -150,6 +180,37 @@ class TagCreate(TagBase):
 
 class TagOut(TagBase):
     id: int
+        
+class UserProfileBase(BaseModel):
+    full_name: Optional[str] = None
+    website: Optional[str] = None
+    location: Optional[str] = None
+    about_me: Optional[str] = None
+
+
+class UserProfileUpdate(UserProfileBase):
+    pass
+
+
+class UserProfileOut(UserProfileBase):
+    id: int
+    user_id: int
+      
+class DirectMessageBase(BaseModel):
+    content: str
+
+
+class DirectMessageCreate(DirectMessageBase):
+    sender_id: Optional[int]
+    receiver_id: int
+
+
+class DirectMessageOut(DirectMessageBase):
+    id: int
+    sender_id: Optional[int]
+    receiver_id: int
+    is_read: bool
+    created_at: datetime
 
     class Config:
         orm_mode = True
@@ -162,6 +223,34 @@ class ArticleTagCreate(BaseModel):
 class ArticleTagOut(ArticleTagCreate):
     id: int
     article_id: int
+      
+      
+class PasswordResetRequest(BaseModel):
+    email: str
+
+
+class PasswordResetConfirm(BaseModel):
+    token: str
+    new_pass_hash: str
+      
+class NotificationBase(BaseModel):
+    message: str
+
+
+class NotificationCreate(NotificationBase):
+    user_id: Optional[int]
+
+
+class NotificationOut(NotificationBase):
+    id: int
+    user_id: Optional[int]
+    is_read: bool
+      
+class AttachmentOut(BaseModel):
+    id: int
+    filename: str
+    content_type: Optional[str] = None
+    created_at: datetime
 
     class Config:
         orm_mode = True
