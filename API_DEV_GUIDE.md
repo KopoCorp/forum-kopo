@@ -45,6 +45,20 @@ Ce document fournit une description détaillée de l'API REST proposée dans ce 
 |---------|--------|-----------------------------------|
 | POST    | `/likes` | Ajouter un "j'aime" sur un contenu |
 
+### Reports
+| Méthode | Chemin                     | Description                         |
+|---------|---------------------------|-------------------------------------|
+| POST    | `/reports`                | Soumettre un signalement            |
+| GET     | `/reports`                | Lister les signalements (admin)     |
+| PATCH   | `/reports/{id}/resolve`   | Marquer un signalement résolu       |
+
+### Bans
+| Méthode | Chemin        | Description                       |
+|---------|--------------|-----------------------------------|
+| POST    | `/bans`      | Bannir un utilisateur             |
+| GET     | `/bans`      | Lister les bannissements actifs   |
+| DELETE  | `/bans/{id}` | Lever un bannissement             |
+
 ## Structures de données
 
 Les schémas utilisés par l'API sont définis dans `backend/schemas.py`. Les modèles principaux contiennent les champs suivants (extraits) :

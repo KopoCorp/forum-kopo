@@ -132,3 +132,64 @@ def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Like already exists")
     db.refresh(db_like)
     return db_like
+
+
+@app.post("/reports", response_model=schemas.ReportOut)
+def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
+    db_report = models.Report(**report.dict())
+    db.add(db_report)
+    db.commit()
+    db.refresh(db_report)
+    return db_report
+
+
+@app.get("/reports", response_model=List[schemas.ReportOut])
+def list_reports(db: Session = Depends(get_db)):
+    return db.query(models.Report).all()
+
+
+@app.patch("/reports/{report_id}/resolve", response_model=schemas.ReportOut)
+def resolve_report(report_id: int, db: Session = Depends(get_db)):
+    report = db.query(models.Report).get(report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    report.is_resolved = True
+    log = models.AuditLog(action="resolve_report", target_type="report", target_id=report_id)
+    db.add(log)
+    db.commit()
+    db.refresh(report)
+    return report
+
+
+@app.post("/bans", response_model=schemas.BanOut)
+def create_ban(ban: schemas.BanCreate, db: Session = Depends(get_db)):
+    user = db.query(models.User).get(ban.user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_active = False
+    db_ban = models.Ban(**ban.dict())
+    db.add(db_ban)
+    db.add(models.AuditLog(action="ban_user", target_type="user", target_id=ban.user_id))
+    db.commit()
+    db.refresh(db_ban)
+    return db_ban
+
+
+@app.get("/bans", response_model=List[schemas.BanOut])
+def list_bans(db: Session = Depends(get_db)):
+    return db.query(models.Ban).filter(models.Ban.is_active == True).all()
+
+
+@app.delete("/bans/{ban_id}", response_model=schemas.BanOut)
+def lift_ban(ban_id: int, db: Session = Depends(get_db)):
+    ban = db.query(models.Ban).get(ban_id)
+    if not ban:
+        raise HTTPException(status_code=404, detail="Ban not found")
+    user = db.query(models.User).get(ban.user_id)
+    if user:
+        user.is_active = True
+    ban.is_active = False
+    db.add(models.AuditLog(action="unban_user", target_type="user", target_id=ban.user_id))
+    db.commit()
+    db.refresh(ban)
+    return ban
