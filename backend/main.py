@@ -73,7 +73,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         email=user.email,
         bio=user.bio,
         avatar_url=user.avatar_url,
-        password_hash=get_password_hash(user.password),
+        pass_hash=get_password_hash(user.password),
     )
     db.add(db_user)
     db.commit()
@@ -84,7 +84,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.username == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.password_hash):
+    if not user or not verify_password(form_data.password, user.pass_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     token = create_access_token(data={"sub": str(user.id)}, expires_delta=access_token_expires)
@@ -343,8 +343,8 @@ def resolve_report(report_id: int, db: Session = Depends(get_db)):
     report = db.query(models.Report).get(report_id)
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
-    report.is_resolved = True
-    log = models.AuditLog(action="resolve_report", target_type="report", target_id=report_id)
+    report.status = "resolved"
+    log = models.AuditLog(actor_id=None, action_type="resolve_report", target_type="report", target_id=report_id)
     db.add(log)
     db.commit()
     db.refresh(report)
@@ -359,7 +359,7 @@ def create_ban(ban: schemas.BanCreate, db: Session = Depends(get_db)):
     user.is_active = False
     db_ban = models.Ban(**ban.dict())
     db.add(db_ban)
-    db.add(models.AuditLog(action="ban_user", target_type="user", target_id=ban.user_id))
+    db.add(models.AuditLog(actor_id=ban.banned_by, action_type="ban_user", target_type="user", target_id=ban.user_id))
     db.commit()
     db.refresh(db_ban)
     return db_ban
@@ -367,7 +367,8 @@ def create_ban(ban: schemas.BanCreate, db: Session = Depends(get_db)):
 
 @app.get("/bans", response_model=List[schemas.BanOut])
 def list_bans(db: Session = Depends(get_db)):
-    return db.query(models.Ban).filter(models.Ban.is_active == True).all()
+    now = datetime.utcnow()
+    return db.query(models.Ban).filter((models.Ban.expires_at == None) | (models.Ban.expires_at > now)).all()
 
 
 @app.delete("/bans/{ban_id}", response_model=schemas.BanOut)
@@ -378,8 +379,8 @@ def lift_ban(ban_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).get(ban.user_id)
     if user:
         user.is_active = True
-    ban.is_active = False
-    db.add(models.AuditLog(action="unban_user", target_type="user", target_id=ban.user_id))
+    ban.expires_at = datetime.utcnow()
+    db.add(models.AuditLog(actor_id=None, action_type="unban_user", target_type="user", target_id=ban.user_id))
     db.commit()
     db.refresh(ban)
     return ban
@@ -424,7 +425,8 @@ def request_password_reset(data: schemas.PasswordResetRequest, db: Session = Dep
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     token_str = uuid4().hex
-    token = models.PasswordResetToken(user_id=user.id, token=token_str)
+    expires = datetime.utcnow() + timedelta(hours=1)
+    token = models.PasswordResetToken(user_id=user.id, token=token_str, expires_at=expires)
     db.add(token)
     db.commit()
     db.refresh(token)
@@ -434,27 +436,27 @@ def request_password_reset(data: schemas.PasswordResetRequest, db: Session = Dep
 
 @app.post("/password-reset/confirm")
 def confirm_password_reset(data: schemas.PasswordResetConfirm, db: Session = Depends(get_db)):
-    token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == data.token, models.PasswordResetToken.is_used == False).first()
+    token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == data.token, models.PasswordResetToken.used == False).first()
     if not token:
         raise HTTPException(status_code=404, detail="Invalid token")
     user = token.user
     user.pass_hash = data.new_pass_hash
-    token.is_used = True
+    token.used = True
     db.commit()
     return {"status": "password updated"}
   
-@app.post("/messages", response_model=schemas.DirectMessageOut)
-def send_message(message: schemas.DirectMessageCreate, db: Session = Depends(get_db)):
-    db_msg = models.DirectMessage(**message.dict())
+@app.post("/messages", response_model=schemas.MessageOut)
+def send_message(message: schemas.MessageCreate, db: Session = Depends(get_db)):
+    db_msg = models.Message(**message.dict())
     db.add(db_msg)
     db.commit()
     db.refresh(db_msg)
     return db_msg
 
 
-@app.get("/messages/{user_id}", response_model=List[schemas.DirectMessageOut])
+@app.get("/messages/{user_id}", response_model=List[schemas.MessageOut])
 def read_messages(user_id: int, db: Session = Depends(get_db)):
-    msgs = db.query(models.DirectMessage).filter(models.DirectMessage.receiver_id == user_id).all()
+    msgs = db.query(models.Message).filter(models.Message.receiver_id == user_id).all()
     for msg in msgs:
         if not msg.is_read:
             msg.is_read = True
@@ -615,7 +617,8 @@ async def upload_attachment(file: UploadFile = File(...), db: Session = Depends(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    db_obj = models.Attachment(filename=file.filename, path=file_path, content_type=file.content_type)
+    size = os.path.getsize(file_path)
+    db_obj = models.Attachment(file_url=file_path, file_type=file.content_type, file_size=size)
     db.add(db_obj)
     db.commit()
     db.refresh(db_obj)
@@ -627,7 +630,7 @@ def get_attachment(attachment_id: int, db: Session = Depends(get_db)):
     att = db.query(models.Attachment).get(attachment_id)
     if not att:
         raise HTTPException(status_code=404, detail="Attachment not found")
-    return FileResponse(att.path, media_type=att.content_type, filename=att.filename)
+    return FileResponse(att.file_url, media_type=att.file_type)
 
 
 @app.delete("/attachments/{attachment_id}")
@@ -636,7 +639,7 @@ def delete_attachment(attachment_id: int, db: Session = Depends(get_db)):
     if not att:
         raise HTTPException(status_code=404, detail="Attachment not found")
     try:
-        os.remove(att.path)
+        os.remove(att.file_url)
     except FileNotFoundError:
         pass
     db.delete(att)
