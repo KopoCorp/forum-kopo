@@ -43,6 +43,25 @@ bash setup_db.sh
 ```
 Il crée la base (si nécessaire) et importe `forum.sql`.
 
+## Activer l'accès réseau
+
+Si la base doit être accessible depuis d'autres conteneurs, utilisez le script
+`enable_remote_access.sh`. Il configure `postgresql.conf` et `pg_hba.conf` pour
+autoriser les connexions distantes puis redémarre le service.
+
+Exemple d'usage pour autoriser tout le réseau :
+
+```bash
+sudo bash enable_remote_access.sh
+```
+
+Vous pouvez aussi spécifier un sous-réseau autorisé :
+
+```bash
+sudo bash enable_remote_access.sh 192.168.1.0/24
+```
+
+
 ## Notes
 
 - Adaptez les noms de base ou d'utilisateur selon vos besoins en modifiant le script.
