@@ -139,7 +139,39 @@ class LikeOut(LikeBase):
     class Config:
         orm_mode = True
 
+class DirectMessageBase(BaseModel):
+    content: str
 
+
+class DirectMessageCreate(DirectMessageBase):
+    sender_id: Optional[int]
+    receiver_id: int
+
+
+class DirectMessageOut(DirectMessageBase):
+    id: int
+    sender_id: Optional[int]
+    receiver_id: int
+    is_read: bool
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class NotificationBase(BaseModel):
+    message: str
+
+
+class NotificationCreate(NotificationBase):
+    user_id: Optional[int]
+
+
+class NotificationOut(NotificationBase):
+    id: int
+    user_id: Optional[int]
+    is_read: bool
+      
 class AttachmentOut(BaseModel):
     id: int
     filename: str
