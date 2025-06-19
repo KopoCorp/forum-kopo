@@ -297,3 +297,49 @@ class AttachmentOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class RoleBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+
+class RoleCreate(RoleBase):
+    pass
+
+
+class RoleOut(RoleBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class RoleUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class PermissionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+
+class PermissionCreate(PermissionBase):
+    pass
+
+
+class PermissionOut(PermissionBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class PermissionUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class UserRoleAssign(BaseModel):
+    role_id: int
