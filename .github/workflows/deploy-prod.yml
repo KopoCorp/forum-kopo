@@ -6,20 +6,14 @@ on:
 
 jobs:
   deploy:
+    name: Déploiement webhook sur Proxmox
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Vérification du repo
+        uses: actions/checkout@v4
 
-      - name: Déployer via rsync sur le conteneur
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.PROXMOX_SSH_KEY }}
-          HOST: ${{ secrets.PROXMOX_HOST }}
-          USER: ${{ secrets.PROXMOX_USER }}
+      - name: Appel webhook Proxmox
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          rsync -avz --delete ./ "$USER@$HOST:/chemin/destination/"
-
-      - name: (Optionnel) Redémarrer le service
-        run: ssh -i ~/.ssh/id_rsa "$USER@$HOST" 'sudo systemctl restart nginx'
+          curl -X POST https://kopo.systems/deploy-prod \
+               -H "X-Auth-Token: ${{ secrets.WEBHOOK_TOKEN_FRONT }}"
