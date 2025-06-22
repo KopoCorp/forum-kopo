@@ -3,6 +3,8 @@ name: Deploy on PROD
 on:
   push:
     branches: [PROD]
+  pull_request:
+    branches: [PROD]
 
 jobs:
   deploy:
