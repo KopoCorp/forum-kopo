@@ -313,7 +313,7 @@ class ActivityLog(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     action = Column(String(100))
-    metadata = Column(JSON)
+    metadata_json = Column('metadata', JSON)
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship('User')
