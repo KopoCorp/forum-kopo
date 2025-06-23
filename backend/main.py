@@ -131,7 +131,11 @@ def update_profile(user_id: int, data: schemas.UserProfileUpdate, db: Session = 
 
 
 @app.post("/articles", response_model=schemas.ArticleOut)
-def create_article(article: schemas.ArticleCreate, db: Session = Depends(get_db)):
+def create_article(
+    article: schemas.ArticleCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_article = models.Article(**article.dict())
     db.add(db_article)
     db.commit()
@@ -140,11 +144,8 @@ def create_article(article: schemas.ArticleCreate, db: Session = Depends(get_db)
 
 
 @app.get("/articles", response_model=List[schemas.ArticleOut])
-def read_articles(skip: int = 0, limit: int = 10, tag: Optional[int] = None, db: Session = Depends(get_db)):
-    query = db.query(models.Article)
-    if tag is not None:
-        query = query.join(models.ArticleTag).filter(models.ArticleTag.tag_id == tag)
-    return query.offset(skip).limit(limit).all()
+def read_articles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return db.query(models.Article).offset(skip).limit(limit).all()
 
 
 @app.get("/articles/{article_id}", response_model=schemas.ArticleOut)
@@ -157,7 +158,12 @@ def read_article(article_id: int, db: Session = Depends(get_db)):
 
 @app.put("/articles/{article_id}", response_model=schemas.ArticleOut)
 @app.patch("/articles/{article_id}", response_model=schemas.ArticleOut)
-def update_article(article_id: int, article: schemas.ArticleUpdate, db: Session = Depends(get_db)):
+def update_article(
+    article_id: int,
+    article: schemas.ArticleUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_article = db.query(models.Article).get(article_id)
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
@@ -169,7 +175,11 @@ def update_article(article_id: int, article: schemas.ArticleUpdate, db: Session 
 
 
 @app.delete("/articles/{article_id}", status_code=204)
-def delete_article(article_id: int, db: Session = Depends(get_db)):
+def delete_article(
+    article_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_article = db.query(models.Article).get(article_id)
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
@@ -178,7 +188,12 @@ def delete_article(article_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/articles/{article_id}/comments", response_model=schemas.CommentOut)
-def create_comment(article_id: int, comment: schemas.CommentCreate, db: Session = Depends(get_db)):
+def create_comment(
+    article_id: int,
+    comment: schemas.CommentCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     if not db.query(models.Article).get(article_id):
         raise HTTPException(status_code=404, detail="Article not found")
     db_comment = models.Comment(post_id=article_id, **comment.dict(exclude={"post_id"}))
@@ -195,7 +210,12 @@ def list_comments(article_id: int, db: Session = Depends(get_db)):
 
 @app.put("/comments/{comment_id}", response_model=schemas.CommentOut)
 @app.patch("/comments/{comment_id}", response_model=schemas.CommentOut)
-def update_comment(comment_id: int, comment: schemas.CommentUpdate, db: Session = Depends(get_db)):
+def update_comment(
+    comment_id: int,
+    comment: schemas.CommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_comment = db.query(models.Comment).get(comment_id)
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
@@ -207,7 +227,11 @@ def update_comment(comment_id: int, comment: schemas.CommentUpdate, db: Session 
 
 
 @app.delete("/comments/{comment_id}", status_code=204)
-def delete_comment(comment_id: int, db: Session = Depends(get_db)):
+def delete_comment(
+    comment_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_comment = db.query(models.Comment).get(comment_id)
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
@@ -216,7 +240,11 @@ def delete_comment(comment_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/forum/categories", response_model=schemas.ForumCategoryOut)
-def create_category(category: schemas.ForumCategoryCreate, db: Session = Depends(get_db)):
+def create_category(
+    category: schemas.ForumCategoryCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_cat = models.ForumCategory(**category.dict())
     db.add(db_cat)
     db.commit()
@@ -230,7 +258,11 @@ def list_categories(db: Session = Depends(get_db)):
 
 
 @app.post("/forum/threads", response_model=schemas.ForumThreadOut)
-def create_thread(thread: schemas.ForumThreadCreate, db: Session = Depends(get_db)):
+def create_thread(
+    thread: schemas.ForumThreadCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_thread = models.ForumThread(**thread.dict())
     db.add(db_thread)
     db.commit()
@@ -253,7 +285,12 @@ def read_thread(thread_id: int, db: Session = Depends(get_db)):
 
 @app.put("/forum/threads/{thread_id}", response_model=schemas.ForumThreadOut)
 @app.patch("/forum/threads/{thread_id}", response_model=schemas.ForumThreadOut)
-def update_thread(thread_id: int, thread: schemas.ForumThreadUpdate, db: Session = Depends(get_db)):
+def update_thread(
+    thread_id: int,
+    thread: schemas.ForumThreadUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_thread = db.query(models.ForumThread).get(thread_id)
     if not db_thread:
         raise HTTPException(status_code=404, detail="Thread not found")
@@ -265,7 +302,11 @@ def update_thread(thread_id: int, thread: schemas.ForumThreadUpdate, db: Session
 
 
 @app.delete("/forum/threads/{thread_id}", status_code=204)
-def delete_thread(thread_id: int, db: Session = Depends(get_db)):
+def delete_thread(
+    thread_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_thread = db.query(models.ForumThread).get(thread_id)
     if not db_thread:
         raise HTTPException(status_code=404, detail="Thread not found")
@@ -274,7 +315,12 @@ def delete_thread(thread_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/forum/threads/{thread_id}/replies", response_model=schemas.ForumReplyOut)
-def create_reply(thread_id: int, reply: schemas.ForumReplyCreate, db: Session = Depends(get_db)):
+def create_reply(
+    thread_id: int,
+    reply: schemas.ForumReplyCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     if not db.query(models.ForumThread).get(thread_id):
         raise HTTPException(status_code=404, detail="Thread not found")
     db_reply = models.ForumReply(thread_id=thread_id, **reply.dict(exclude={"thread_id"}))
@@ -291,7 +337,12 @@ def list_replies(thread_id: int, db: Session = Depends(get_db)):
 
 @app.put("/forum/replies/{reply_id}", response_model=schemas.ForumReplyOut)
 @app.patch("/forum/replies/{reply_id}", response_model=schemas.ForumReplyOut)
-def update_reply(reply_id: int, reply: schemas.ForumReplyUpdate, db: Session = Depends(get_db)):
+def update_reply(
+    reply_id: int,
+    reply: schemas.ForumReplyUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_reply = db.query(models.ForumReply).get(reply_id)
     if not db_reply:
         raise HTTPException(status_code=404, detail="Reply not found")
@@ -303,7 +354,11 @@ def update_reply(reply_id: int, reply: schemas.ForumReplyUpdate, db: Session = D
 
 
 @app.delete("/forum/replies/{reply_id}", status_code=204)
-def delete_reply(reply_id: int, db: Session = Depends(get_db)):
+def delete_reply(
+    reply_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     db_reply = db.query(models.ForumReply).get(reply_id)
     if not db_reply:
         raise HTTPException(status_code=404, detail="Reply not found")
@@ -311,337 +366,3 @@ def delete_reply(reply_id: int, db: Session = Depends(get_db)):
     db.commit()
 
 
-@app.post("/likes", response_model=schemas.LikeOut)
-def create_like(like: schemas.LikeCreate, db: Session = Depends(get_db)):
-    db_like = models.Like(**like.dict())
-    db.add(db_like)
-    try:
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Like already exists")
-    db.refresh(db_like)
-    return db_like
-
-
-@app.post("/reports", response_model=schemas.ReportOut)
-def create_report(report: schemas.ReportCreate, db: Session = Depends(get_db)):
-    db_report = models.Report(**report.dict())
-    db.add(db_report)
-    db.commit()
-    db.refresh(db_report)
-    return db_report
-
-
-@app.get("/reports", response_model=List[schemas.ReportOut])
-def list_reports(db: Session = Depends(get_db)):
-    return db.query(models.Report).all()
-
-
-@app.patch("/reports/{report_id}/resolve", response_model=schemas.ReportOut)
-def resolve_report(report_id: int, db: Session = Depends(get_db)):
-    report = db.query(models.Report).get(report_id)
-    if not report:
-        raise HTTPException(status_code=404, detail="Report not found")
-    report.status = "resolved"
-    log = models.AuditLog(actor_id=None, action_type="resolve_report", target_type="report", target_id=report_id)
-    db.add(log)
-    db.commit()
-    db.refresh(report)
-    return report
-
-
-@app.post("/bans", response_model=schemas.BanOut)
-def create_ban(ban: schemas.BanCreate, db: Session = Depends(get_db)):
-    user = db.query(models.User).get(ban.user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user.is_active = False
-    db_ban = models.Ban(**ban.dict())
-    db.add(db_ban)
-    db.add(models.AuditLog(actor_id=ban.banned_by, action_type="ban_user", target_type="user", target_id=ban.user_id))
-    db.commit()
-    db.refresh(db_ban)
-    return db_ban
-
-
-@app.get("/bans", response_model=List[schemas.BanOut])
-def list_bans(db: Session = Depends(get_db)):
-    now = datetime.utcnow()
-    return db.query(models.Ban).filter((models.Ban.expires_at == None) | (models.Ban.expires_at > now)).all()
-
-
-@app.delete("/bans/{ban_id}", response_model=schemas.BanOut)
-def lift_ban(ban_id: int, db: Session = Depends(get_db)):
-    ban = db.query(models.Ban).get(ban_id)
-    if not ban:
-        raise HTTPException(status_code=404, detail="Ban not found")
-    user = db.query(models.User).get(ban.user_id)
-    if user:
-        user.is_active = True
-    ban.expires_at = datetime.utcnow()
-    db.add(models.AuditLog(actor_id=None, action_type="unban_user", target_type="user", target_id=ban.user_id))
-    db.commit()
-    db.refresh(ban)
-    return ban
-  
-@app.post("/tags", response_model=schemas.TagOut)
-def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
-    db_tag = models.Tag(name=tag.name)
-    db.add(db_tag)
-    try:
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Tag already exists")
-    db.refresh(db_tag)
-    return db_tag
-
-
-@app.get("/tags", response_model=List[schemas.TagOut])
-def list_tags(db: Session = Depends(get_db)):
-    return db.query(models.Tag).all()
-
-
-@app.post("/articles/{article_id}/tags", response_model=schemas.ArticleTagOut)
-def assign_tag(article_id: int, data: schemas.ArticleTagCreate, db: Session = Depends(get_db)):
-    if not db.query(models.Article).get(article_id):
-        raise HTTPException(status_code=404, detail="Article not found")
-    if not db.query(models.Tag).get(data.tag_id):
-        raise HTTPException(status_code=404, detail="Tag not found")
-    db_at = models.ArticleTag(article_id=article_id, tag_id=data.tag_id)
-    db.add(db_at)
-    try:
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Tag already assigned")
-    db.refresh(db_at)
-    return db_at
-
-@app.post("/password-reset/request")
-def request_password_reset(data: schemas.PasswordResetRequest, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == data.email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    token_str = uuid4().hex
-    expires = datetime.utcnow() + timedelta(hours=1)
-    token = models.PasswordResetToken(user_id=user.id, token=token_str, expires_at=expires)
-    db.add(token)
-    db.commit()
-    db.refresh(token)
-    # In real app, send token via email. Here we return it for simplicity.
-    return {"token": token_str}
-
-
-@app.post("/password-reset/confirm")
-def confirm_password_reset(data: schemas.PasswordResetConfirm, db: Session = Depends(get_db)):
-    token = db.query(models.PasswordResetToken).filter(models.PasswordResetToken.token == data.token, models.PasswordResetToken.used == False).first()
-    if not token:
-        raise HTTPException(status_code=404, detail="Invalid token")
-    user = token.user
-    user.pass_hash = data.new_pass_hash
-    token.used = True
-    db.commit()
-    return {"status": "password updated"}
-  
-@app.post("/messages", response_model=schemas.MessageOut)
-def send_message(message: schemas.MessageCreate, db: Session = Depends(get_db)):
-    db_msg = models.Message(**message.dict())
-    db.add(db_msg)
-    db.commit()
-    db.refresh(db_msg)
-    return db_msg
-
-
-@app.get("/messages/{user_id}", response_model=List[schemas.MessageOut])
-def read_messages(user_id: int, db: Session = Depends(get_db)):
-    msgs = db.query(models.Message).filter(models.Message.receiver_id == user_id).all()
-    for msg in msgs:
-        if not msg.is_read:
-            msg.is_read = True
-    db.commit()
-    return msgs
-
-
-@app.post("/notifications", response_model=schemas.NotificationOut)
-def create_notification(notification: schemas.NotificationCreate, db: Session = Depends(get_db)):
-    db_notif = models.Notification(**notification.dict())
-    db.add(db_notif)
-    db.commit()
-    db.refresh(db_notif)
-    return db_notif
-
-
-@app.get("/notifications/{user_id}", response_model=List[schemas.NotificationOut])
-def list_notifications(user_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Notification).filter(models.Notification.user_id == user_id).all()
-
-
-@app.post("/notifications/{notif_id}/read", response_model=schemas.NotificationOut)
-def mark_notification_read(notif_id: int, db: Session = Depends(get_db)):
-    notif = db.query(models.Notification).get(notif_id)
-    if not notif:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    notif.is_read = True
-    db.commit()
-    db.refresh(notif)
-    return notif
-
-
-@app.post("/roles", response_model=schemas.RoleOut)
-def create_role(role: schemas.RoleCreate, db: Session = Depends(get_db)):
-    db_role = models.Role(**role.dict())
-    db.add(db_role)
-    db.commit()
-    db.refresh(db_role)
-    return db_role
-
-
-@app.get("/roles", response_model=List[schemas.RoleOut])
-def list_roles(db: Session = Depends(get_db)):
-    return db.query(models.Role).all()
-
-
-@app.get("/roles/{role_id}", response_model=schemas.RoleOut)
-def read_role(role_id: int, db: Session = Depends(get_db)):
-    role = db.query(models.Role).get(role_id)
-    if not role:
-        raise HTTPException(status_code=404, detail="Role not found")
-    return role
-
-
-@app.put("/roles/{role_id}", response_model=schemas.RoleOut)
-@app.patch("/roles/{role_id}", response_model=schemas.RoleOut)
-def update_role(role_id: int, data: schemas.RoleUpdate, db: Session = Depends(get_db)):
-    role = db.query(models.Role).get(role_id)
-    if not role:
-        raise HTTPException(status_code=404, detail="Role not found")
-    for key, value in data.dict(exclude_unset=True).items():
-        setattr(role, key, value)
-    db.commit()
-    db.refresh(role)
-    return role
-
-
-@app.delete("/roles/{role_id}", status_code=204)
-def delete_role(role_id: int, db: Session = Depends(get_db)):
-    role = db.query(models.Role).get(role_id)
-    if not role:
-        raise HTTPException(status_code=404, detail="Role not found")
-    db.delete(role)
-    db.commit()
-
-
-@app.post("/permissions", response_model=schemas.PermissionOut)
-def create_permission(permission: schemas.PermissionCreate, db: Session = Depends(get_db)):
-    db_perm = models.Permission(**permission.dict())
-    db.add(db_perm)
-    db.commit()
-    db.refresh(db_perm)
-    return db_perm
-
-
-@app.get("/permissions", response_model=List[schemas.PermissionOut])
-def list_permissions(db: Session = Depends(get_db)):
-    return db.query(models.Permission).all()
-
-
-@app.get("/permissions/{perm_id}", response_model=schemas.PermissionOut)
-def read_permission(perm_id: int, db: Session = Depends(get_db)):
-    perm = db.query(models.Permission).get(perm_id)
-    if not perm:
-        raise HTTPException(status_code=404, detail="Permission not found")
-    return perm
-
-
-@app.put("/permissions/{perm_id}", response_model=schemas.PermissionOut)
-@app.patch("/permissions/{perm_id}", response_model=schemas.PermissionOut)
-def update_permission(perm_id: int, data: schemas.PermissionUpdate, db: Session = Depends(get_db)):
-    perm = db.query(models.Permission).get(perm_id)
-    if not perm:
-        raise HTTPException(status_code=404, detail="Permission not found")
-    for key, value in data.dict(exclude_unset=True).items():
-        setattr(perm, key, value)
-    db.commit()
-    db.refresh(perm)
-    return perm
-
-
-@app.delete("/permissions/{perm_id}", status_code=204)
-def delete_permission(perm_id: int, db: Session = Depends(get_db)):
-    perm = db.query(models.Permission).get(perm_id)
-    if not perm:
-        raise HTTPException(status_code=404, detail="Permission not found")
-    db.delete(perm)
-    db.commit()
-
-
-@app.post("/users/{user_id}/roles", status_code=204)
-def assign_role(user_id: int, data: schemas.UserRoleAssign, db: Session = Depends(get_db)):
-    if not db.query(models.User).get(user_id):
-        raise HTTPException(status_code=404, detail="User not found")
-    if not db.query(models.Role).get(data.role_id):
-        raise HTTPException(status_code=404, detail="Role not found")
-    ur = models.UserRole(user_id=user_id, role_id=data.role_id)
-    db.add(ur)
-    try:
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Role already assigned")
-
-
-@app.get("/users/{user_id}/roles", response_model=List[schemas.RoleOut])
-def list_user_roles(user_id: int, db: Session = Depends(get_db)):
-    if not db.query(models.User).get(user_id):
-        raise HTTPException(status_code=404, detail="User not found")
-    return [ur.role for ur in db.query(models.UserRole).filter(models.UserRole.user_id == user_id).all()]
-
-
-@app.delete("/users/{user_id}/roles/{role_id}", status_code=204)
-def unassign_role(user_id: int, role_id: int, db: Session = Depends(get_db)):
-    ur = db.query(models.UserRole).filter(models.UserRole.user_id == user_id, models.UserRole.role_id == role_id).first()
-    if not ur:
-        raise HTTPException(status_code=404, detail="Assignment not found")
-    db.delete(ur)
-    db.commit()
-
-@app.post("/attachments", response_model=schemas.AttachmentOut)
-async def upload_attachment(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    upload_dir = "uploads"
-    os.makedirs(upload_dir, exist_ok=True)
-    ext = os.path.splitext(file.filename)[1]
-    unique_name = f"{uuid.uuid4()}{ext}"
-    file_path = os.path.join(upload_dir, unique_name)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    size = os.path.getsize(file_path)
-    db_obj = models.Attachment(file_url=file_path, file_type=file.content_type, file_size=size)
-    db.add(db_obj)
-    db.commit()
-    db.refresh(db_obj)
-    return db_obj
-
-
-@app.get("/attachments/{attachment_id}")
-def get_attachment(attachment_id: int, db: Session = Depends(get_db)):
-    att = db.query(models.Attachment).get(attachment_id)
-    if not att:
-        raise HTTPException(status_code=404, detail="Attachment not found")
-    return FileResponse(att.file_url, media_type=att.file_type)
-
-
-@app.delete("/attachments/{attachment_id}")
-def delete_attachment(attachment_id: int, db: Session = Depends(get_db)):
-    att = db.query(models.Attachment).get(attachment_id)
-    if not att:
-        raise HTTPException(status_code=404, detail="Attachment not found")
-    try:
-        os.remove(att.file_url)
-    except FileNotFoundError:
-        pass
-    db.delete(att)
-    db.commit()
-    return {"detail": "Attachment deleted"}
