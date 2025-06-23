@@ -34,21 +34,29 @@ The API will be available on port **8000** of the container. Replace
 
 ## Endpoints
 
-- `POST /users` – create a new user
-  (passwords are hashed server-side)
+- `POST /users` – create a new user (passwords are hashed server-side)
 - `GET /users/{id}` – retrieve a user
-- `POST /articles` – create a new article
-- `GET /articles` – list articles
-- `POST /reports` – submit a report
-- `GET /reports` – list reports (admin)
-- `PATCH /reports/{id}/resolve` – resolve a report
-- `POST /bans` – ban a user
-- `GET /bans` – list active bans
-- `DELETE /bans/{id}` – lift a ban
 - `POST /login` – obtain a JWT access token
 - `POST /logout` – revoke the current token
-- `POST /attachments` – upload a file
-- `GET /attachments/{id}` – fetch an attachment
-- `DELETE /attachments/{id}` – delete an attachment
+- `POST /articles` – create an article *(requires token)*
+- `GET /articles` – list articles
+- `GET /articles/{id}` – read a single article
+- `PUT/PATCH /articles/{id}` – modify an article *(requires token)*
+- `DELETE /articles/{id}` – delete an article *(requires token)*
+- `POST /articles/{id}/comments` – add a comment *(requires token)*
+- `GET /articles/{id}/comments` – list comments
+- `PUT/PATCH /comments/{id}` – edit a comment *(requires token)*
+- `DELETE /comments/{id}` – remove a comment *(requires token)*
+- `POST /forum/categories` – create a category *(requires token)*
+- `GET /forum/categories` – list categories
+- `POST /forum/threads` – create a thread *(requires token)*
+- `GET /forum/threads` – list threads
+- `GET /forum/threads/{id}` – read a thread
+- `PUT/PATCH /forum/threads/{id}` – edit a thread *(requires token)*
+- `DELETE /forum/threads/{id}` – delete a thread *(requires token)*
+- `POST /forum/threads/{thread_id}/replies` – reply to a thread *(requires token)*
+- `GET /forum/threads/{thread_id}/replies` – list replies
+- `PUT/PATCH /forum/replies/{id}` – edit a reply *(requires token)*
+- `DELETE /forum/replies/{id}` – delete a reply *(requires token)*
 
 This is only a starting point. More models and endpoints can be added following the same pattern.

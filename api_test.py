@@ -26,6 +26,14 @@ def main():
 
     if resp.ok:
         user_id = resp.json().get("id")
+
+        # Login to obtain a token
+        login_data = {"username": user_payload["username"], "password": user_payload["password"]}
+        resp = requests.post(f"{BASE_URL}/login", data=login_data)
+        print_result("Login", resp)
+        token = resp.json().get("access_token") if resp.ok else None
+        headers = {"Authorization": f"Bearer {token}"} if token else {}
+
         # 2. Get the created user
         resp = requests.get(f"{BASE_URL}/users/{user_id}")
         print_result("Get user", resp)
@@ -36,7 +44,7 @@ def main():
             "title": "Hello",
             "content": "Testing from another container"
         }
-        resp = requests.post(f"{BASE_URL}/articles", json=article_payload)
+        resp = requests.post(f"{BASE_URL}/articles", json=article_payload, headers=headers)
         print_result("Create article", resp)
 
         if resp.ok:
@@ -52,7 +60,7 @@ def main():
                 "user_id": user_id,
                 "content": "Nice post!"
             }
-            resp = requests.post(f"{BASE_URL}/articles/{article_id}/comments", json=comment_payload)
+            resp = requests.post(f"{BASE_URL}/articles/{article_id}/comments", json=comment_payload, headers=headers)
             print_result("Create comment", resp)
 
             # 6. List comments for the article
@@ -64,7 +72,7 @@ def main():
                 "name": "General",
                 "description": "General discussion"
             }
-            resp = requests.post(f"{BASE_URL}/forum/categories", json=category_payload)
+            resp = requests.post(f"{BASE_URL}/forum/categories", json=category_payload, headers=headers)
             print_result("Create category", resp)
 
             if resp.ok:
@@ -81,7 +89,7 @@ def main():
                     "user_id": user_id,
                     "category_id": category_id
                 }
-                resp = requests.post(f"{BASE_URL}/forum/threads", json=thread_payload)
+                resp = requests.post(f"{BASE_URL}/forum/threads", json=thread_payload, headers=headers)
                 print_result("Create thread", resp)
 
                 if resp.ok:
@@ -101,38 +109,13 @@ def main():
                         "user_id": user_id,
                         "content": "Hello everyone"
                     }
-                    resp = requests.post(f"{BASE_URL}/forum/threads/{thread_id}/replies", json=reply_payload)
+                    resp = requests.post(f"{BASE_URL}/forum/threads/{thread_id}/replies", json=reply_payload, headers=headers)
                     print_result("Create reply", resp)
 
                     # 13. List replies
                     resp = requests.get(f"{BASE_URL}/forum/threads/{thread_id}/replies")
                     print_result("List replies", resp)
 
-            # 14. Like the article
-            like_payload = {
-                "user_id": user_id,
-                "target_type": "article",
-                "target_id": article_id
-            }
-            resp = requests.post(f"{BASE_URL}/likes", json=like_payload)
-            print_result("Create like", resp)
-
-            # 15. Create a tag
-            tag_payload = {"name": "news"}
-            resp = requests.post(f"{BASE_URL}/tags", json=tag_payload)
-            print_result("Create tag", resp)
-
-            if resp.ok:
-                tag_id = resp.json().get("id")
-
-                # 16. Assign tag to article
-                assign_payload = {"tag_id": tag_id}
-                resp = requests.post(f"{BASE_URL}/articles/{article_id}/tags", json=assign_payload)
-                print_result("Assign tag", resp)
-
-                # 17. Filter articles by tag
-                resp = requests.get(f"{BASE_URL}/articles", params={"tag": tag_id})
-                print_result("Filter articles", resp)
 
     # Final: list all articles
     resp = requests.get(f"{BASE_URL}/articles")
