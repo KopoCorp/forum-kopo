@@ -200,7 +200,7 @@ if (!empty($categories)) {
                         <div class="widget-content" style="text-align: center;">
                             <?php $user = $api->getCurrentUser(); ?>
                             <div style="margin-bottom: 1rem;">
-                                <img src="<?php echo isset($user['avatar_url']) && !empty($user['avatar_url']) ? htmlspecialchars($user['avatar_url']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" class="user-avatar" style="margin: 0 auto 0.5rem; width: 80px; height: 80px;">
+                                <img src="<?php echo isset($user['avatar_url']) && !empty($user['avatar_url']) ? htmlspecialchars($user['avatar_url']) : 'assets/kopologovide.png'; ?>" alt="Avatar" class="user-avatar" style="margin: 0 auto 0.5rem; width: 80px; height: 80px;">
                                 <h4 style="margin: 0;"><?php echo htmlspecialchars($user['username']); ?></h4>
                                 <div style="color: #666; font-size: 0.875rem;">
                                     Membre depuis <?php echo date('M Y', strtotime($user['created_at'])); ?>
