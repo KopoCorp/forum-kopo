@@ -8,15 +8,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Jeton CSRF invalide.';
     } else {
         $username = trim($_POST['username'] ?? '');
-        $password = trim($_POST['password'] ?? '');
-        if ($username && $password) {
-            $resp = api_request('POST', '/login', ['username' => $username, 'password' => $password]);
-            if ($resp && isset($resp['access_token'])) {
-                $_SESSION['token'] = $resp['access_token'];
-                header('Location: /');
-                exit;
+        $password = $_POST['password'] ?? '';
+        $confirm  = $_POST['confirm'] ?? '';
+        if ($username && $password && $confirm) {
+            if ($password !== $confirm) {
+                $errors[] = 'Les mots de passe ne correspondent pas.';
+            } elseif (strlen($password) < 8) {
+                $errors[] = 'Le mot de passe doit comporter au moins 8 caractères.';
+            } else {
+                $resp = api_request('POST', '/register', ['username' => $username, 'password' => $password]);
+                if ($resp && !isset($resp['error'])) {
+                    header('Location: /login.php?registered=1');
+                    exit;
+                }
+                $errors[] = isset($resp['error']) ? $resp['error'] : "Inscription échouée.";
             }
-            $errors[] = 'Identifiants invalides.';
         } else {
             $errors[] = 'Champs requis.';
         }
@@ -28,7 +34,7 @@ $csrf = generate_csrf_token();
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Connexion</title>
+    <title>Inscription</title>
     <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/site.css">
 </head>
@@ -46,7 +52,7 @@ $csrf = generate_csrf_token();
             </ul>
         </div>
     <?php endif; ?>
-    <form method="post" action="/login.php">
+    <form method="post" action="/register.php">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
         <label>Nom d'utilisateur
             <input type="text" name="username" required>
@@ -54,9 +60,12 @@ $csrf = generate_csrf_token();
         <label>Mot de passe
             <input type="password" name="password" required>
         </label>
-        <button type="submit">Se connecter</button>
+        <label>Confirmez le mot de passe
+            <input type="password" name="confirm" required>
+        </label>
+        <button type="submit">Créer le compte</button>
     </form>
-    <p>Pas encore de compte ? <a href="/register.php">Inscription</a></p>
+    <p>Déjà inscrit ? <a href="/login.php">Connexion</a></p>
 </main>
 <footer class="site-footer">&copy; 2025 Kopo</footer>
 </body>
