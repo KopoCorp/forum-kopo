@@ -27,8 +27,22 @@ function api_request($method, $endpoint, $data = null, $token = null) {
     }
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $response = curl_exec($ch);
+    if ($response === false) {
+        error_log('cURL error: ' . curl_error($ch));
+        curl_close($ch);
+        return null;
+    }
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return $response ? json_decode($response, true) : null;
+    if ($status >= 400) {
+        error_log("API request failed with status $status");
+        return null;
+    }
+    $decoded = json_decode($response, true);
+    if ($decoded === null) {
+        error_log('Invalid JSON response from API');
+    }
+    return $decoded;
 }
 
 function fetch_json($endpoint, $params = [], $token = null) {
