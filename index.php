@@ -264,4 +264,14 @@ try {
                                     </li>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <li style="padding: 1rem 0; text-align
+                                <li style="padding: 1rem 0; text-align: center;">Aucun sujet populaire pour le moment.</li>
+                              <?php endif; ?>
+                          </ul>
+                      </div>
+                  </div>
+              </aside>
+          </div>
+      </div>
+  </main>
+
+<?php include 'footer.php'; ?>
