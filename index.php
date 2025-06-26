@@ -26,6 +26,7 @@ $threads  = fetch_json('/forum/threads', ['limit' => 5], $token) ?? [];
                 <a href="/logout.php">Déconnexion</a>
             <?php else: ?>
                 <a href="/login.php">Connexion</a>
+                <a href="/register.php">Inscription</a>
             <?php endif; ?>
         </nav>
     </header>

@@ -42,7 +42,9 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
-    background-color: #FFFFFF;
+    background-color: var(--c-white);
+    border-bottom: 2px solid var(--c-blue);
+    color: var(--c-dark-blue);
     position: fixed;
     top: 0;
     width: 100%;
@@ -128,14 +130,14 @@ header.scrolled #logo-img {
 }
 
 #navbar ul li a {
-    color: #333333;
+    color: var(--c-dark-blue);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s;
 }
 
 #navbar ul li a:hover {
-    color: #FF4B4B;
+    color: var(--c-red);
     text-decoration: underline;
 }
 
@@ -170,39 +172,41 @@ header.scrolled #logo-img {
 
 h2 {
     font-size: 2em;
-    color: #4ABAF5;
+    color: var(--c-light-blue);
     margin-bottom: 20px;
 }
 
 /* Mode sombre */
 body {
-    background-color: #f4f4f9;
-    color: #333;
+    background-color: var(--c-gray);
+    color: var(--c-night);
 }
 
+
 .dark-mode {
-    background-color: #1a1a1a;
+    background-color: var(--c-night);
 }
 
 .dark-mode header,
 .dark-mode .section-content {
-    background-color: #282828;
-    color: #CCCCCC;
-    border-color: #444444;
+    background-color: var(--c-dark-blue);
+    color: var(--c-gray);
+    border-color: var(--c-night);
 }
 
 .dark-mode h2,
 .dark-mode p,
 .dark-mode a {
-    color: #CCCCCC;
+    color: var(--c-gray);
 }
 
+
 .dark-mode #navbar ul li a {
-    color: #FFFFFF;
+    color: var(--c-white);
 }
 
 .dark-mode nav ul li a:hover {
-    color: #4ABAF5;
+    color: var(--c-light-blue);
 }
 
 /* Responsive Design */
