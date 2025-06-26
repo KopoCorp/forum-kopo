@@ -19,7 +19,7 @@ class API {
      * @param bool $auth Whether to include auth token
      * @return array Response data
      */
-    public function request($endpoint, $method = 'GET', $data = [], $auth = false) {
+    public function request($endpoint, $method = 'GET', $data = [], $auth = false, $json = true) {
         $url = $this->base_url . $endpoint;
         $ch = curl_init();
         
@@ -29,7 +29,7 @@ class API {
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         
         // Headers
-        $headers = ['Content-Type: application/json'];
+        $headers = [$json ? 'Content-Type: application/json' : 'Content-Type: application/x-www-form-urlencoded'];
         if ($auth && $this->token) {
             $headers[] = 'Authorization: Bearer ' . $this->token;
         }
@@ -37,7 +37,11 @@ class API {
         
         // Post data if needed
         if (!empty($data) && $method !== 'GET') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            if ($json) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            }
         }
         
         // Execute request
@@ -88,10 +92,17 @@ class API {
      * @return array User data
      */
     public function login($username, $password) {
-        $response = $this->request('/login', 'POST', [
-            'username' => $username,
-            'password' => $password
-        ]);
+        // The login endpoint expects form-encoded data
+        $response = $this->request(
+            '/login',
+            'POST',
+            [
+                'username' => $username,
+                'password' => $password
+            ],
+            false,
+            false
+        );
         
         if (isset($response['access_token'])) {
             $_SESSION['token'] = $response['access_token'];
