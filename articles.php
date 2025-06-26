@@ -142,3 +142,16 @@ try {
                                 <a href="?page=<?php echo $page + 1; ?><?php echo !empty($tag) ? '&tag=' . urlencode($tag) : ''; ?>">
                                     Suivant <i class="fas fa-chevron-right"></i>
                 
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <p style="text-align: center; padding: 2rem 0;">Aucun article disponible pour le moment.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</main>
+
+<?php include 'footer.php'; ?>

@@ -140,4 +140,12 @@ include 'header.php';
                         <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] === $article['user_id']): ?>
                             <a href="edit-article.php?id=<?php echo $article_id; ?>" class="btn btn-outline btn-sm">
                                 <i class="fas fa-edit"></i> Éditer
-                            
+                            </a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+<?php include 'footer.php'; ?>
