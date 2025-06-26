@@ -1,16 +1,14 @@
 <?php
-require_once __DIR__ . '/utils.php';
-start_secure_session();
+require_once 'config.php';
+require_once 'api.php';
 
-if (!empty($_SESSION['token'])) {
-    api_request('POST', '/logout', null, $_SESSION['token']);
-}
-$_SESSION = [];
-if (ini_get('session.use_cookies')) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], true);
-}
-session_destroy();
-header('Location: /');
-exit;
+// Log the user out
+$api->logout();
+
+// Redirect to homepage
+$_SESSION['flash_message'] = "Vous avez été déconnecté avec succès.";
+$_SESSION['flash_type'] = "success";
+
+header('Location: index.php');
+exit();
 ?>
