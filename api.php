@@ -55,7 +55,25 @@ class API {
         $result = json_decode($response, true);
         if ($status >= 400) {
             // Handle error based on status code
-            $error_message = isset($result['detail']) ? $result['detail'] : 'API request failed';
+            $error_message = 'API request failed';
+            if (isset($result['detail'])) {
+                $detail = $result['detail'];
+                if (is_array($detail)) {
+                    // FastAPI style validation errors or array messages
+                    $msgs = [];
+                    foreach ($detail as $d) {
+                        if (is_array($d) && isset($d['msg'])) {
+                            $msgs[] = $d['msg'];
+                        } else {
+                            $msgs[] = is_string($d) ? $d : json_encode($d);
+                        }
+                    }
+                    $error_message = implode('; ', $msgs);
+                } else {
+                    $error_message = $detail;
+                }
+            }
+
             throw new Exception('API Error (' . $status . '): ' . $error_message);
         }
         
