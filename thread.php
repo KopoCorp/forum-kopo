@@ -92,7 +92,7 @@ include 'header.php';
             <!-- Original Post -->
             <div class="post">
                 <div class="post-sidebar">
-                    <img src="<?php echo isset($thread['user']['avatar_url']) && !empty($thread['user']['avatar_url']) ? htmlspecialchars($thread['user']['avatar_url']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" class="user-avatar">
+                    <img src="<?php echo isset($thread['user']['avatar_url']) && !empty($thread['user']['avatar_url']) ? htmlspecialchars($thread['user']['avatar_url']) : 'assets/kopologovide.png'; ?>" alt="Avatar" class="user-avatar">
                     <div class="user-name"><?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?></div>
                     <div class="user-info">
                         <?php
@@ -145,7 +145,7 @@ include 'header.php';
                     <?php foreach ($replies as $reply): ?>
                         <div class="post" id="reply-<?php echo $reply['id']; ?>">
                             <div class="post-sidebar">
-                                <img src="<?php echo isset($reply['user']['avatar_url']) && !empty($reply['user']['avatar_url']) ? htmlspecialchars($reply['user']['avatar_url']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" class="user-avatar">
+                                <img src="<?php echo isset($reply['user']['avatar_url']) && !empty($reply['user']['avatar_url']) ? htmlspecialchars($reply['user']['avatar_url']) : 'assets/kopologovide.png'; ?>" alt="Avatar" class="user-avatar">
                                 <div class="user-name"><?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?></div>
                                 <div class="user-info">
                                     <?php

@@ -10,7 +10,7 @@ require_once 'api.php';
     <title><?php echo isset($page_title) ? $page_title . ' - ' . SITE_NAME : SITE_NAME; ?></title>
     <meta name="description" content="<?php echo isset($page_description) ? $page_description : SITE_DESCRIPTION; ?>">
     <!-- Favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@ require_once 'api.php';
         <div class="header-container">
             <div class="logo">
                 <a href="index.php">
-                    <img src="assets/images/logo.png" alt="KOPO Forum Logo">
+                    <img src="assets/kopologo.png" alt="KOPO Forum Logo">
                 </a>
                 <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
