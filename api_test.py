@@ -16,10 +16,13 @@ def print_result(description, response):
 
 def main():
     # 1. Create user
+    # Create a dedicated test user that can be reused on a production front
+    # deployment.  This provides some seed data (user, article and thread)
+    # so the UI has content to display straight away.
     user_payload = {
-        "username": "tester",
-        "email": "tester@example.com",
-        "password": "secret"
+        "username": "test",
+        "email": "test@example.com",
+        "password": "test",
     }
     resp = requests.post(f"{BASE_URL}/users", json=user_payload)
     print_result("Create user", resp)
@@ -41,8 +44,8 @@ def main():
         # 3. Create an article
         article_payload = {
             "user_id": user_id,
-            "title": "Hello",
-            "content": "Testing from another container"
+            "title": "Article de test",
+            "content": "Ceci est un article factice créé automatiquement pour la vitrine."
         }
         resp = requests.post(f"{BASE_URL}/articles", json=article_payload, headers=headers)
         print_result("Create article", resp)
@@ -58,9 +61,13 @@ def main():
             comment_payload = {
                 "post_id": article_id,
                 "user_id": user_id,
-                "content": "Nice post!"
+                "content": "Merci pour cet article de démonstration !",
             }
-            resp = requests.post(f"{BASE_URL}/articles/{article_id}/comments", json=comment_payload, headers=headers)
+            resp = requests.post(
+                f"{BASE_URL}/articles/{article_id}/comments",
+                json=comment_payload,
+                headers=headers,
+            )
             print_result("Create comment", resp)
 
             # 6. List comments for the article
@@ -84,10 +91,10 @@ def main():
 
                 # 9. Create a thread
                 thread_payload = {
-                    "title": "Welcome",
-                    "content": "Introduce yourself here",
+                    "title": "Discussion de test",
+                    "content": "Ceci est un sujet factice pour peupler l'interface.",
                     "user_id": user_id,
-                    "category_id": category_id
+                    "category_id": category_id,
                 }
                 resp = requests.post(f"{BASE_URL}/forum/threads", json=thread_payload, headers=headers)
                 print_result("Create thread", resp)
@@ -107,7 +114,7 @@ def main():
                     reply_payload = {
                         "thread_id": thread_id,
                         "user_id": user_id,
-                        "content": "Hello everyone"
+                        "content": "Bonjour à tous !",
                     }
                     resp = requests.post(f"{BASE_URL}/forum/threads/{thread_id}/replies", json=reply_payload, headers=headers)
                     print_result("Create reply", resp)
