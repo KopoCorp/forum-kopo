@@ -47,9 +47,6 @@ require_once 'api.php';
             </nav>
             
             <div class="user-actions">
-                <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode">
-                    <i class="fas fa-moon"></i>
-                </button>
                 
                 <?php if ($api->isLoggedIn()): ?>
                     <?php $user = $api->getCurrentUser(); ?>
