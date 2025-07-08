@@ -1,0 +1,20 @@
+name: Déploiement de la mise a jour API
+
+on:
+  push:
+    branches:
+      - API
+
+jobs:
+  deploy:
+    name: Déploiement webhook sur Proxmox
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Vérification du repo
+        uses: actions/checkout@v4
+
+      - name: Appel webhook Proxmox
+        run: |
+          curl -X POST https://kopo.systems/deploy-api \
+               -H "X-Auth-Token: ${{ secrets.WEBHOOK_TOKEN_FRONT }}"
