@@ -1000,25 +1000,6 @@ tr:hover td {
   background-color: #f9f9f9;
 }
 
-/* Dark Mode Toggle */
-.dark-mode-toggle {
-  background: transparent;
-  border: none;
-  color: var(--white);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transition: background-color var(--transition-speed) ease;
-}
-
-.dark-mode-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
 /* Mobile Navigation */
 .mobile-nav-toggle {
   display: none;
