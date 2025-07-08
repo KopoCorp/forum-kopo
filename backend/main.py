@@ -67,7 +67,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail="This username already exist")
     db_user = models.User(
         username=user.username,
         email=user.email,
