@@ -3,7 +3,7 @@
 define('API_BASE_URL', 'http://192.168.1.180:8000');
 
 // Site Configuration
-define('SITE_NAME', 'KOPO Forum');
+define('SITE_NAME', 'Kopo Forum');
 define('SITE_DESCRIPTION', 'Discussions et Actualités sur l\'Informatique et la Cybersécurité');
 
 // Color Scheme

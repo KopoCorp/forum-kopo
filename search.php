@@ -1,6 +1,6 @@
 <?php
 $page_title = "Recherche";
-$page_description = "Rechercher du contenu sur le forum KOPO";
+$page_description = "Rechercher du contenu sur le forum Kopo";
 require_once 'header.php';
 
 // Get search parameters
@@ -350,7 +350,7 @@ function highlightSearchTerms($text, $search) {
             <!-- Search Initial State -->
             <div class="search-initial" style="text-align: center; padding: 3rem 0;">
                 <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
-                <h2>Rechercher sur KOPO Forum</h2>
+                <h2>Rechercher sur Kopo Forum</h2>
                 <p style="max-width: 600px; margin: 0 auto 2rem; color: #666;">Utilisez la barre de recherche ci-dessus pour trouver des articles, discussions, et membres.</p>
                 
                 <div class="popular-searches" style="margin-top: 2rem;">

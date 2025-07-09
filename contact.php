@@ -1,6 +1,6 @@
 <?php
 $page_title = "Contact";
-$page_description = "Contactez l'équipe KOPO Forum pour toute question, suggestion ou signalement";
+$page_description = "Contactez l'équipe Kopo Forum pour toute question, suggestion ou signalement";
 require_once 'header.php';
 
 $success = false;

@@ -22,7 +22,7 @@ try {
 <section class="hero">
     <div class="container">
         <div class="hero-content">
-            <h1>Bienvenue sur KOPO Forum</h1>
+            <h1>Bienvenue sur Kopo Forum</h1>
             <p>Rejoignez notre communauté dédiée à l'informatique, la cybersécurité et les technologies du numérique.</p>
             <div class="hero-buttons">
                 <a href="register.php" class="btn btn-primary">Rejoindre la communauté</a>

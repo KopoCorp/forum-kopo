@@ -1,5 +1,5 @@
 /**
- * Forum KOPO - Main JavaScript
+ * Forum Kopo - Main JavaScript
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile navigation toggle

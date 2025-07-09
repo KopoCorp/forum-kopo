@@ -1,6 +1,6 @@
 <?php
 $page_title = "Membres";
-$page_description = "Découvrez les membres de la communauté KOPO Forum";
+$page_description = "Découvrez les membres de la communauté Kopo Forum";
 require_once 'header.php';
 
 // Pagination parameters
@@ -59,7 +59,7 @@ try {
             <a href="index.php" style="color: #999;">Accueil</a> &raquo; Membres
         </div>
         <h1 style="color: var(--white); margin-bottom: 0.5rem;">Membres de la communauté</h1>
-        <p style="color: #ccc; max-width: 700px;">Découvrez les membres actifs de notre communauté KOPO.</p>
+        <p style="color: #ccc; max-width: 700px;">Découvrez les membres actifs de notre communauté Kopo.</p>
     </div>
 </div>
 
