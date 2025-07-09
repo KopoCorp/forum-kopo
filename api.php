@@ -106,13 +106,17 @@ class API {
         
         if (isset($response['access_token'])) {
             $_SESSION['token'] = $response['access_token'];
-            $_SESSION['user'] = $response['user'];
             $this->token = $response['access_token'];
+
+            // ********** NEW PART **********
+            // récupère l'utilisateur via /me
+            $userData = $this->request('/me', 'GET', [], true);
+            $_SESSION['user'] = $userData;
         }
         
         return $response;
     }
-    
+
     /**
      * Logout and clear session
      */
