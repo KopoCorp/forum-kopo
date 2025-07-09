@@ -45,9 +45,7 @@ require_once 'api.php';
                     <?php endif; ?>
                 </ul>
             </nav>
-            
             <div class="user-actions">
-                
                 <?php if ($api->isLoggedIn()): ?>
                     <?php $user = $api->getCurrentUser(); ?>
                     <div class="user-dropdown">
