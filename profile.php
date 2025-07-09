@@ -141,7 +141,7 @@ include 'header.php';
                         
                         <div class="profile-actions" style="margin-left: auto; text-align: right;">
                             <?php if ($api->isLoggedIn() && $user_id == $_SESSION['user']['id']): ?>
-                                <a href="settings.php" class="btn btn-outline">
+                                <a href="edit-profile.php" class="btn btn-outline">
                                     <i class="fas fa-cog"></i> Modifier le profil
                                 </a>
                             <?php elseif ($api->isLoggedIn()): ?>
