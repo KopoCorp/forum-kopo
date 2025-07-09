@@ -3,7 +3,7 @@ require_once 'config.php';
 require_once 'api.php';
 
 $page_title = "Connexion";
-$page_description = "Connectez-vous à votre compte KOPO Forum";
+$page_description = "Connectez-vous à votre compte Kopo Forum";
 
 // Check if user is already logged in
 if ($api->isLoggedIn()) {

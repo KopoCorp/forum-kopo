@@ -34,7 +34,7 @@ try {
     $recent_articles = array_slice($recent_articles, 0, 5);
     
     $page_title = $profile['username'] . " - Profil";
-    $page_description = "Profil de " . $profile['username'] . " sur KOPO Forum";
+    $page_description = "Profil de " . $profile['username'] . " sur Kopo Forum";
 } catch (Exception $e) {
     $_SESSION['flash_message'] = "Erreur: " . $e->getMessage();
     $_SESSION['flash_type'] = "error";
