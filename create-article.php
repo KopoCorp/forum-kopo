@@ -25,9 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = [
                 'title' => $title,
                 'content' => $content,
-                'status' => 'en ligne'
+                'user_id' => $user['id'],
+                'is_pub' => true
             ];
-
+            
             // Envoi à l'API
             $response = $api->request('/articles', 'POST', $data, true);
 
