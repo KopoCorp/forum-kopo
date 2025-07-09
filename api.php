@@ -108,14 +108,24 @@ class API {
             $_SESSION['token'] = $response['access_token'];
             $this->token = $response['access_token'];
 
-            // ********** NEW PART **********
-            // récupère l'utilisateur via /me
-            $userData = $this->request('/me', 'GET', [], true);
-            $_SESSION['user'] = $userData;
+            // Décoder le token JWT pour récupérer user_id
+            list($header, $payload, $signature) = explode('.', $response['access_token']);
+            $payload_data = json_decode(base64_decode(strtr($payload, '-_', '+/')), true);
+
+            if (isset($payload_data['sub'])) {
+                $user_id = $payload_data['sub'];
+
+                // Requête pour récupérer le user
+                $userData = $this->request("/users/$user_id", 'GET', [], true);
+                $_SESSION['user'] = $userData;
+            } else {
+                $_SESSION['user'] = null;
+            }
         }
         
         return $response;
     }
+
 
     /**
      * Logout and clear session
