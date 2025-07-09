@@ -23,14 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Préparer les données
             $data = [
-                'titre' => $title,
+                'title' => $title,
                 'content' => $content,
                 'status' => 'en ligne'
             ];
 
             // Envoi à l'API
-            var_dump($data);
-            exit;
             $response = $api->request('/articles', 'POST', $data, true);
 
             $success = "Article créé avec succès.";
