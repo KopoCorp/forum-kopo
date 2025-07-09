@@ -17,7 +17,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 try {
     // Get user profile
-    $profile = $api->request('/users/' . $user_id . '/profile');
+    $profile = $api->request('/users/' . $user_id);
     
     // Get user's recent activity
     $recent_threads = $api->request('/users/' . $user_id . '/threads?limit=5');
