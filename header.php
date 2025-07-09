@@ -80,6 +80,9 @@ var_dump($_SESSION);
                             <a href="settings.php">
                                 <i class="fas fa-cog"></i> Paramètres
                             </a>
+                            <a href="create-article.php">
+                                <i class="fas fa-pen"></i> Créer un Article
+                            </a>
                             <a href="logout.php">
                                 <i class="fas fa-sign-out-alt"></i> Déconnexion
                             </a>
