@@ -17,31 +17,35 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 try {
     // Get user profile
-    $profile = $api->request('/users/' . $user_id);
+    $profile = $api->request('/users/' . $user_id, 'GET', [], true);
     
-    $all_threads = $api->request('/forum/threads');
+    // Threads
+    $all_threads = $api->request('/forum/threads', 'GET', [], true);
     $recent_threads = array_filter(
         $all_threads,
-        fn($t) => isset($t['author']) && $t['author']['id'] == $user_id
+        fn($t) => isset($t['author']['id']) && $t['author']['id'] == $user_id
     );
     $recent_threads = array_slice($recent_threads, 0, 5);
-    
-    $all_articles = $api->request('/articles');
+
+    // Articles
+    $all_articles = $api->request('/articles', 'GET', [], true);
     $recent_articles = array_filter(
         $all_articles,
-        fn($a) => isset($a['author']) && $a['author']['id'] == $user_id
+        fn($a) => isset($a['author']['id']) && $a['author']['id'] == $user_id
     );
     $recent_articles = array_slice($recent_articles, 0, 5);
-    
+
     $page_title = $profile['username'] . " - Profil";
-    $page_description = "Profil de " . $profile['username'] . " sur Kopo Forum";
+    $page_description = "Profil de " . $profile['username'] . " sur KOPO Forum";
+
 } catch (Exception $e) {
-    $_SESSION['flash_message'] = "Erreur: " . $e->getMessage();
+    $_SESSION['flash_message'] = "Erreur lors du chargement des articles: " . $e->getMessage();
     $_SESSION['flash_type'] = "error";
     
     header('Location: index.php');
     exit();
 }
+
 
 
 // Handle following/unfollowing
