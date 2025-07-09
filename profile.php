@@ -19,9 +19,19 @@ try {
     // Get user profile
     $profile = $api->request('/users/' . $user_id);
     
-    // Get user's recent activity
-    $recent_threads = $api->request('/users/' . $user_id . '/threads?limit=5');
-    $recent_articles = $api->request('/users/' . $user_id . '/articles?limit=5');
+    $all_threads = $api->request('/forum/threads');
+    $recent_threads = array_filter(
+        $all_threads,
+        fn($t) => isset($t['author']) && $t['author']['id'] == $user_id
+    );
+    $recent_threads = array_slice($recent_threads, 0, 5);
+    
+    $all_articles = $api->request('/articles');
+    $recent_articles = array_filter(
+        $all_articles,
+        fn($a) => isset($a['author']) && $a['author']['id'] == $user_id
+    );
+    $recent_articles = array_slice($recent_articles, 0, 5);
     
     $page_title = $profile['username'] . " - Profil";
     $page_description = "Profil de " . $profile['username'] . " sur KOPO Forum";
@@ -32,6 +42,7 @@ try {
     header('Location: index.php');
     exit();
 }
+
 
 // Handle following/unfollowing
 $follow_error = '';
