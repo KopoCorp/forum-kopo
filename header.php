@@ -20,6 +20,13 @@ require_once 'api.php';
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
+<pre style="color: #fff; background-color: #333; padding: 1rem;">
+<?php
+var_dump($_SESSION);
+?>
+</pre>
+
 <body>
     <!-- Header -->
     <header class="site-header">
