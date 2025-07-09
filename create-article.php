@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
 
             // Envoi à l'API
+            var_dump($data);
+            exit;
             $response = $api->request('/articles', 'POST', $data, true);
 
             $success = "Article créé avec succès.";
