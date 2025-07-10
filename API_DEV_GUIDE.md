@@ -49,6 +49,16 @@ Recuperer les informations d'un utilisateur.
 curl http://localhost:8000/users/1
 ```
 
+### PUT /users/{id}/bio
+Mettre a jour **uniquement** sa bio *(token requis)*.
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PUT -H "Content-Type: application/json" \
+     -d '{"bio":"Ma nouvelle bio"}' \
+     http://localhost:8000/users/1/bio
+```
+
 ### GET /users/{id}/profile
 Afficher le profil detaille d'un utilisateur.
 
@@ -95,6 +105,16 @@ Recuperer les informations d'un utilisateur.
 
 ```bash
 curl http://localhost:8000/users/1
+```
+
+### PUT /users/{id}/bio
+Mettre a jour **uniquement** sa bio *(token requis)*.
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PUT -H "Content-Type: application/json" \
+     -d '{"bio":"Ma nouvelle bio"}' \
+     http://localhost:8000/users/1/bio
 ```
 
 ### GET /users/{id}/profile
