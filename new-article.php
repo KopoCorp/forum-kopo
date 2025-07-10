@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
     $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
     $selected_tags = isset($_POST['tags']) ? array_map('sanitize_int', (array)$_POST['tags']) : [];
     $new_tag = isset($_POST['new_tag']) ? sanitize_string($_POST['new_tag']) : '';
+    $image_url = isset($_POST['image_url']) ? filter_var($_POST['image_url'], FILTER_SANITIZE_URL) : '';
     $is_published = isset($_POST['is_published']) ? true : false;
 
     // Basic validation
@@ -77,6 +78,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                     }
                 }
                 
+                // Set image via URL if provided
+                if (!empty($image_url)) {
+                    try {
+                        $api->request('/articles/' . $article_id, 'PATCH', [
+                            'image_url' => $image_url
+                        ], true);
+                    } catch (Exception $e) {
+                        // Ignore URL update errors
+                    }
+                }
+
                 // Handle image upload if present
                 if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                     // Upload image and associate with article
@@ -216,6 +228,11 @@ code sur plusieurs lignes
                             <label for="image" class="form-label">Image d'en-tête (optionnelle)</label>
                             <input type="file" id="image" name="image" class="form-control" accept="image/jpeg,image/png,image/gif">
                             <div class="form-text">Format recommandé: 1200 x 630 pixels. Taille maximale: 5 Mo.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image_url" class="form-label">URL de l'image d'en-tête (optionnelle)</label>
+                            <input type="url" id="image_url" name="image_url" class="form-control" placeholder="https://example.com/image.jpg">
                         </div>
                         
                         <div class="form-group">

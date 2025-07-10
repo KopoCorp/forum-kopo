@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
     $selected_tags = isset($_POST['tags']) ? array_map('sanitize_int', (array)$_POST['tags']) : [];
     $new_tag = isset($_POST['new_tag']) ? sanitize_string($_POST['new_tag']) : '';
     $is_published = isset($_POST['is_published']) ? true : false;
+    $image_url = isset($_POST['image_url']) ? filter_var($_POST['image_url'], FILTER_SANITIZE_URL) : '';
 
     // Basic validation
     if (empty($title)) {
@@ -89,7 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                 'content' => $content,
                 'is_pub' => $is_published
             ];
-            
+            if (!empty($image_url)) {
+                $article_data['image_url'] = $image_url;
+            }
+
             $api->request('/articles/' . $article_id, 'PATCH', $article_data, true);
             
             // Update tags - first remove existing tags
@@ -259,6 +263,11 @@ code sur plusieurs lignes
                             <label for="image" class="form-label">Nouvelle image d'en-tête (optionnelle)</label>
                             <input type="file" id="image" name="image" class="form-control" accept="image/jpeg,image/png,image/gif">
                             <div class="form-text">Format recommandé: 1200 x 630 pixels. Taille maximale: 5 Mo.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image_url" class="form-label">URL de l'image d'en-tête (optionnelle)</label>
+                            <input type="url" id="image_url" name="image_url" class="form-control" value="<?php echo htmlspecialchars($article['image_url'] ?? ''); ?>" placeholder="https://example.com/image.jpg">
                         </div>
                         
                         <div class="form-group">
