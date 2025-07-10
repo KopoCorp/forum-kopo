@@ -38,6 +38,8 @@ The API will be available on port **8000** of the container. Replace
 - `GET /users/{id}` – retrieve a user
 - `GET /users` – list users
 - `GET /users/count` – total number of users
+- `GET /users/{id}/threads` – list an author's threads
+- `GET /users/{id}/articles` – list an author's articles
 - `PUT/PATCH /users/{id}` – update account information *(requires token)*
 - `PUT/PATCH /users/{id}/bio` – update your bio *(requires token)*
 - `POST /login` – obtain a JWT access token
