@@ -150,7 +150,7 @@ console.table(users, ['name', 'role']);</code></pre>
                                             <a href="article.php?id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a>
                                         </h3>
                                         <div class="article-card-meta">
-                                            <span>Par <?php echo htmlspecialchars($article['username'] ?? 'Auteur'); ?></span> • 
+                                            <span>Par <?php echo htmlspecialchars(get_username($article) ?? 'Auteur'); ?></span> •
                                             <span><?php echo date('d/m/Y', strtotime($article['created_at'])); ?></span>
                                         </div>
                                         <p class="article-card-excerpt">
@@ -199,7 +199,7 @@ console.table(users, ['name', 'role']);</code></pre>
                                                 <div>par <a href="profile.php?id=<?php echo $thread['last_reply_user']['id']; ?>"><?php echo htmlspecialchars($thread['last_reply_user']['username']); ?></a></div>
                                                 <div><?php echo date('d/m à H:i', strtotime($thread['last_reply_at'])); ?></div>
                                             <?php else: ?>
-                                                <div>par <a href="profile.php?id=<?php echo $thread['user_id']; ?>"><?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?></a></div>
+                                                <div>par <a href="profile.php?id=<?php echo $thread['user_id']; ?>"><?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?></a></div>
                                                 <div><?php echo date('d/m à H:i', strtotime($thread['created_at'])); ?></div>
                                             <?php endif; ?>
                                         </div>
