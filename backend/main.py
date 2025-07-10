@@ -235,7 +235,6 @@ def list_user_threads(
         .all()
     )
 
-
 @app.get("/users/{user_id}/articles", response_model=List[schemas.ArticleOut])
 def list_user_articles(
     user_id: int,
@@ -253,7 +252,6 @@ def list_user_articles(
         .limit(limit)
         .all()
     )
-
 
 @app.post("/articles", response_model=schemas.ArticleOut)
 def create_article(
