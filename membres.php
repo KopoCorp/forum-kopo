@@ -31,23 +31,29 @@ switch ($sort) {
         break;
 }
 
+// Récupération des membres
 try {
-    // Get members
     $query = '/users?skip=' . $skip . '&limit=' . $limit . $sort_param;
     if (!empty($search)) {
         $query .= '&search=' . urlencode($search);
     }
-    
+
     $members_data = $api->request($query);
-    
-    // Get total count for pagination
-    $total_count = $api->request('/users/count' . (!empty($search) ? '?search=' . urlencode($search) : ''));
-    $total_pages = ceil(($total_count['count'] ?? 24) / $limit);
-    
 } catch (Exception $e) {
     $_SESSION['flash_message'] = "Erreur lors du chargement des membres: " . $e->getMessage();
     $_SESSION['flash_type'] = "error";
     $members_data = [];
+}
+
+// Pagination (ne doit pas masquer la liste si le comptage échoue)
+try {
+    $total_count = $api->request('/users/count' . (!empty($search) ? '?search=' . urlencode($search) : ''));
+    $total_pages = ceil(($total_count['count'] ?? 24) / $limit);
+} catch (Exception $e) {
+    if (!isset($_SESSION['flash_message'])) {
+        $_SESSION['flash_message'] = "Erreur lors du chargement du nombre de membres: " . $e->getMessage();
+        $_SESSION['flash_type'] = "error";
+    }
     $total_pages = 1;
 }
 ?>
