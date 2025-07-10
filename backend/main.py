@@ -235,6 +235,23 @@ def list_user_threads(
         .all()
     )
 
+@app.get("/users/{user_id}/articles", response_model=List[schemas.ArticleOut])
+def list_user_articles(
+    user_id: int,
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+):
+    """List articles created by a specific user."""
+    if not db.query(models.User).get(user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+    return (
+        db.query(models.Article)
+        .filter(models.Article.user_id == user_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
 
 @app.post("/articles", response_model=schemas.ArticleOut)
 def create_article(
