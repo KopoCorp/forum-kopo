@@ -6,7 +6,7 @@ require_once 'api.php';
 $route = isset($_GET['route']) ? sanitize_string($_GET['route']) : 'home';
 
 // Whitelist allowed routes to avoid path traversal
-$allowed_routes = ['home','article','articles','forums','contact','login','register'];
+$allowed_routes = ['home','article','articles','forums','contact','login','register','about','terms','privacy','charte'];
 $route = in_array($route, $allowed_routes, true) ? $route : 'home';
 
 switch ($route) {
