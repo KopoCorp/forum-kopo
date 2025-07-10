@@ -97,6 +97,7 @@ class Article(Base):
     user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
+    image_url = Column(Text)
     is_pub = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -106,8 +107,8 @@ class Article(Base):
     article_tags = relationship('ArticleTag', back_populates='article')
 
     @property
-    def tag_id(self):
-        return self.article_tags[0].tag_id if self.article_tags else None
+    def tags(self):
+        return [at.tag_id for at in self.article_tags]
 
 
 class Tag(Base):

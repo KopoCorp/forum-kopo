@@ -195,8 +195,10 @@ Creer un nouvel article.
 Corps JSON :
 - `title`
 - `content`
+- `image_url` (optionnel)
 - `user_id` (optionnel)
 - `is_pub` (bool, defaut `false`)
+- `tag_ids` ou `tag_names` (listes optionnelles)
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
@@ -228,7 +230,7 @@ Modifier un article.
 
 ```bash
 curl -X PATCH -H "Content-Type: application/json" \
-     -d '{"title":"Nouveau titre"}' \
+     -d '{"title":"Nouveau titre", "image_url":"https://...", "tag_names":["news"]}' \
      http://localhost:8000/articles/1
 ```
 
