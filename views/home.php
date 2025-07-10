@@ -172,7 +172,7 @@
                     <p><a href="article.php?id=cybersecurity-alert" class="btn btn-accent" style="margin-top: 0.5rem;">En savoir plus</a></p>
                 </section>
                 <!-- CTA Section -->
-                <section class="cta-section" style="margin: 3rem 0; padding: 3rem; background-color: var(--dark-blue); color: var(--white); border-radius: var(--border-radius); text-align: center;">
+                <section class="cta-section" style="margin: 3rem 0; padding: 3rem; background: linear-gradient(135deg, #504A97, #23255D); color: var(--white); border-radius: var(--border-radius); text-align: center;">
                     <h2 style="color: var(--white); font-size: 2rem; margin-bottom: 1.5rem;">Rejoignez la conversation</h2>
                     <p style="max-width: 700px; margin: 0 auto 2rem; font-size: 1.125rem;">Participez aux discussions, partagez vos connaissances et connectez-vous avec une communauté passionnée d'informatique et de cybersécurité.</p>
                     <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
