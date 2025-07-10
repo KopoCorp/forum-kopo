@@ -595,3 +595,15 @@ def delete_reply(
         raise HTTPException(status_code=404, detail="Reply not found")
     db.delete(db_reply)
     db.commit()
+
+
+@app.get("/reporting/config", response_model=schemas.ReportingConfigOut)
+def get_reporting_config(db: Session = Depends(get_db)):
+    config = (
+        db.query(models.ReportingConfig)
+        .order_by(models.ReportingConfig.id.desc())
+        .first()
+    )
+    if not config:
+        raise HTTPException(status_code=404, detail="Config not found")
+    return config

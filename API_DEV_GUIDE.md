@@ -347,5 +347,12 @@ Supprimer une réponse *(token requis)*.
 curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/forum/replies/3
 ```
 
+### GET /reporting/config
+Récupérer la configuration des signalements.
+
+```bash
+curl http://localhost:8000/reporting/config
+```
+
 ---
 Ce guide reprend tous les points d'entrée actuellement implémentés dans l'API. Les schémas Pydantic sont disponibles dans `backend/schemas.py` pour plus de détails sur les champs acceptés.
