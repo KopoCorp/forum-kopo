@@ -352,7 +352,7 @@ pre code {
 
 /* Hero section */
 .hero {
-  background-color: var(--light-blue);
+  background: linear-gradient(90deg, #504A97, #57B8FF);
   color: var(--white);
   padding: 4rem 0;
   text-align: center;
