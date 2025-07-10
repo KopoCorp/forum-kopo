@@ -279,7 +279,7 @@
                         <ul style="list-style: none;">
                             <?php
                             try {
-                                $stats = $this->api->request('/stats');
+                                $stats = calculate_forum_stats($this->api);
                             } catch (Exception $e) {
                                 $stats = [
                                     'user_count' => 0,
