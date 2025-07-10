@@ -40,6 +40,7 @@ The API will be available on port **8000** of the container. Replace
 - `POST /logout` – revoke the current token
 - `POST /articles` – create an article *(requires token)*
 - `GET /articles` – list articles
+- `GET /articles/count` – total number of articles
 - `GET /articles/{id}` – read a single article
 - `PUT/PATCH /articles/{id}` – modify an article *(requires token)*
 - `DELETE /articles/{id}` – delete an article *(requires token)*
