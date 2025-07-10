@@ -113,3 +113,68 @@
     </div>
 </main>
 
+<!-- Comments Section -->
+<div class="container comments-section" id="comments">
+    <h2 style="margin-bottom: 1rem;">Commentaires</h2>
+
+    <?php if (!empty($comments)): ?>
+        <?php foreach ($comments as $comment): ?>
+            <div class="comment" id="comment-<?php echo $comment['id']; ?>">
+                <img src="<?php echo isset($comment['user']['avatar_url']) && !empty($comment['user']['avatar_url']) ? htmlspecialchars($comment['user']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="comment-avatar">
+                <div class="comment-body">
+                    <div class="comment-meta">
+                        <span class="comment-author"><a href="profile.php?id=<?php echo $comment['user_id']; ?>"><?php echo htmlspecialchars($comment['username'] ?? 'Utilisateur'); ?></a></span>
+                        <span><?php echo date('d/m/Y à H:i', strtotime($comment['created_at'])); ?></span>
+                        <?php if (isset($comment['updated_at']) && $comment['updated_at'] !== $comment['created_at']): ?>
+                            <em>(édité le <?php echo date('d/m/Y à H:i', strtotime($comment['updated_at'])); ?>)</em>
+                        <?php endif; ?>
+                    </div>
+                    <div class="comment-content">
+                        <?php echo $comment['content']; ?>
+                    </div>
+                    <?php if ($api->isLoggedIn() && isset($_SESSION['user']['id']) && $_SESSION['user']['id'] === $comment['user_id']): ?>
+                        <div style="margin-top: 0.5rem;">
+                            <a href="delete-content.php?type=comment&id=<?php echo $comment['id']; ?>" class="btn btn-outline btn-sm">Supprimer</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>Aucun commentaire pour le moment.</p>
+    <?php endif; ?>
+
+    <div class="comment-form" style="margin-top: 2rem;">
+        <?php if ($api->isLoggedIn()): ?>
+            <?php if (!empty($comment_error)): ?>
+                <div class="notification notification-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo $comment_error; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_GET['comment']) && $_GET['comment'] === 'success'): ?>
+                <div class="notification notification-success">
+                    <i class="fas fa-check-circle"></i>
+                    Votre commentaire a été ajouté avec succès.
+                </div>
+            <?php endif; ?>
+
+            <form method="post" action="article.php?id=<?php echo $article_id; ?>#comments">
+                <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
+                <div class="form-group">
+                    <label for="content" class="form-label">Votre commentaire</label>
+                    <textarea id="content" name="content" class="form-control" rows="6" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Envoyer le commentaire</button>
+            </form>
+        <?php else: ?>
+            <p style="text-align: center;">Vous devez être connecté pour commenter.</p>
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="index.php?route=login&redirect=article.php?id=<?php echo $article_id; ?>#comments" class="btn btn-primary">Connexion</a>
+                <a href="index.php?route=register" class="btn btn-outline">Inscription</a>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+

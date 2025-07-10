@@ -634,6 +634,44 @@ pre code {
   gap: 1rem;
 }
 
+/* Comments */
+.comments-section {
+  margin-top: 2rem;
+}
+
+.comment {
+  display: flex;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.comment:last-child {
+  border-bottom: none;
+}
+
+.comment-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.comment-body {
+  flex: 1;
+}
+
+.comment-meta {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
 /* Article card for lists */
 .article-card {
   background-color: var(--white);
