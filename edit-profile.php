@@ -17,11 +17,6 @@ $current_username = $user['username'];
 $current_email = $user['email'] ?? '';
 $current_bio = $user['bio'] ?? '';
 $current_avatar = $user['avatar_url'] ?? '';
-$current_display_name = $user['display_name'] ?? '';
-$current_location = $user['location'] ?? '';
-$current_website = $user['website'] ?? '';
-$current_birth_date = $user['birth_date'] ?? '';
-$current_gender = $user['gender'] ?? '';
 
 $error = '';
 $success = '';
@@ -33,12 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
     $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
     $bio = sanitize_string($_POST['bio']);
     $avatar_url = filter_var($_POST['avatar_url'], FILTER_SANITIZE_URL);
-
-    $display_name = sanitize_string($_POST['display_name']);
-    $location = sanitize_string($_POST['location']);
-    $website = filter_var($_POST['website'], FILTER_SANITIZE_URL);
-    $birth_date = sanitize_string($_POST['birth_date']);
-    $gender = sanitize_string($_POST['gender']);
     
     // Validation des champs
     if (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
@@ -51,10 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         } elseif (strlen($password) < 8) {
             $error = "Le mot de passe doit contenir au moins 8 caractères.";
         }
-    } elseif (!empty($website) && !filter_var($website, FILTER_VALIDATE_URL)) {
-        $error = "URL de site invalide.";
-    } elseif (!empty($birth_date) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $birth_date)) {
-        $error = "Format de date invalide.";
     } else {
         try {
             // Préparer données pour mise à jour du compte (hors bio)
@@ -73,26 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
             // Mise à jour de la bio via le nouvel endpoint
             $api->request('/users/' . $user_id . '/bio', 'PUT', ['bio' => $bio], true);
 
-            // Mise à jour des informations de profil étendu
-            $profileData = [
-                'display_name' => $display_name,
-                'website'      => $website,
-                'location'     => $location,
-                'birth_date'   => $birth_date,
-                'gender'       => $gender
-            ];
-            $api->request('/users/' . $user_id . '/profile', 'PUT', $profileData, true);
-
             // Mettre à jour la session
             $_SESSION['user']['username'] = $username;
             $_SESSION['user']['email'] = $email;
             $_SESSION['user']['bio'] = $bio;
             $_SESSION['user']['avatar_url'] = $avatar_url;
-            $_SESSION['user']['display_name'] = $display_name;
-            $_SESSION['user']['website'] = $website;
-            $_SESSION['user']['location'] = $location;
-            $_SESSION['user']['birth_date'] = $birth_date;
-            $_SESSION['user']['gender'] = $gender;
 
             $success = "Profil mis à jour avec succès.";
 
@@ -160,40 +130,12 @@ include 'header.php';
                     <input type="password" id="confirm_password" name="confirm_password" class="form-control">
                 </div>
                 
-                <div class="form-group">
-                    <label for="display_name" class="form-label">Nom affiché</label>
-                    <input type="text" id="display_name" name="display_name" class="form-control" value="<?php echo htmlspecialchars($current_display_name); ?>">
-                </div>
 
                 <div class="form-group">
                     <label for="bio" class="form-label">Biographie</label>
                     <textarea id="bio" name="bio" class="form-control" rows="3"><?php echo htmlspecialchars($current_bio); ?></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="website" class="form-label">Site Web</label>
-                    <input type="url" id="website" name="website" class="form-control" value="<?php echo htmlspecialchars($current_website); ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="location" class="form-label">Localisation</label>
-                    <input type="text" id="location" name="location" class="form-control" value="<?php echo htmlspecialchars($current_location); ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="birth_date" class="form-label">Date de naissance</label>
-                    <input type="date" id="birth_date" name="birth_date" class="form-control" value="<?php echo htmlspecialchars($current_birth_date); ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="gender" class="form-label">Genre</label>
-                    <select id="gender" name="gender" class="form-control">
-                        <option value="" <?php echo $current_gender === '' ? 'selected' : ''; ?>>Non spécifié</option>
-                        <option value="male" <?php echo $current_gender === 'male' ? 'selected' : ''; ?>>Homme</option>
-                        <option value="female" <?php echo $current_gender === 'female' ? 'selected' : ''; ?>>Femme</option>
-                        <option value="other" <?php echo $current_gender === 'other' ? 'selected' : ''; ?>>Autre</option>
-                    </select>
-                </div>
 
                 <div class="form-group">
                     <label for="avatar_url" class="form-label">URL de l'image de profil</label>
