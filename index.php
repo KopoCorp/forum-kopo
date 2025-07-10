@@ -46,6 +46,26 @@ switch ($route) {
         $controller = new AuthController($api);
         $controller->register();
         break;
+    case 'about':
+        require_once __DIR__ . '/controllers/MoreController.php';
+        $controller = new ContactController($api);
+        $controller->index();
+        break;
+    case 'terms':
+        require_once __DIR__ . '/controllers/MoreController.php';
+        $controller = new ContactController($api);
+        $controller->index();
+        break;
+    case 'privacy':
+        require_once __DIR__ . '/controllers/MoreController.php';
+        $controller = new ContactController($api);
+        $controller->index();
+        break;
+    case 'charte':
+        require_once __DIR__ . '/controllers/MoreController.php';
+        $controller = new ContactController($api);
+        $controller->index();
+        break;
     default:
         $file = __DIR__ . '/' . $route . '.php';
         if (file_exists($file)) {
