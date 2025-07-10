@@ -121,4 +121,26 @@ function calculate_forum_stats($api) {
 
     return $stats;
 }
+
+/**
+ * Extract a username from an API entity array.
+ *
+ * Many API responses include a nested `user` or `author` object. This helper
+ * attempts to retrieve the username from the various possible keys.
+ *
+ * @param array $data Entity returned by the API
+ * @return string|null Username if available, otherwise null
+ */
+function get_username(array $data) {
+    if (!empty($data['username'])) {
+        return $data['username'];
+    }
+    if (!empty($data['author']['username'])) {
+        return $data['author']['username'];
+    }
+    if (!empty($data['user']['username'])) {
+        return $data['user']['username'];
+    }
+    return null;
+}
 ?>

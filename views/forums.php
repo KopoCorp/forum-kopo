@@ -88,7 +88,7 @@
                                                             <div>par <a href="profile.php?id=<?php echo $thread['last_reply_user']['id']; ?>"><?php echo htmlspecialchars($thread['last_reply_user']['username']); ?></a></div>
                                                             <div><?php echo date('d/m à H:i', strtotime($thread['last_reply_at'])); ?></div>
                                                         <?php else: ?>
-                                                            <div>par <a href="profile.php?id=<?php echo $thread['user_id']; ?>"><?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?></a></div>
+                                                            <div>par <a href="profile.php?id=<?php echo $thread['user_id']; ?>"><?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?></a></div>
                                                             <div><?php echo date('d/m à H:i', strtotime($thread['created_at'])); ?></div>
                                                         <?php endif; ?>
                                                     </div>
@@ -184,7 +184,7 @@
                                 <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--light-gray);">
                                     <a href="thread.php?id=<?php echo $thread['id']; ?>" style="font-weight: 500;"><?php echo htmlspecialchars($thread['title']); ?></a>
                                     <div style="font-size: 0.8125rem; color: #666; margin-top: 0.25rem;">
-                                        <span>par <a href="profile.php?id=<?php echo $thread['user_id']; ?>"><?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?></a></span>
+                                        <span>par <a href="profile.php?id=<?php echo $thread['user_id']; ?>"><?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?></a></span>
                                         <span style="margin-left: 0.5rem;"><?php echo date('d/m à H:i', strtotime($thread['created_at'])); ?></span>
                                     </div>
                                 </li>
