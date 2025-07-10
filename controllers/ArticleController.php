@@ -28,6 +28,13 @@ class ArticleController {
             exit();
         }
 
+        // Fetch latest articles for the sidebar (ignore errors silently)
+        try {
+            $recent_articles = $this->api->request('/articles?skip=0&limit=5');
+        } catch (Exception $e) {
+            $recent_articles = [];
+        }
+
         // Attempt to record the view count but don't block if the endpoint is missing
         try {
             $this->api->request('/articles/' . $article_id . '/view', 'POST');

@@ -11,8 +11,10 @@
 
 <!-- Main Content -->
 <main class="main-content section">
-    <div class="container" style="max-width: 900px;">
-        <article class="article">
+    <div class="container">
+        <div class="grid grid-sidebar">
+            <div>
+                <article class="article">
             <?php if (isset($article['image_url']) && !empty($article['image_url'])): ?>
                 <div style="height: 400px; overflow: hidden;">
                     <img src="<?php echo htmlspecialchars($article['image_url']); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
@@ -77,6 +79,31 @@
                     <?php endif; ?>
                     </div>
                 </div>
+            </article>
             </div>
-        </main>
+            <aside class="sidebar">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Articles récents</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul style="list-style: none;">
+                            <?php if (!empty($recent_articles)): ?>
+                                <?php foreach ($recent_articles as $ra): ?>
+                                    <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--light-gray);">
+                                        <a href="index.php?route=article&id=<?php echo $ra['id']; ?>" style="font-weight: 500;">
+                                            <?php echo htmlspecialchars($ra['title']); ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li style="padding: 1rem 0; text-align: center;">Aucun article</li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
 
