@@ -16,9 +16,13 @@ class HomeController {
             $categories = $this->api->request('/forum/categories');
             // Get popular threads
             $popular_threads = $this->api->request('/forum/threads?skip=0&limit=5');
+            // Load latest CERT-FR alert
+            $alerts = fetch_cert_alerts(1);
+            $latest_security_alert = $alerts[0] ?? null;
         } catch (Exception $e) {
             $_SESSION['flash_message'] = "Erreur lors du chargement des données: " . $e->getMessage();
             $_SESSION['flash_type'] = "error";
+            $latest_security_alert = null;
         }
 
         require __DIR__ . '/../views/templates/header.php';
