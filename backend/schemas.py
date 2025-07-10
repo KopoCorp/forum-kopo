@@ -388,3 +388,11 @@ class ReportingConfigOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SecurityAlertOut(BaseModel):
+    """Schema for items parsed from the CERT-FR RSS feed."""
+    title: str
+    link: str
+    summary: Optional[str] = None
+    published: Optional[str] = None
