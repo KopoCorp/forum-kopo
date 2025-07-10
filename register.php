@@ -44,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include 'header.php';
 ?>
 
-<div class="container" style="max-width: 500px; margin: 2rem auto;">
-    <div class="forum-container">
+<main class="container" style="max-width: 500px; margin: 2rem auto;">
+    <section class="forum-container">
         <div class="forum-header">
             <h1 style="color: var(--white); margin: 0; text-align: center;">Inscription</h1>
         </div>
@@ -104,7 +104,7 @@ include 'header.php';
                 </div>
             <?php endif; ?>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 <?php include 'footer.php'; ?>
