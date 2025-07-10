@@ -7,8 +7,8 @@ class ArticlesController {
     public function index() {
         $page_title = "Articles";
         $page_description = "Articles sur l'informatique, la cybersécurité et les technologies";
-        $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
-        $tag = isset($_GET['tag']) ? $_GET['tag'] : '';
+        $page = isset($_GET['p']) ? sanitize_int($_GET['p']) : 1;
+        $tag = isset($_GET['tag']) ? sanitize_string($_GET['tag']) : '';
         $skip = ($page - 1) * 9;
         try {
             $query = '/articles?skip=' . $skip . '&limit=9';

@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 $page_title = "Mes publications";
@@ -18,7 +19,7 @@ $user = $api->getCurrentUser();
 $user_id = $user['id'];
 
 // Get the current tab (default to articles)
-$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'articles';
+$active_tab = isset($_GET['tab']) ? sanitize_string($_GET['tab']) : 'articles';
 
 try {
     // Get user's articles

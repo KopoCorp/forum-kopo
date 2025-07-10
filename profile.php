@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 // Check if user ID is provided
@@ -12,7 +13,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
         exit();
     }
 } else {
-    $user_id = (int)$_GET['id'];
+    $user_id = sanitize_int($_GET['id']);
 }
 
 try {
@@ -61,11 +62,12 @@ if ($api->isLoggedIn() && $user_id != $_SESSION['user']['id']) {
     }
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['follow_action'])) {
+        $action = sanitize_string($_POST['follow_action']);
         try {
-            if ($_POST['follow_action'] === 'follow') {
+            if ($action === 'follow') {
                 $api->request('/users/' . $_SESSION['user']['id'] . '/following', 'POST', ['following_id' => $user_id], true);
                 $is_following = true;
-            } elseif ($_POST['follow_action'] === 'unfollow') {
+            } elseif ($action === 'unfollow') {
                 $api->request('/users/' . $_SESSION['user']['id'] . '/following/' . $user_id, 'DELETE', [], true);
                 $is_following = false;
             }

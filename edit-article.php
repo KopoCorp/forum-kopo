@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 $page_title = "Modifier l'article";
@@ -20,7 +21,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit();
 }
 
-$article_id = (int)$_GET['id'];
+$article_id = sanitize_int($_GET['id']);
 $user = $api->getCurrentUser();
 
 try {
@@ -55,10 +56,10 @@ $error = '';
 $success = false;
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = isset($_POST['title']) ? $_POST['title'] : '';
-    $content = isset($_POST['content']) ? $_POST['content'] : '';
-    $selected_tags = isset($_POST['tags']) ? $_POST['tags'] : [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    $title = isset($_POST['title']) ? sanitize_string($_POST['title']) : '';
+    $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
+    $selected_tags = isset($_POST['tags']) ? array_map('sanitize_int', (array)$_POST['tags']) : [];
     $is_published = isset($_POST['is_published']) ? true : false;
 
     // Basic validation
@@ -166,6 +167,7 @@ include 'header.php';
                     <?php endif; ?>
                     
                     <form method="post" action="edit-article.php?id=<?php echo $article_id; ?>" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
                             <label for="title" class="form-label">Titre de l'article</label>
                             <input type="text" id="title" name="title" class="form-control" value="<?php echo htmlspecialchars($article['title']); ?>" required>

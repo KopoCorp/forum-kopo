@@ -19,6 +19,7 @@
             
             <?php if (!$success): ?>
                 <form method="post" action="index.php?route=register" data-validate>
+                    <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                     <div class="form-group">
                         <label for="username" class="form-label">Nom d'utilisateur</label>
                         <input type="text" id="username" name="username" class="form-control" required>

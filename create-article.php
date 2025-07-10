@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 // Vérifier si connecté
@@ -13,9 +14,9 @@ $user = $api->getCurrentUser();
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title']);
-    $content = trim($_POST['content']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    $title = sanitize_string($_POST['title']);
+    $content = sanitize_string($_POST['content']);
 
     if (empty($title) || empty($content)) {
         $error = "Veuillez remplir tous les champs.";
@@ -77,6 +78,7 @@ include 'header.php';
             <?php endif; ?>
             
             <form method="post" action="create-article.php">
+                <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                 <div class="form-group">
                     <label for="title" class="form-label">Titre</label>
                     <input type="text" id="title" name="title" class="form-control" required>

@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 // Vérifier si connecté
@@ -19,10 +20,10 @@ $current_avatar = $user['avatar_url'] ?? '';
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $bio = trim($_POST['bio']);
-    $avatar_url = trim($_POST['avatar_url']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    $username = sanitize_string($_POST['username']);
+    $bio = sanitize_string($_POST['bio']);
+    $avatar_url = filter_var($_POST['avatar_url'], FILTER_SANITIZE_URL);
     
     // Validation username
     if (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
@@ -89,6 +90,7 @@ include 'header.php';
             <?php endif; ?>
             
             <form method="post" action="edit-profile.php">
+                <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                 <div class="form-group">
                     <label for="username" class="form-label">Nom d'utilisateur</label>
                     <input type="text" id="username" name="username" class="form-control" value="<?php echo htmlspecialchars($current_username); ?>" required>

@@ -25,8 +25,8 @@ class ArticleController {
 
         $comment_error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && $this->api->isLoggedIn()) {
-            $content = isset($_POST['content']) ? $_POST['content'] : '';
-            $parent_id = isset($_POST['parent_id']) ? (int)$_POST['parent_id'] : null;
+            $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
+            $parent_id = isset($_POST['parent_id']) ? sanitize_int($_POST['parent_id']) : null;
             if (empty($content)) {
                 $comment_error = "Le contenu du commentaire ne peut pas être vide.";
             } else {

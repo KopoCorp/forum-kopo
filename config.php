@@ -21,5 +21,13 @@ define('SESSION_TIMEOUT', 3600); // 1 hour
 
 // Initialize session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
+    session_set_cookie_params([
+        'lifetime' => SESSION_TIMEOUT,
+        'path' => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure' => $secure
+    ]);
     session_start();
 }
