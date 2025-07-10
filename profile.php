@@ -200,7 +200,7 @@ include 'header.php';
                                                         <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
                                                             • 
                                                             <?php foreach ($article['tags'] as $index => $tag): ?>
-                                                                <a href="articles.php?tag=<?php echo urlencode($tag['name']); ?>" style="color: var(--bright-blue);">
+                                                                <a href="articles.php?tag=<?php echo $tag['id']; ?>" style="color: var(--bright-blue);">
                                                                     #<?php echo htmlspecialchars($tag['name']); ?>
                                                                 </a>
                                                                 <?php if ($index < count($article['tags']) - 1) echo ', '; ?>

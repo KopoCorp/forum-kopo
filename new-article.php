@@ -52,11 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                 'user_id' => $user['id'] ?? null
             ];
 
-            // Associate tag with the article
+            // Associate tags with the article
+            if (!empty($selected_tags)) {
+                $article_data['tag_ids'] = $selected_tags;
+            }
             if (!empty($new_tag)) {
-                $article_data['tag_name'] = $new_tag;
-            } elseif (!empty($selected_tags)) {
-                $article_data['tag_id'] = $selected_tags[0];
+                $article_data['tag_names'] = [$new_tag];
             }
 
             $result = $api->request('/articles', 'POST', $article_data, true);

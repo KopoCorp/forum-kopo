@@ -38,7 +38,7 @@
                 <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
                     <div class="article-tags" style="margin-top: 1rem;">
                         <?php foreach ($article['tags'] as $tag): ?>
-                            <a href="articles.php?tag=<?php echo urlencode($tag['name']); ?>" class="article-tag">
+                            <a href="articles.php?tag=<?php echo $tag['id']; ?>" class="article-tag">
                                 <?php echo htmlspecialchars($tag['name']); ?>
                             </a>
                         <?php endforeach; ?>
@@ -60,7 +60,7 @@
                 <div class="article-tags">
                     <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
                         <?php foreach ($article['tags'] as $tag): ?>
-                            <a href="articles.php?tag=<?php echo urlencode($tag['name']); ?>" class="article-tag">
+                            <a href="articles.php?tag=<?php echo $tag['id']; ?>" class="article-tag">
                                 <?php echo htmlspecialchars($tag['name']); ?>
                             </a>
                         <?php endforeach; ?>
