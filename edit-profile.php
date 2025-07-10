@@ -30,15 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         $error = "Le nom d'utilisateur doit comporter entre 3 et 20 caractères (lettres, chiffres ou underscore).";
     } else {
         try {
-            // Préparer données
+            // Préparer données pour mise à jour du compte (hors bio)
             $data = [
                 'username' => $username,
-                'bio' => $bio,
                 'avatar_url' => $avatar_url
             ];
 
-            // Envoi à l'API (PUT /users/{id})
+            // Envoi à l'API (PUT /users/{id}) pour les infos du compte
             $api->request('/users/' . $user_id, 'PUT', $data, true);
+
+            // Mise à jour de la bio via le nouvel endpoint
+            $api->request('/users/' . $user_id . '/bio', 'PUT', ['bio' => $bio], true);
 
             // Mettre à jour la session
             $_SESSION['user']['username'] = $username;
