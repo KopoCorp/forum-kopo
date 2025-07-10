@@ -153,7 +153,6 @@ console.table(users, ['name', 'role']);</code></pre>
                                             <a href="thread.php?id=<?php echo $thread['id']; ?>" class="topic-title"><?php echo htmlspecialchars($thread['title']); ?></a>
                                             <div class="topic-stats">
                                                 <span><i class="fas fa-comment"></i> <?php echo $thread['reply_count'] ?? 0; ?> réponses</span>
-                                                <span><i class="fas fa-eye"></i> <?php echo $thread['view_count'] ?? 0; ?> vues</span>
                                             </div>
                                         </div>
                                         <div class="topic-last-post">

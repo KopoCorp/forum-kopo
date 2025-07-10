@@ -60,7 +60,6 @@
                                                     <a href="thread.php?id=<?php echo $thread['id']; ?>" class="topic-title"><?php echo htmlspecialchars($thread['title']); ?></a>
                                                     <div class="topic-stats">
                                                         <span><i class="fas fa-comment"></i> <?php echo $thread['reply_count'] ?? 0; ?> réponses</span>
-                                                        <span><i class="fas fa-eye"></i> <?php echo $thread['view_count'] ?? 0; ?> vues</span>
                                                     </div>
                                                 </div>
                                                 <div class="topic-last-post">
@@ -228,7 +227,6 @@
                                         <a href="thread.php?id=<?php echo $thread['id']; ?>" style="font-weight: 500;"><?php echo htmlspecialchars($thread['title']); ?></a>
                                         <div style="font-size: 0.8125rem; color: #666; margin-top: 0.25rem;">
                                             <span><?php echo $thread['reply_count'] ?? 0; ?> réponses</span>
-                                            <span style="margin-left: 0.5rem;"><?php echo $thread['view_count'] ?? 0; ?> vues</span>
                                         </div>
                                     </li>
                                 <?php endforeach; ?>
