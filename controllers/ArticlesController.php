@@ -18,12 +18,18 @@ class ArticlesController {
             $articles_data = $this->api->request($query);
             $total_count = $this->api->request('/articles/count' . (!empty($tag) ? '?tag=' . urlencode($tag) : ''));
             $total_pages = ceil(($total_count['count'] ?? 1) / 9);
-            $tags = $this->api->request('/tags');
         } catch (Exception $e) {
             $_SESSION['flash_message'] = "Erreur lors du chargement des articles: " . $e->getMessage();
             $_SESSION['flash_type'] = "error";
             $articles_data = [];
             $total_pages = 1;
+        }
+
+        // Charger la liste des tags séparément pour ne pas bloquer l'affichage des articles
+        try {
+            $tags = $this->api->request('/tags');
+        } catch (Exception $e) {
+            // Si l'API des tags n'est pas disponible, on continue sans les tags
             $tags = [];
         }
         require __DIR__ . '/../views/templates/header.php';
