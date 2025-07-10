@@ -10,7 +10,7 @@ if (!$api->isLoggedIn()) {
     $_SESSION['redirect_after_login'] = 'new-article.php';
     $_SESSION['flash_message'] = "Vous devez être connecté pour publier un article.";
     $_SESSION['flash_type'] = "error";
-    header('Location: login.php');
+    header('Location: index.php?route=login');
     exit();
 }
 

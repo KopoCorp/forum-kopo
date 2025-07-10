@@ -6,7 +6,7 @@ require_once 'api.php';
 if (!$api->isLoggedIn()) {
     $_SESSION['flash_message'] = "Vous devez être connecté pour supprimer du contenu.";
     $_SESSION['flash_type'] = "error";
-    header('Location: login.php');
+    header('Location: index.php?route=login');
     exit();
 }
 

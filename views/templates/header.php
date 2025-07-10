@@ -35,9 +35,9 @@ require_once 'api.php';
             
             <nav class="main-nav" id="main-nav">
                 <ul>
-                    <li><a href="index.php" <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'class="active"' : ''; ?>>Accueil</a></li>
-                    <li><a href="forums.php" <?php echo basename($_SERVER['PHP_SELF']) == 'forums.php' ? 'class="active"' : ''; ?>>Forums</a></li>
-                    <li><a href="articles.php" <?php echo basename($_SERVER['PHP_SELF']) == 'articles.php' ? 'class="active"' : ''; ?>>Articles</a></li>
+                    <li><a href="index.php" <?php echo !isset($_GET['route']) || $_GET['route'] == 'home' ? 'class="active"' : ''; ?>>Accueil</a></li>
+                    <li><a href="index.php?route=forums" <?php echo isset($_GET['route']) && $_GET['route'] == 'forums' ? 'class="active"' : ''; ?>>Forums</a></li>
+                    <li><a href="index.php?route=articles" <?php echo isset($_GET['route']) && $_GET['route'] == 'articles' ? 'class="active"' : ''; ?>>Articles</a></li>
                     <li><a href="cyber-securite.php" <?php echo basename($_SERVER['PHP_SELF']) == 'cyber-securite.php' ? 'class="active"' : ''; ?>>Cyber-Sécurité</a></li>
                     <li><a href="dev.php" <?php echo basename($_SERVER['PHP_SELF']) == 'dev.php' ? 'class="active"' : ''; ?>>Développement</a></li>
                     <?php if ($api->isLoggedIn()): ?>
@@ -82,8 +82,8 @@ require_once 'api.php';
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" class="btn btn-outline">Connexion</a>
-                    <a href="register.php" class="btn btn-primary">Inscription</a>
+                    <a href="index.php?route=login" class="btn btn-outline">Connexion</a>
+                    <a href="index.php?route=register" class="btn btn-primary">Inscription</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -103,4 +103,3 @@ require_once 'api.php';
         unset($_SESSION['flash_type']);
     }
     ?>
-

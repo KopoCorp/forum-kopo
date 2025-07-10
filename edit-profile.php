@@ -4,7 +4,7 @@ require_once 'api.php';
 
 // Vérifier si connecté
 if (!$api->isLoggedIn()) {
-    header('Location: login.php');
+    header('Location: index.php?route=login');
     exit;
 }
 
