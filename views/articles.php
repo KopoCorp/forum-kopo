@@ -79,7 +79,7 @@
                                         <a href="index.php?route=article&id=<?php echo $article['id']; ?>"><?php echo htmlspecialchars($article['title']); ?></a>
                                     </h3>
                                     <div class="article-card-meta">
-                                        <span>Par <?php echo htmlspecialchars($article['username'] ?? 'Auteur'); ?></span> • 
+                                        <span>Par <?php echo htmlspecialchars(get_username($article) ?? 'Auteur'); ?></span> •
                                         <span><?php echo date('d/m/Y', strtotime($article['created_at'])); ?></span>
                                     </div>
                                     <p class="article-card-excerpt">
