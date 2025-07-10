@@ -258,7 +258,7 @@ function highlightSearchTerms($text, $search) {
                         <div class="search-list grid grid-3" style="gap: 1rem;">
                             <?php foreach ($users as $user): ?>
                                 <div class="search-item" style="padding: 1.5rem; background-color: var(--white); border-radius: var(--border-radius); box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center;">
-                                    <img src="<?php echo isset($user['avatar_url']) && !empty($user['avatar_url']) ? htmlspecialchars($user['avatar_url']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 1rem;">
+                                    <img src="<?php echo isset($user['avatar_url']) && !empty($user['avatar_url']) ? htmlspecialchars($user['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 1rem;">
                                     
                                     <div style="flex: 1;">
                                         <h4 style="margin: 0 0 0.25rem;">
