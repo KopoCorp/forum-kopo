@@ -131,9 +131,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api->isLoggedIn() && verify_csrf_t
         $reply_error = "Le contenu de la réponse ne peut pas être vide.";
     } else {
         try {
+            $user = $api->getCurrentUser();
             $data = [
                 'thread_id' => $thread_id,
-                'content' => $content
+                'content' => $content,
+                'user_id' => $user['id'] ?? null
             ];
             if ($parent_id) {
                 $data['parent_id'] = $parent_id;
