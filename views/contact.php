@@ -98,17 +98,7 @@
                                 </div>
                                 <div>
                                     <strong>Email</strong>
-                                    <p style="margin-top: 0.25rem;">contact@kopo-forum.fr</p>
-                                </div>
-                            </li>
-                            
-                            <li style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                                <div style="color: var(--bright-blue); font-size: 1.5rem; width: 24px;">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </div>
-                                <div>
-                                    <strong>Adresse</strong>
-                                    <p style="margin-top: 0.25rem;">123 Boulevard de l'Innovation<br>75001 Paris, France</p>
+                                    <p style="margin-top: 0.25rem;">forum@kopo.systems</p>
                                 </div>
                             </li>
                             
@@ -132,19 +122,12 @@
                     
                     <div style="padding: 2rem;">
                         <div class="social-links" style="display: flex; flex-wrap: wrap; gap: 1rem;">
-                            <a href="https://twitter.com/KopoForum" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background-color: #1DA1F2; color: white; border-radius: var(--border-radius); text-decoration: none;">
-                                <i class="fab fa-twitter"></i> Twitter
-                            </a>
                             
                             <a href="https://github.com/KopoCorp" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background-color: #333333; color: white; border-radius: var(--border-radius); text-decoration: none;">
                                 <i class="fab fa-github"></i> GitHub
                             </a>
                             
-                            <a href="https://www.linkedin.com/company/kopo-forum" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background-color: #0077B5; color: white; border-radius: var(--border-radius); text-decoration: none;">
-                                <i class="fab fa-linkedin"></i> LinkedIn
-                            </a>
-                            
-                            <a href="https://discord.gg/kopo-forum" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background-color: #7289DA; color: white; border-radius: var(--border-radius); text-decoration: none;">
+                            <a href="http://discord.kopo.systems/" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background-color: #7289DA; color: white; border-radius: var(--border-radius); text-decoration: none;">
                                 <i class="fab fa-discord"></i> Discord
                             </a>
                         </div>
@@ -165,21 +148,11 @@
                 <div class="faq-list">
                     <div class="faq-item" style="border-bottom: 1px solid var(--light-gray); padding: 1.5rem;">
                         <div class="faq-question" style="cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
-                            <div>Comment puis-je réinitialiser mon mot de passe ?</div>
+                            <div>Comment changer mon mot de passe ?</div>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
-                            <p>Pour réinitialiser votre mot de passe, cliquez sur le lien "Mot de passe oublié" sur la page de connexion. Vous recevrez un email avec les instructions pour créer un nouveau mot de passe.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item" style="border-bottom: 1px solid var(--light-gray); padding: 1.5rem;">
-                        <div class="faq-question" style="cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
-                            <div>Comment signaler un contenu inapproprié ?</div>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="faq-answer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
-                            <p>Vous pouvez signaler tout contenu inapproprié en cliquant sur le bouton "Signaler" présent sur les discussions, commentaires ou profils. Vous pouvez également nous contacter directement via ce formulaire en sélectionnant "Signalement de contenu" comme sujet.</p>
+                            <p>Le mot de passe peut se changer dans le profil. Il y a un bouton « Modifier le profil » : en cliquant dessus, vous pourrez modifier votre mot de passe.</p>
                         </div>
                     </div>
                     
@@ -189,17 +162,37 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
-                            <p>Nous sélectionnons nos modérateurs parmi les membres les plus actifs et respectueux de la communauté. Si vous souhaitez rejoindre notre équipe de modération, vous pouvez postuler en nous envoyant un message via ce formulaire en sélectionnant "Autre" comme sujet et en précisant votre intérêt pour la modération.</p>
+                            <p>Pour devenir modérateur, il faut être actif sur la plateforme et faire une demande sur notre Discord ou via le formulaire de contact.</p>
                         </div>
                     </div>
                     
                     <div class="faq-item" style="padding: 1.5rem;">
                         <div class="faq-question" style="cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
-                            <div>Comment supprimer mon compte ?</div>
+                            <div>Comment contacter le support ?</div>
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="faq-answer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
-                            <p>Vous pouvez demander la suppression de votre compte dans les paramètres de votre profil, sous l'onglet "Confidentialité". Veuillez noter que cette action est irréversible et que toutes vos données personnelles seront supprimées conformément à notre politique de confidentialité.</p>
+                            <p>Vous pouvez nous contacter via le formulaire disponible sur la page de contact ou nous écrire directement par email à forum@kopo.systems</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="padding: 1.5rem;">
+                        <div class="faq-question" style="cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                            <div>Puis-je changer mon nom d’utilisateur ?</div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
+                            <p>Oui, il est possible de changer votre nom d’utilisateur dans les paramètres de votre profil.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" style="padding: 1.5rem;">
+                        <div class="faq-question" style="cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                            <div>Mon compte est bloqué, que faire ?</div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--light-gray);">
+                            <p>Si votre compte est bloqué, contactez le support via le formulaire de contact en précisant votre nom d’utilisateur et la raison du blocage si vous la connaissez.</p>
                         </div>
                     </div>
                 </div>
@@ -230,4 +223,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
