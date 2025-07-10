@@ -141,37 +141,7 @@ try {
                                 </div>
                             </div>
                             
-                            <?php if ($api->isLoggedIn() && $_SESSION['user']['id'] !== $member['id']): ?>
-                                <div class="member-actions" style="display: flex; gap: 0.5rem;">
-                                    <a href="messages.php?to=<?php echo $member['id']; ?>" class="btn btn-sm btn-outline" style="flex: 1;">
-                                        <i class="far fa-envelope"></i> Message
-                                    </a>
-                                    
-                                    <?php
-                                    $is_following = false;
-                                    try {
-                                        $follow_status = $api->request('/users/' . $_SESSION['user']['id'] . '/following/' . $member['id'], 'GET', [], true);
-                                        $is_following = $follow_status['is_following'] ?? false;
-                                    } catch (Exception $e) {
-                                        // Silently fail if we can't get follow status
-                                    }
-                                    ?>
-                                    
-                                    <form method="post" action="follow.php" style="flex: 1;">
-                                        <input type="hidden" name="user_id" value="<?php echo $member['id']; ?>">
-                                        <input type="hidden" name="action" value="<?php echo $is_following ? 'unfollow' : 'follow'; ?>">
-                                        <input type="hidden" name="redirect" value="membres.php<?php echo !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''; ?>">
-                                        
-                                        <button type="submit" class="btn btn-sm <?php echo $is_following ? 'btn-outline' : 'btn-primary'; ?>" style="width: 100%;">
-                                            <?php if ($is_following): ?>
-                                                <i class="fas fa-user-minus"></i> Abonné
-                                            <?php else: ?>
-                                                <i class="fas fa-user-plus"></i> Suivre
-                                            <?php endif; ?>
-                                        </button>
-                                    </form>
-                                </div>
-                            <?php elseif ($api->isLoggedIn() && $_SESSION['user']['id'] === $member['id']): ?>
+                            <?php if ($api->isLoggedIn() && $_SESSION['user']['id'] === $member['id']): ?>
                                 <div class="member-actions">
                                     <a href="profile.php?id=<?php echo $member['id']; ?>" class="btn btn-sm btn-outline" style="width: 100%;">
                                         <i class="fas fa-user-edit"></i> C'est vous

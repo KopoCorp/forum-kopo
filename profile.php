@@ -49,33 +49,6 @@ try {
 
 
 
-// Handle following/unfollowing
-$follow_error = '';
-$is_following = false;
-
-if ($api->isLoggedIn() && $user_id != $_SESSION['user']['id']) {
-    try {
-        $follow_status = $api->request('/users/' . $_SESSION['user']['id'] . '/following/' . $user_id, 'GET', [], true);
-        $is_following = $follow_status['is_following'] ?? false;
-    } catch (Exception $e) {
-        // Silently fail if we can't get follow status
-    }
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['follow_action'])) {
-        $action = sanitize_string($_POST['follow_action']);
-        try {
-            if ($action === 'follow') {
-                $api->request('/users/' . $_SESSION['user']['id'] . '/following', 'POST', ['following_id' => $user_id], true);
-                $is_following = true;
-            } elseif ($action === 'unfollow') {
-                $api->request('/users/' . $_SESSION['user']['id'] . '/following/' . $user_id, 'DELETE', [], true);
-                $is_following = false;
-            }
-        } catch (Exception $e) {
-            $follow_error = $e->getMessage();
-        }
-    }
-}
 
 include 'header.php';
 ?>
@@ -146,26 +119,6 @@ include 'header.php';
                                 <a href="edit-profile.php" class="btn btn-outline">
                                     <i class="fas fa-cog"></i> Modifier le profil
                                 </a>
-                            <?php elseif ($api->isLoggedIn()): ?>
-                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                    <form method="post">
-                                        <?php if ($is_following): ?>
-                                            <input type="hidden" name="follow_action" value="unfollow">
-                                            <button type="submit" class="btn btn-outline">
-                                                <i class="fas fa-user-minus"></i> Ne plus suivre
-                                            </button>
-                                        <?php else: ?>
-                                            <input type="hidden" name="follow_action" value="follow">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-user-plus"></i> Suivre
-                                            </button>
-                                        <?php endif; ?>
-                                    </form>
-                                    
-                                    <a href="messages.php?to=<?php echo $user_id; ?>" class="btn btn-outline">
-                                        <i class="far fa-envelope"></i> Message
-                                    </a>
-                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -183,10 +136,6 @@ include 'header.php';
                         <div style="flex: 1; text-align: center; border-left: 1px solid var(--light-gray); padding: 0.5rem 0;">
                             <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $profile['article_count'] ?? 0; ?></div>
                             <div style="color: #666; font-size: 0.875rem;">Articles</div>
-                        </div>
-                        <div style="flex: 1; text-align: center; border-left: 1px solid var(--light-gray); padding: 0.5rem 0;">
-                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $profile['follower_count'] ?? 0; ?></div>
-                            <div style="color: #666; font-size: 0.875rem;">Abonnés</div>
                         </div>
                     </div>
                 </div>

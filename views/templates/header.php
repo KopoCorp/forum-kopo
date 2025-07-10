@@ -59,19 +59,6 @@ global $api;
                             <a href="profile.php?id=<?php echo $user['id']; ?>">
                                 <i class="fas fa-user"></i> Mon Profil
                             </a>
-                            <a href="messages.php">
-                                <i class="fas fa-envelope"></i> Messages
-                                <?php
-                                try {
-                                    $unread_count = $api->request('/messages/unread-count', 'GET', [], true);
-                                    if ($unread_count['count'] > 0) {
-                                        echo '<span class="badge">' . $unread_count['count'] . '</span>';
-                                    }
-                                } catch (Exception $e) {
-                                    // Silently fail if we can't get message count
-                                }
-                                ?>
-                            </a>
                             <a href="settings.php">
                                 <i class="fas fa-cog"></i> Paramètres
                             </a>
