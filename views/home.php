@@ -213,6 +213,40 @@
                         </div>
                     </div>
                 </div>
+                <?php else: ?>
+                <!-- User Widget -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Mon profil</h3>
+                    </div>
+                    <div class="widget-content" style="text-align: center;">
+                        <?php $user = $this->api->getCurrentUser(); ?>
+                        <div style="margin-bottom: 1rem;">
+                            <img src="<?php echo isset($user['avatar_url']) && !empty($user['avatar_url']) ? htmlspecialchars($user['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="user-avatar" style="margin: 0 auto 0.5rem; width: 80px; height: 80px;">
+                            <h4 style="margin: 0;">
+                                <?php echo htmlspecialchars($user['username']); ?>
+                            </h4>
+                            <div style="color: #666; font-size: 0.875rem;">
+                                Membre depuis <?php echo date('M Y', strtotime($user['created_at'])); ?>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600;">
+                                    <?php echo $user['thread_count'] ?? 0; ?>
+                                </div>
+                                <div style="font-size: 0.75rem; color: #666;">Discussions</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600;">
+                                    <?php echo $user['reply_count'] ?? 0; ?>
+                                </div>
+                                <div style="font-size: 0.75rem; color: #666;">Réponses</div>
+                            </div>
+                        </div>
+                        <a href="profile.php?id=<?php echo $user['id']; ?>" class="btn btn-outline" style="width: 100%;">Voir mon profil</a>
+                    </div>
+                </div>
                 <?php endif; ?>
                 <!-- Hot Topics -->
                 <div class="widget">
@@ -234,9 +268,49 @@
                                 <li style="padding: 1rem 0; text-align: center;">Aucun sujet populaire pour le moment.</li>
                               <?php endif; ?>
                           </ul>
-                      </div>
-                  </div>
-              </aside>
+                    </div>
+                </div>
+                <!-- Stats Widget -->
+                <div class="widget">
+                    <div class="widget-header" style="background-color: var(--bright-blue);">
+                        <h3>Statistiques</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul style="list-style: none;">
+                            <?php
+                            try {
+                                $stats = $this->api->request('/stats');
+                            } catch (Exception $e) {
+                                $stats = [
+                                    'user_count' => 0,
+                                    'thread_count' => 0,
+                                    'reply_count' => 0,
+                                    'most_active_user' => null
+                                ];
+                            }
+                            ?>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                <span>Membres:</span>
+                                <strong><?php echo $stats['user_count'] ?? 0; ?></strong>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                <span>Discussions:</span>
+                                <strong><?php echo $stats['thread_count'] ?? 0; ?></strong>
+                            </li>
+                            <li style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                                <span>Messages:</span>
+                                <strong><?php echo $stats['reply_count'] ?? 0; ?></strong>
+                            </li>
+                            <?php if (isset($stats['most_active_user']) && !empty($stats['most_active_user'])): ?>
+                                <li style="display: flex; justify-content: space-between;">
+                                    <span>Membre le plus actif:</span>
+                                    <strong><a href="profile.php?id=<?php echo $stats['most_active_user']['id']; ?>"><?php echo htmlspecialchars($stats['most_active_user']['username']); ?></a></strong>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
           </div>
       </div>
   </main>
