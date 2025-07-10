@@ -6,7 +6,7 @@ require_once 'api.php';
 $route = isset($_GET['route']) ? sanitize_string($_GET['route']) : 'home';
 
 // Whitelist allowed routes to avoid path traversal
-$allowed_routes = ['home','article','articles','forums','contact','login','register','about','charte','terms','privacy'];
+$allowed_routes = ['home','article','articles','forums','contact','login','register','new-article','new-thread','about','charte','terms','privacy'];
 $route = in_array($route, $allowed_routes, true) ? $route : 'home';
 
 switch ($route) {
@@ -45,6 +45,16 @@ switch ($route) {
         require_once __DIR__ . '/controllers/AuthController.php';
         $controller = new AuthController($api);
         $controller->register();
+        break;
+    case 'new-article':
+        require_once __DIR__ . '/controllers/NewArticleController.php';
+        $controller = new NewArticleController($api);
+        $controller->create();
+        break;
+    case 'new-thread':
+        require_once __DIR__ . '/controllers/NewThreadController.php';
+        $controller = new NewThreadController($api);
+        $controller->create();
         break;
     case 'about':
     case 'charte':
