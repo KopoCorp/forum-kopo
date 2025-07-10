@@ -39,6 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         $error = "Le titre ne peut pas être vide.";
     } elseif (empty($content)) {
         $error = "Le contenu ne peut pas être vide.";
+    } elseif (empty($selected_tags) && empty($new_tag)) {
+        $error = "Veuillez sélectionner au moins un tag.";
     } else {
         try {
             // Create tag if user provided one
@@ -188,7 +190,7 @@ code sur plusieurs lignes
                         
                         <div class="form-group">
                             <label for="tags" class="form-label">Tags</label>
-                            <select id="tags" name="tags[]" class="form-control" multiple>
+                            <select id="tags" name="tags[]" class="form-control" multiple required>
                                 <?php if (!empty($tags)): ?>
                                     <?php foreach ($tags as $tag): ?>
                                         <option value="<?php echo $tag['id']; ?>"><?php echo htmlspecialchars($tag['name']); ?></option>
