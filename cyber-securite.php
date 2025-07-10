@@ -4,18 +4,22 @@ $page_description = "Information et discussions sur la cybersécurité, les vuln
 require_once 'functions.php';
 require_once 'header.php';
 
-// Retrieve tag id for "cybersécurité"
+// Retrieve tag id for security and map tag ids to names
 $security_tag_id = null;
+$tag_map = [];
 try {
     $tags_list = $api->request('/tags');
     foreach ($tags_list as $t) {
-        if (strtolower($t['name']) === 'cybersécurité' || strtolower($t['name']) === 'cybersecurite') {
-            $security_tag_id = $t['id'];
-            break;
+        if (isset($t['id'])) {
+            $tag_map[$t['id']] = $t['name'] ?? '';
+            if ($security_tag_id === null && detect_topic([$t['name']], $t['name']) === 'security') {
+                $security_tag_id = $t['id'];
+            }
         }
     }
 } catch (Exception $e) {
     $security_tag_id = null;
+    $tag_map = [];
 }
 
 try {
@@ -27,8 +31,17 @@ try {
         $all_articles = $api->request('/articles?limit=20');
         $security_articles = [];
         foreach ($all_articles as $article) {
-            $tags = array_column($article['tags'] ?? [], 'name');
-            if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'security') {
+            $tag_names = [];
+            if (isset($article['tags']) && is_array($article['tags'])) {
+                foreach ($article['tags'] as $t) {
+                    if (is_array($t) && isset($t['name'])) {
+                        $tag_names[] = $t['name'];
+                    } elseif (isset($tag_map[$t])) {
+                        $tag_names[] = $tag_map[$t];
+                    }
+                }
+            }
+            if (detect_topic($tag_names, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'security') {
                 $security_articles[] = $article;
             }
             if (count($security_articles) >= 6) {
