@@ -103,8 +103,18 @@ class Article(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     author = relationship('User', back_populates='articles')
-    comments = relationship('Comment', back_populates='article')
-    article_tags = relationship('ArticleTag', back_populates='article')
+    comments = relationship(
+        'Comment',
+        back_populates='article',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
+    article_tags = relationship(
+        'ArticleTag',
+        back_populates='article',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
 
     @property
     def tags(self):
