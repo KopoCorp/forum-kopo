@@ -101,6 +101,28 @@ def logout(token: str = Depends(oauth2_scheme)):
     return {"detail": "Logged out"}
 
 
+@app.get("/users", response_model=List[schemas.UserOut])
+def list_users(
+    skip: int = 0,
+    limit: int = 10,
+    sort: str = "newest",
+    db: Session = Depends(get_db),
+):
+    """List users with optional pagination and sorting."""
+    query = db.query(models.User)
+    if sort == "newest":
+        query = query.order_by(models.User.created_at.desc())
+    elif sort == "oldest":
+        query = query.order_by(models.User.created_at)
+    return query.offset(skip).limit(limit).all()
+
+
+@app.get("/users/count", response_model=schemas.CountOut)
+def count_users(db: Session = Depends(get_db)):
+    """Return the total number of registered users."""
+    return {"count": db.query(models.User).count()}
+
+
 @app.get("/users/{user_id}", response_model=schemas.UserOut)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).get(user_id)

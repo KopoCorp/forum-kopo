@@ -49,6 +49,25 @@ Recuperer les informations d'un utilisateur.
 curl http://localhost:8000/users/1
 ```
 
+### GET /users
+Lister les utilisateurs.
+
+Parametres query :
+- `skip` (defaut 0)
+- `limit` (defaut 10)
+- `sort` : `newest` ou `oldest`
+
+```bash
+curl "http://localhost:8000/users?skip=0&limit=24&sort=newest"
+```
+
+### GET /users/count
+Nombre total d'utilisateurs inscrits.
+
+```bash
+curl http://localhost:8000/users/count
+```
+
 
 
 
