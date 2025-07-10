@@ -21,8 +21,8 @@ class HomeController {
             $_SESSION['flash_type'] = "error";
         }
 
-        require __DIR__ . '/views/templates/header.php';
-        require __DIR__ . '/views/home.php';
-        require __DIR__ . '/views/templates/footer.php';
+        require __DIR__ . '/../views/templates/header.php';
+        require __DIR__ . '/../views/home.php';
+        require __DIR__ . '/../views/templates/footer.php';
     }
 }
