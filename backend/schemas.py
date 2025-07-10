@@ -23,6 +23,19 @@ class UserOut(UserBase):
         orm_mode = True
 
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class UserBioUpdate(BaseModel):
+    bio: str
+
+
 class ArticleBase(BaseModel):
     title: str
     content: str
