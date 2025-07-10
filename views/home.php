@@ -166,11 +166,13 @@
                     </div>
                 </section>
                 <!-- Cybersecurity Alert -->
+                <?php if (isset($latest_cert_alert)): ?>
                 <section class="security-alert" style="margin-top: 3rem;">
-                    <h4><i class="fas fa-shield-alt"></i> Alerte de sécurité</h4>
-                    <p>Mise à jour importante concernant la vulnérabilité critique Log4Shell (CVE-2021-44228). Assurez-vous que vos systèmes sont protégés contre cette faille.</p>
-                    <p><a href="article.php?id=cybersecurity-alert" class="btn btn-accent" style="margin-top: 0.5rem;">En savoir plus</a></p>
+                    <h4><i class="fas fa-shield-alt"></i> <?php echo htmlspecialchars($latest_cert_alert['title']); ?></h4>
+                    <p><?php echo htmlspecialchars(mb_strimwidth($latest_cert_alert['description'], 0, 200, '...')); ?></p>
+                    <p><a href="<?php echo htmlspecialchars($latest_cert_alert['link']); ?>" class="btn btn-accent" style="margin-top: 0.5rem;" target="_blank" rel="noopener">En savoir plus</a></p>
                 </section>
+                <?php endif; ?>
                 <!-- CTA Section -->
                 <section class="cta-section" style="margin: 3rem 0; padding: 3rem; background-color: var(--dark-blue); color: var(--white); border-radius: var(--border-radius); text-align: center;">
                     <h2 style="color: var(--white); font-size: 2rem; margin-bottom: 1.5rem;">Rejoignez la conversation</h2>
