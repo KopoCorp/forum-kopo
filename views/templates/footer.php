@@ -46,6 +46,7 @@
     </footer>
 
     <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="assets/js/main.js"></script>
 </body>
 </html>

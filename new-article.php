@@ -189,15 +189,10 @@ code sur plusieurs lignes
                         </div>
                         
                         <div class="form-group">
-                            <label for="tags" class="form-label">Tags</label>
-                            <select id="tags" name="tags[]" class="form-control" multiple required>
-                                <?php if (!empty($tags)): ?>
-                                    <?php foreach ($tags as $tag): ?>
-                                        <option value="<?php echo $tag['id']; ?>"><?php echo htmlspecialchars($tag['name']); ?></option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                            <div class="form-text">Vous pouvez sélectionner plusieurs tags en maintenant la touche Ctrl (ou Cmd sur Mac).</div>
+                            <label for="tags-input" class="form-label">Tags</label>
+                            <input id="tags-input" class="form-control" placeholder="Choisissez des tags">
+                            <div id="selected-tags"></div>
+                            <div class="form-text">Commencez à taper pour rechercher ou ajouter un tag.</div>
                         </div>
 
                         <div class="form-group">
@@ -240,6 +235,33 @@ function toggleFormatHelp() {
         helpPanel.style.display = 'none';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const tagInput = document.getElementById('tags-input');
+    if (tagInput) {
+        const tagData = <?php echo json_encode($tags); ?>;
+        const tagify = new Tagify(tagInput, {
+            whitelist: tagData.map(t => ({ value: t.id, name: t.name })),
+            enforceWhitelist: true,
+            tagTextProp: 'name',
+            dropdown: { enabled: 0, maxItems: 20 }
+        });
+
+        const container = document.getElementById('selected-tags');
+        function updateHidden() {
+            container.innerHTML = '';
+            tagify.value.forEach(tag => {
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'tags[]';
+                hidden.value = tag.value;
+                container.appendChild(hidden);
+            });
+        }
+        tagify.on('add', updateHidden);
+        tagify.on('remove', updateHidden);
+    }
+});
 </script>
 
 <?php include 'footer.php'; ?>
