@@ -240,8 +240,8 @@ try {
                 <h2 style="color: var(--white); font-size: 1.75rem; margin-bottom: 1rem;">Rejoignez notre communauté</h2>
                 <p style="max-width: 700px; margin: 0 auto 1.5rem;">Créez un compte pour interagir avec d'autres membres, participer aux discussions et partager vos connaissances.</p>
                 <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                    <a href="register.php" class="btn btn-primary" style="min-width: 150px;">Créer un compte</a>
-                    <a href="login.php" class="btn btn-outline" style="background-color: transparent; border-color: var(--white); color: var(--white); min-width: 150px;">Connexion</a>
+                    <a href="index.php?route=register" class="btn btn-primary" style="min-width: 150px;">Créer un compte</a>
+                    <a href="index.php?route=login" class="btn btn-outline" style="background-color: transparent; border-color: var(--white); color: var(--white); min-width: 150px;">Connexion</a>
                 </div>
             </div>
         <?php endif; ?>
