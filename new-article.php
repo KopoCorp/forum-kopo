@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
     $title = isset($_POST['title']) ? sanitize_string($_POST['title']) : '';
     $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
     $selected_tags = isset($_POST['tags']) ? array_map('sanitize_int', (array)$_POST['tags']) : [];
+    $new_tag = isset($_POST['new_tag']) ? sanitize_string($_POST['new_tag']) : '';
     $is_published = isset($_POST['is_published']) ? true : false;
 
     // Basic validation
@@ -39,6 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         $error = "Le contenu ne peut pas être vide.";
     } else {
         try {
+            // Create tag if user provided one
+            if (!empty($new_tag)) {
+                try {
+                    $tagResult = $api->request('/tags', 'POST', ['name' => $new_tag], true);
+                    if (isset($tagResult['id'])) {
+                        $selected_tags[] = $tagResult['id'];
+                        $tags[] = ['id' => $tagResult['id'], 'name' => $new_tag];
+                    }
+                } catch (Exception $e) {
+                    $error = "Erreur lors de la création du tag: " . $e->getMessage();
+                }
+            }
+
             // Create article first
             $article_data = [
                 'title' => $title,
@@ -190,6 +204,12 @@ code sur plusieurs lignes
                                 <?php endif; ?>
                             </select>
                             <div class="form-text">Vous pouvez sélectionner plusieurs tags en maintenant la touche Ctrl (ou Cmd sur Mac).</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_tag" class="form-label">Ajouter un tag</label>
+                            <input type="text" id="new_tag" name="new_tag" class="form-control" placeholder="Nouveau tag">
+                            <div class="form-text">Si le tag n'existe pas encore, il sera créé puis associé à l'article.</div>
                         </div>
                         
                         <div class="form-group">
