@@ -118,6 +118,17 @@ Parametres query :
 curl "http://localhost:8000/users/1/threads?skip=0&limit=10"
 ```
 
+### GET /users/{id}/articles
+Lister les articles créés par un utilisateur.
+
+Parametres query :
+- `skip` (defaut 0)
+- `limit` (defaut 10)
+
+```bash
+curl "http://localhost:8000/users/1/articles?skip=0&limit=10"
+```
+
 ## Articles
 Revoque le token present dans l'en-tete `Authorization`.
 
