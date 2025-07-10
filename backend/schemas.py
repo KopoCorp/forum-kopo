@@ -45,6 +45,7 @@ class ArticleBase(BaseModel):
 class ArticleCreate(ArticleBase):
     user_id: Optional[int]
     tag_id: Optional[int] = None
+    tag_name: Optional[str] = None
 
 
 class ArticleUpdate(BaseModel):
@@ -53,6 +54,7 @@ class ArticleUpdate(BaseModel):
     is_pub: Optional[bool] = None
     user_id: Optional[int] = None
     tag_id: Optional[int] = None
+    tag_name: Optional[str] = None
 
 
 class ArticleOut(ArticleBase):
@@ -123,7 +125,6 @@ class ForumThreadBase(BaseModel):
 
 class ForumThreadCreate(ForumThreadBase):
     user_id: Optional[int]
-    tag_id: Optional[int] = None
 
 
 class ForumThreadUpdate(BaseModel):
@@ -131,7 +132,6 @@ class ForumThreadUpdate(BaseModel):
     content: Optional[str] = None
     category_id: Optional[int] = None
     user_id: Optional[int] = None
-    tag_id: Optional[int] = None
     is_locked: Optional[bool] = None
     is_pinned: Optional[bool] = None
 
@@ -139,7 +139,6 @@ class ForumThreadUpdate(BaseModel):
 class ForumThreadOut(ForumThreadBase):
     id: int
     user_id: Optional[int]
-    tag_id: Optional[int] = None
     is_locked: bool
     is_pinned: bool
     created_at: datetime
@@ -296,13 +295,6 @@ class ArticleTagCreate(BaseModel):
 class ArticleTagOut(ArticleTagCreate):
     article_id: int
 
-
-class ThreadTagCreate(BaseModel):
-    tag_id: int
-
-
-class ThreadTagOut(ThreadTagCreate):
-    thread_id: int
 
 
 class PasswordResetRequest(BaseModel):
