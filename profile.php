@@ -183,12 +183,12 @@ include 'header.php';
                         
                         <!-- Articles Tab -->
                         <div id="articles-content" class="tab-pane" style="display: none; padding: 1.5rem;">
-                            <?php if (empty($recent_articles)): ?>
+                            <?php if (empty($user_articles)): ?>
                                 <p style="text-align: center; color: #666;">Cet utilisateur n'a pas encore publié d'articles.</p>
                             <?php else: ?>
                                 <div class="article-list">
-                                    <?php foreach ($recent_articles as $article): ?>
-                                        <div class="article-item" style="padding: 1rem 0; border-bottom: 1px solid var(--light-gray);">
+                                    <?php foreach ($user_articles as $index => $article): ?>
+                                        <div class="article-item<?php echo $index >= 5 ? ' extra-article' : ''; ?>" style="padding: 1rem 0; border-bottom: 1px solid var(--light-gray);<?php echo $index >= 5 ? ' display:none;' : ''; ?>">
                                             <div style="display: flex; justify-content: space-between; align-items: start;">
                                                 <div>
                                                     <h3 style="margin: 0 0 0.5rem; font-size: 1.1rem;">
@@ -216,11 +216,11 @@ include 'header.php';
                                     <?php endforeach; ?>
                                 </div>
                                 
-                                <?php if (count($recent_articles) >= 5): ?>
+                                <?php if (count($user_articles) > 5): ?>
                                     <div style="text-align: center; margin-top: 1.5rem;">
-                                        <a href="user-articles.php?id=<?php echo $user_id; ?>" class="btn btn-outline">
+                                        <button id="show-all-articles" class="btn btn-outline" type="button" onclick="showAllArticles()">
                                             Voir tous les articles
-                                        </a>
+                                        </button>
                                     </div>
                                 <?php endif; ?>
                             <?php endif; ?>
@@ -409,6 +409,16 @@ window.addEventListener('click', function(event) {
         closeReportModal();
     }
 });
+
+function showAllArticles() {
+    document.querySelectorAll('.extra-article').forEach(el => {
+        el.style.display = 'block';
+    });
+    const btn = document.getElementById('show-all-articles');
+    if (btn) {
+        btn.style.display = 'none';
+    }
+}
 </script>
 
 <?php include 'footer.php'; ?>
