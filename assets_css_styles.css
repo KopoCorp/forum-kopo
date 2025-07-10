@@ -607,13 +607,23 @@ pre code {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 
 .article-tag {
+  display: inline-block;
   background-color: var(--light-gray);
+  color: var(--dark-blue);
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  border-radius: 15px;
   font-size: 0.75rem;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.article-tag:hover {
+  background-color: var(--bright-blue);
+  color: var(--white);
 }
 
 .article-actions {
