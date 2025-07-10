@@ -109,6 +109,47 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
+@app.put("/users/{user_id}", response_model=schemas.UserOut)
+@app.patch("/users/{user_id}", response_model=schemas.UserOut)
+def update_user(
+    user_id: int,
+    user_update: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to modify this user")
+    db_user = db.query(models.User).get(user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user_update.username and user_update.username != db_user.username:
+        if db.query(models.User).filter(models.User.username == user_update.username).first():
+            raise HTTPException(status_code=400, detail="This username already exists")
+        db_user.username = user_update.username
+
+    if user_update.email and user_update.email != db_user.email:
+        if db.query(models.User).filter(models.User.email == user_update.email).first():
+            raise HTTPException(status_code=400, detail="This email is already use by another account")
+        db_user.email = user_update.email
+
+    if user_update.password:
+        db_user.pass_hash = get_password_hash(user_update.password)
+
+    if user_update.bio is not None:
+        db_user.bio = html.escape(user_update.bio.strip()) if user_update.bio else ""
+
+    if user_update.avatar_url is not None:
+        db_user.avatar_url = user_update.avatar_url
+
+    if user_update.is_active is not None:
+        db_user.is_active = user_update.is_active
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
 @app.put("/users/{user_id}/bio", response_model=schemas.UserOut)
 @app.patch("/users/{user_id}/bio", response_model=schemas.UserOut)
 def update_user_bio(
