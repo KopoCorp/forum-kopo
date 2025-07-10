@@ -151,6 +151,12 @@ def read_articles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db))
     return db.query(models.Article).offset(skip).limit(limit).all()
 
 
+@app.get("/articles/count", response_model=schemas.CountOut)
+def count_articles(db: Session = Depends(get_db)):
+    """Return the total number of articles."""
+    return {"count": db.query(models.Article).count()}
+
+
 @app.get("/articles/{article_id}", response_model=schemas.ArticleOut)
 def read_article(article_id: int, db: Session = Depends(get_db)):
     article = db.query(models.Article).get(article_id)

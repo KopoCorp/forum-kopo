@@ -50,6 +50,11 @@ class ArticleOut(ArticleBase):
         orm_mode = True
 
 
+class CountOut(BaseModel):
+    """Simple count response schema."""
+    count: int
+
+
 class CommentBase(BaseModel):
     content: str
     parent_id: Optional[int] = None
