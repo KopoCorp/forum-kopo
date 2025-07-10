@@ -16,6 +16,9 @@ define('COLOR_DARK_BLUE', '#23255D');
 define('COLOR_NEAR_BLACK', '#191920');
 define('COLOR_ACCENT_RED', '#E6213A');
 
+// Default avatar image URL for users without a profile picture
+define('DEFAULT_AVATAR_URL', 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y');
+
 // Session timeout (in seconds)
 define('SESSION_TIMEOUT', 3600); // 1 hour
 

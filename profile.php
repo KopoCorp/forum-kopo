@@ -72,7 +72,7 @@ include 'header.php';
                 <div class="forum-container" style="margin-bottom: 2rem;">
                     <div class="profile-header" style="padding: 2rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
                         <div class="profile-avatar" style="flex-shrink: 0;">
-                            <img src="<?php echo isset($profile['avatar_url']) && !empty($profile['avatar_url']) ? htmlspecialchars($profile['avatar_url']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                            <img src="<?php echo isset($profile['avatar_url']) && !empty($profile['avatar_url']) ? htmlspecialchars($profile['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
                         </div>
                         
                         <div class="profile-info" style="flex-grow: 1; min-width: 200px;">

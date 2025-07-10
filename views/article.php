@@ -34,7 +34,7 @@
                 
                 <div class="article-meta">
                     <div class="article-author">
-                        <img src="<?php echo isset($article['author']['avatar_url']) && !empty($article['author']['avatar_url']) ? htmlspecialchars($article['author']['avatar_url']) : 'assets/kopologovide.png'; ?>" alt="Avatar" class="article-author-avatar">
+                        <img src="<?php echo isset($article['author']['avatar_url']) && !empty($article['author']['avatar_url']) ? htmlspecialchars($article['author']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="article-author-avatar">
                         <div>
                             <a href="profile.php?id=<?php echo $article['user_id']; ?>"><?php echo htmlspecialchars($article['username'] ?? 'Auteur'); ?></a>
                         </div>
