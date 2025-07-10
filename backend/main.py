@@ -332,6 +332,34 @@ def list_tags(db: Session = Depends(get_db)):
     return db.query(models.Tag).all()
 
 
+@app.post("/articles/{article_id}/tags", response_model=schemas.ArticleTagOut)
+def add_tag_to_article(
+    article_id: int,
+    article_tag: schemas.ArticleTagCreate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if not db.query(models.Article).get(article_id):
+        raise HTTPException(status_code=404, detail="Article not found")
+    if not db.query(models.Tag).get(article_tag.tag_id):
+        raise HTTPException(status_code=404, detail="Tag not found")
+    existing = (
+        db.query(models.ArticleTag)
+        .filter(
+            models.ArticleTag.article_id == article_id,
+            models.ArticleTag.tag_id == article_tag.tag_id,
+        )
+        .first()
+    )
+    if existing:
+        raise HTTPException(status_code=400, detail="Tag already linked")
+    db_link = models.ArticleTag(article_id=article_id, tag_id=article_tag.tag_id)
+    db.add(db_link)
+    db.commit()
+    db.refresh(db_link)
+    return db_link
+
+
 @app.get("/articles/{article_id}", response_model=schemas.ArticleOut)
 def read_article(article_id: int, db: Session = Depends(get_db)):
     article = db.query(models.Article).get(article_id)
