@@ -47,7 +47,7 @@ try {
             <div class="post reply-level-<?php echo $level; ?>" id="reply-<?php echo $reply['id']; ?>">
                 <div class="post-sidebar">
                     <img src="<?php echo isset($reply['user']['avatar_url']) && !empty($reply['user']['avatar_url']) ? htmlspecialchars($reply['user']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="user-avatar">
-                    <div class="user-name"><?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?></div>
+                    <div class="user-name"><?php echo htmlspecialchars(get_username($reply) ?? 'Utilisateur'); ?></div>
                     <div class="user-info">
                         <?php
                         $role = isset($reply['user']['role']) ? $reply['user']['role'] : '';
@@ -80,10 +80,10 @@ try {
 
                         <div class="post-actions">
                             <?php if ($api->isLoggedIn()): ?>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?>')">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars(get_username($reply) ?? 'Utilisateur'); ?>')">
                                     <i class="fas fa-quote-right"></i> Citer
                                 </button>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="replyTo(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?>')">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="replyTo(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars(get_username($reply) ?? 'Utilisateur'); ?>')">
                                     <i class="fas fa-reply"></i> Répondre
                                 </button>
                                 <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] === $reply['user_id']): ?>
@@ -187,7 +187,7 @@ include 'header.php';
             <div class="post">
                 <div class="post-sidebar">
                     <img src="<?php echo isset($thread['user']['avatar_url']) && !empty($thread['user']['avatar_url']) ? htmlspecialchars($thread['user']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="user-avatar">
-                    <div class="user-name"><?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?></div>
+                    <div class="user-name"><?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?></div>
                     <div class="user-info">
                         <?php
                         $role = isset($thread['user']['role']) ? $thread['user']['role'] : '';
@@ -212,10 +212,10 @@ include 'header.php';
                         
                         <div class="post-actions">
                             <?php if ($api->isLoggedIn()): ?>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $thread_id; ?>, '<?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?>')">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $thread_id; ?>, '<?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?>')">
                                     <i class="fas fa-quote-right"></i> Citer
                                 </button>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="replyTo(0, '<?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?>')">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="replyTo(0, '<?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?>')">
                                     <i class="fas fa-reply"></i> Répondre
                                 </button>
                                 

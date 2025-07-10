@@ -29,7 +29,7 @@
                     <div class="article-author">
                         <img src="<?php echo isset($article['author']['avatar_url']) && !empty($article['author']['avatar_url']) ? htmlspecialchars($article['author']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="article-author-avatar">
                         <div>
-                            <a href="profile.php?id=<?php echo $article['user_id']; ?>"><?php echo htmlspecialchars($article['username'] ?? 'Auteur'); ?></a>
+                            <a href="profile.php?id=<?php echo $article['user_id']; ?>"><?php echo htmlspecialchars(get_username($article) ?? 'Auteur'); ?></a>
                         </div>
                     </div>
                     <div><i class="far fa-calendar"></i> <?php echo date('d/m/Y', strtotime($article['created_at'])); ?></div>
@@ -119,7 +119,7 @@
                 <img src="<?php echo isset($comment['user']['avatar_url']) && !empty($comment['user']['avatar_url']) ? htmlspecialchars($comment['user']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="comment-avatar">
                 <div class="comment-body">
                     <div class="comment-meta">
-                        <span class="comment-author"><a href="profile.php?id=<?php echo $comment['user_id']; ?>"><?php echo htmlspecialchars($comment['username'] ?? 'Utilisateur'); ?></a></span>
+                        <span class="comment-author"><a href="profile.php?id=<?php echo $comment['user_id']; ?>"><?php echo htmlspecialchars(get_username($comment) ?? 'Utilisateur'); ?></a></span>
                         <span><?php echo date('d/m/Y à H:i', strtotime($comment['created_at'])); ?></span>
                         <?php if (isset($comment['updated_at']) && $comment['updated_at'] !== $comment['created_at']): ?>
                             <em>(édité le <?php echo date('d/m/Y à H:i', strtotime($comment['updated_at'])); ?>)</em>

@@ -148,7 +148,7 @@ function highlightSearchTerms($text, $search) {
                                     </h3>
                                     
                                     <div class="search-meta" style="margin-bottom: 1rem; font-size: 0.875rem; color: #666;">
-                                        <span><i class="fas fa-user"></i> <?php echo htmlspecialchars($article['username'] ?? 'Auteur'); ?></span> &bull;
+                                        <span><i class="fas fa-user"></i> <?php echo htmlspecialchars(get_username($article) ?? 'Auteur'); ?></span> &bull;
                                         <span><i class="far fa-calendar"></i> <?php echo date('d/m/Y', strtotime($article['created_at'])); ?></span> &bull;
                                         
                                         <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
@@ -202,7 +202,7 @@ function highlightSearchTerms($text, $search) {
                                     </h3>
                                     
                                     <div class="search-meta" style="margin-bottom: 1rem; font-size: 0.875rem; color: #666;">
-                                        <span><i class="fas fa-user"></i> <?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?></span> &bull;
+                                        <span><i class="fas fa-user"></i> <?php echo htmlspecialchars(get_username($thread) ?? 'Utilisateur'); ?></span> &bull;
                                         <span><i class="far fa-calendar"></i> <?php echo date('d/m/Y', strtotime($thread['created_at'])); ?></span> &bull;
                                         <span><i class="far fa-comment"></i> <?php echo $thread['reply_count'] ?? 0; ?> réponses</span> &bull;
                                         
