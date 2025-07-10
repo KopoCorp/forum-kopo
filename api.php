@@ -20,7 +20,8 @@ class API {
      * @return array Response data
      */
     public function request($endpoint, $method = 'GET', $data = [], $auth = false, $json = true) {
-        $url = $this->base_url . $endpoint;
+        // Build URL without duplicate slashes
+        $url = rtrim($this->base_url, '/') . '/' . ltrim($endpoint, '/');
         $ch = curl_init();
         
         // Set method and data

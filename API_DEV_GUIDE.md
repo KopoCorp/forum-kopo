@@ -54,6 +54,7 @@ curl http://localhost:8000/users/1
 
 ### PUT /users/{id}
 Mettre a jour son compte (username, email, mot de passe, bio, avatar). Token requis.
+Ne pas inclure de barre oblique finale dans l'URL (`/users/1` et non `/users/1/`).
 
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" \
