@@ -55,6 +55,10 @@ The API will be available on port **8000** of the container. Replace
 - `GET /articles/{id}/comments` – list comments
 - `PUT/PATCH /comments/{id}` – edit a comment *(requires token)*
 - `DELETE /comments/{id}` – remove a comment *(requires token)*
+- `POST /tags` – create a tag
+- `GET /tags` – list available tags
+- `POST /articles/{id}/tags` – link a tag to an article *(requires token)*
+- `GET /articles?tag={id}` – filter articles by tag
 - `POST /forum/categories` – create a category *(requires token)*
 - `GET /forum/categories` – list categories
 - `POST /forum/threads` – create a thread *(requires token)*
