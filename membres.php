@@ -32,12 +32,19 @@ switch ($sort) {
 }
 
 // Récupération des membres
+// $filtered_count stocke le nombre de membres après filtrage pour la pagination
+$filtered_count = 0;
 try {
     if (!empty($search)) {
-        // Utiliser l'endpoint de recherche lorsque l'utilisateur saisit une requête
-        $search_query = '/search?q=' . urlencode($search) . '&type=users&skip=' . $skip . '&limit=' . $limit;
-        $search_result = $api->request($search_query);
-        $members_data = $search_result['users'] ?? [];
+        // Récupère tous les utilisateurs puis filtre côté PHP
+        $count_res = $api->request('/users/count');
+        $all_count = $count_res['count'] ?? 0;
+        $all_users = $api->request('/users?skip=0&limit=' . $all_count . $sort_param);
+        $filtered = array_filter($all_users, function ($u) use ($search) {
+            return stripos($u['username'] ?? '', $search) !== false;
+        });
+        $filtered_count = count($filtered);
+        $members_data = array_slice(array_values($filtered), $skip, $limit);
     } else {
         $query = '/users?skip=' . $skip . '&limit=' . $limit . $sort_param;
         $members_data = $api->request($query);
@@ -51,8 +58,7 @@ try {
 // Pagination (ne doit pas masquer la liste si le comptage échoue)
 try {
     if (!empty($search)) {
-        $count_result = $api->request('/search/count?q=' . urlencode($search) . '&type=users');
-        $total_pages = ceil(($count_result['count'] ?? 24) / $limit);
+        $total_pages = max(1, ceil($filtered_count / $limit));
     } else {
         $total_count = $api->request('/users/count');
         $total_pages = ceil(($total_count['count'] ?? 24) / $limit);
