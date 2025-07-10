@@ -35,12 +35,9 @@ class ArticleController {
             $recent_articles = [];
         }
 
-        // Attempt to record the view count but don't block if the endpoint is missing
-        try {
-            $this->api->request('/articles/' . $article_id . '/view', 'POST');
-        } catch (Exception $e) {
-            // Silently ignore if the API doesn't support view tracking
-        }
+        // L'API actuelle ne dispose pas d'un endpoint dédié au suivi des vues.
+        // On supprime donc l'appel pour éviter des requêtes 404 inutiles qui
+        // ralentissent l'affichage de la page.
 
         $comment_error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && $this->api->isLoggedIn()) {
