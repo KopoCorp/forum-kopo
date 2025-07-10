@@ -44,10 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         $error = "Veuillez sélectionner une catégorie.";
     } else {
         try {
+            $user = $api->getCurrentUser();
             $thread_data = [
                 'title' => $title,
                 'content' => $content,
-                'category_id' => $selected_category
+                'category_id' => $selected_category,
+                'user_id' => $user['id'] ?? null
             ];
             
             $result = $api->request('/forum/threads', 'POST', $thread_data, true);
