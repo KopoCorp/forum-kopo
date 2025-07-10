@@ -49,6 +49,16 @@ Recuperer les informations d'un utilisateur.
 curl http://localhost:8000/users/1
 ```
 
+### PUT /users/{id}/bio
+Mettre a jour **uniquement** sa bio *(token requis)*.
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PUT -H "Content-Type: application/json" \
+     -d '{"bio":"Ma nouvelle bio"}' \
+     http://localhost:8000/users/1/bio
+```
+
 ### GET /users/{id}/profile
 Afficher le profil detaille d'un utilisateur.
 
@@ -95,6 +105,16 @@ Recuperer les informations d'un utilisateur.
 
 ```bash
 curl http://localhost:8000/users/1
+```
+
+### PUT /users/{id}/bio
+Mettre a jour **uniquement** sa bio *(token requis)*.
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PUT -H "Content-Type: application/json" \
+     -d '{"bio":"Ma nouvelle bio"}' \
+     http://localhost:8000/users/1/bio
 ```
 
 ### GET /users/{id}/profile
@@ -438,6 +458,27 @@ Corps JSON :
 
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"token":"<TOKEN>","new_pass_hash":"<HASH>"}' http://localhost:8000/password-reset/confirm
+```
+
+## Messagerie
+
+### POST /messages
+Envoyer un message direct.
+
+Corps JSON :
+- `sender_id` (optionnel)
+- `receiver_id`
+- `content`
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"receiver_id":2,"content":"Bonjour"}' http://localhost:8000/messages
+```
+
+### GET /messages/{user_id}
+Recuperer les messages pour un utilisateur.
+
+```bash
+curl http://localhost:8000/messages/2
 ```
 
 ## Notifications
