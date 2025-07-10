@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 // Check if thread ID is provided
@@ -8,7 +9,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit();
 }
 
-$thread_id = (int)$_GET['id'];
+$thread_id = sanitize_int($_GET['id']);
 
 try {
     // Get thread details
@@ -34,8 +35,8 @@ try {
 $reply_error = '';
 $reply_success = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api->isLoggedIn()) {
-    $content = isset($_POST['content']) ? $_POST['content'] : '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api->isLoggedIn() && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
     
     if (empty($content)) {
         $reply_error = "Le contenu de la réponse ne peut pas être vide.";
@@ -223,6 +224,7 @@ include 'header.php';
                         <?php endif; ?>
                         
                         <form method="post" action="thread.php?id=<?php echo $thread_id; ?>" id="reply-form">
+                            <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                             <div class="form-group">
                                 <label for="content" class="form-label">Votre réponse</label>
                                 <textarea id="content" name="content" class="form-control" rows="8" required></textarea>

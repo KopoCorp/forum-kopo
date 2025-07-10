@@ -9,11 +9,11 @@ class ContactController {
         $page_description = "Contactez l'équipe Kopo Forum pour toute question, suggestion ou signalement";
         $success = false;
         $error = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-            $subject = isset($_POST['subject']) ? trim($_POST['subject']) : '';
-            $message = isset($_POST['message']) ? trim($_POST['message']) : '';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+            $name = isset($_POST['name']) ? sanitize_string($_POST['name']) : '';
+            $email = isset($_POST['email']) ? filter_var($_POST['email'], FILTER_SANITIZE_EMAIL) : '';
+            $subject = isset($_POST['subject']) ? sanitize_string($_POST['subject']) : '';
+            $message = isset($_POST['message']) ? sanitize_string($_POST['message']) : '';
             if (empty($name)) {
                 $error = "Veuillez indiquer votre nom.";
             } elseif (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
