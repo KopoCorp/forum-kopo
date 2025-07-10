@@ -58,6 +58,7 @@ global $api;
                     <div class="user-dropdown">
                         <button class="user-dropdown-toggle">
                             <img src="<?php echo $avatar; ?>" alt="Avatar" class="header-avatar">
+                            <span class="header-username"><?php echo htmlspecialchars($user['username']); ?></span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="user-dropdown-menu">
