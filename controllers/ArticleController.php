@@ -68,7 +68,15 @@ class ArticleController {
                 $comment_error = "Le contenu du commentaire ne peut pas être vide.";
             } else {
                 try {
-                    $this->api->request('/articles/' . $article_id . '/comments', 'POST', ['content' => $content], true);
+                    $this->api->request(
+                        '/articles/' . $article_id . '/comments',
+                        'POST',
+                        [
+                            'post_id' => $article_id,
+                            'content' => $content
+                        ],
+                        true
+                    );
                     header('Location: article.php?id=' . $article_id . '&comment=success#comments');
                     exit();
                 } catch (Exception $e) {
