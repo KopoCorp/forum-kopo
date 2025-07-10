@@ -127,6 +127,44 @@
                     <p style="text-align: center; padding: 2rem 0;">Aucun article disponible pour le moment.</p>
                 <?php endif; ?>
             </div>
+            <aside class="sidebar">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Articles récents</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul style="list-style: none;">
+                            <?php if (!empty($recent_articles)): ?>
+                                <?php foreach ($recent_articles as $ra): ?>
+                                    <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--light-gray);">
+                                        <a href="index.php?route=article&id=<?php echo $ra['id']; ?>" style="font-weight: 500;">
+                                            <?php echo htmlspecialchars($ra['title']); ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li style="padding: 1rem 0; text-align: center;">Aucun article</li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+                <?php if (!empty($tags)): ?>
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Tags populaires</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="article-tags">
+                            <?php foreach ($tags as $t): ?>
+                                <a href="index.php?route=articles&amp;tag=<?php echo urlencode($t['name']); ?>" class="article-tag">
+                                    <?php echo htmlspecialchars($t['name']); ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </aside>
         </div>
     </div>
 </main>

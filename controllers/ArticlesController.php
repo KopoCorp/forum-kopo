@@ -32,6 +32,13 @@ class ArticlesController {
             // Si l'API des tags n'est pas disponible, on continue sans les tags
             $tags = [];
         }
+
+        // Charger quelques articles récents pour la sidebar, ignorer les erreurs
+        try {
+            $recent_articles = $this->api->request('/articles?skip=0&limit=5');
+        } catch (Exception $e) {
+            $recent_articles = [];
+        }
         require __DIR__ . '/../views/templates/header.php';
         require __DIR__ . '/../views/articles.php';
         require __DIR__ . '/../views/templates/footer.php';
