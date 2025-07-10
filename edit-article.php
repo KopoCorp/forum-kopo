@@ -301,7 +301,12 @@ document.addEventListener('DOMContentLoaded', function () {
             whitelist: tagData.map(t => ({ value: t.id, name: t.name })),
             enforceWhitelist: true,
             tagTextProp: 'name',
-            dropdown: { enabled: 0, maxItems: 20 }
+            dropdown: {
+                enabled: 0,
+                maxItems: 20,
+                mapValueTo: 'name',
+                searchKeys: ['name']
+            }
         });
 
         const preselect = tagData.filter(t => selected.includes(t.id)).map(t => ({ value: t.id, name: t.name }));
