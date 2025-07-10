@@ -6,10 +6,8 @@
                     <h4>À propos</h4>
                     <p>Kopo est une plateforme d'échange et d'analyse dédiée à l'informatique, la cybersécurité et les technologies du numérique.</p>
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="https://github.com/KopoCorp"><i class="fab fa-github"></i></a>
+                        <a href="http://discord.kopo.systems/"><i class="fab fa-discord"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
