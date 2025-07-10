@@ -17,9 +17,13 @@ try {
     
     // Get thread replies
     $replies = $api->request('/forum/threads/' . $thread_id . '/replies');
-    
-    // Update view count
-    $api->request('/forum/threads/' . $thread_id . '/view', 'POST');
+
+    // Update view count but continue even if the endpoint does not exist
+    try {
+        $api->request('/forum/threads/' . $thread_id . '/view', 'POST');
+    } catch (Exception $e) {
+        // Ignore missing view tracking endpoint
+    }
     
     $page_title = $thread['title'];
     $page_description = substr(strip_tags($thread['content']), 0, 160);
