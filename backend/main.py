@@ -223,9 +223,14 @@ def create_article(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    db_article = models.Article(**article.dict())
+    data = article.dict()
+    tag_id = data.pop("tag_id", None)
+    db_article = models.Article(**data)
     db.add(db_article)
     db.commit()
+    if tag_id:
+        db.add(models.ArticleTag(article_id=db_article.id, tag_id=tag_id))
+        db.commit()
     db.refresh(db_article)
     return db_article
 
@@ -260,8 +265,14 @@ def update_article(
     db_article = db.query(models.Article).get(article_id)
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
-    for key, value in article.dict(exclude_unset=True).items():
+    data = article.dict(exclude_unset=True)
+    tag_id = data.pop("tag_id", None)
+    for key, value in data.items():
         setattr(db_article, key, value)
+    if tag_id is not None:
+        db.query(models.ArticleTag).filter(models.ArticleTag.article_id == article_id).delete()
+        if tag_id:
+            db.add(models.ArticleTag(article_id=article_id, tag_id=tag_id))
     db.commit()
     db.refresh(db_article)
     return db_article
@@ -356,9 +367,14 @@ def create_thread(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    db_thread = models.ForumThread(**thread.dict())
+    data = thread.dict()
+    tag_id = data.pop("tag_id", None)
+    db_thread = models.ForumThread(**data)
     db.add(db_thread)
     db.commit()
+    if tag_id:
+        db.add(models.ThreadTag(thread_id=db_thread.id, tag_id=tag_id))
+        db.commit()
     db.refresh(db_thread)
     return db_thread
 
@@ -387,8 +403,14 @@ def update_thread(
     db_thread = db.query(models.ForumThread).get(thread_id)
     if not db_thread:
         raise HTTPException(status_code=404, detail="Thread not found")
-    for key, value in thread.dict(exclude_unset=True).items():
+    data = thread.dict(exclude_unset=True)
+    tag_id = data.pop("tag_id", None)
+    for key, value in data.items():
         setattr(db_thread, key, value)
+    if tag_id is not None:
+        db.query(models.ThreadTag).filter(models.ThreadTag.thread_id == thread_id).delete()
+        if tag_id:
+            db.add(models.ThreadTag(thread_id=thread_id, tag_id=tag_id))
     db.commit()
     db.refresh(db_thread)
     return db_thread
