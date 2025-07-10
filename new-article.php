@@ -55,10 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
             }
 
             // Create article first
+            $user = $api->getCurrentUser();
             $article_data = [
                 'title' => $title,
                 'content' => $content,
-                'is_pub' => $is_published
+                'is_pub' => $is_published,
+                'user_id' => $user['id'] ?? null
             ];
             
             $result = $api->request('/articles', 'POST', $article_data, true);
