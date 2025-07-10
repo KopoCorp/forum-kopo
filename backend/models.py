@@ -341,3 +341,12 @@ class Setting(Base):
     key = Column(String(100), primary_key=True)
     value = Column(Text)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class ReportingConfig(Base):
+    __tablename__ = 'reporting_config'
+
+    id = Column(Integer, primary_key=True, index=True)
+    discord_webhook = Column(Text, nullable=False)
+    ntfy_topic = Column(Text, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())

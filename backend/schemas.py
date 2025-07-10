@@ -378,3 +378,13 @@ class PermissionUpdate(BaseModel):
 
 class UserRoleAssign(BaseModel):
     role_id: int
+
+
+class ReportingConfigOut(BaseModel):
+    id: int
+    discord_webhook: str
+    ntfy_topic: str
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
