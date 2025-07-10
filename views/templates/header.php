@@ -1,6 +1,8 @@
 <?php
 require_once 'config.php';
 require_once 'api.php';
+// Access the API instance when included from controllers
+global $api;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
