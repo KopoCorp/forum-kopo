@@ -50,9 +50,14 @@ global $api;
             <div class="user-actions">
                 <?php if ($api->isLoggedIn()): ?>
                     <?php $user = $api->getCurrentUser(); ?>
+                    <?php
+                        $avatar = isset($user['avatar_url']) && !empty($user['avatar_url'])
+                            ? htmlspecialchars($user['avatar_url'])
+                            : DEFAULT_AVATAR_URL;
+                    ?>
                     <div class="user-dropdown">
                         <button class="user-dropdown-toggle">
-                            <?php echo htmlspecialchars($user['username']); ?>
+                            <img src="<?php echo $avatar; ?>" alt="Avatar" class="header-avatar">
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="user-dropdown-menu">
