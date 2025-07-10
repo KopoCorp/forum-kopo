@@ -49,6 +49,19 @@ Recuperer les informations d'un utilisateur.
 curl http://localhost:8000/users/1
 ```
 
+
+
+
+### PUT /users/{id}
+Mettre a jour son compte (username, email, mot de passe, bio, avatar). Token requis.
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PUT -H "Content-Type: application/json" \
+     -d '{"username":"newname","avatar_url":"https://example.com/avatar.png"}' \
+     http://localhost:8000/users/1
+```
+
 ### PUT /users/{id}/bio
 Mettre a jour **uniquement** sa bio *(token requis)*.
 
