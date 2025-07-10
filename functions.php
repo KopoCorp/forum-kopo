@@ -21,6 +21,15 @@ function verify_csrf_token($token) {
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
+function markdown_to_html($markdown) {
+    require_once __DIR__ . "/libs/Parsedown.php";
+    $parser = new Parsedown();
+    $html = $parser->text($markdown);
+    $allowed = "<p><br><strong><em><u><s><ul><ol><li><pre><code><a><img><blockquote><h1><h2><h3><h4><h5><h6>";
+    return strip_tags($html, $allowed);
+}
+
+
 /**
  * Detect the topic of a piece of content based on tags/keywords.
  * Returns 'dev' for development, 'security' for cybersecurity or null if no

@@ -28,7 +28,8 @@ $success = false;
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
     $title = isset($_POST['title']) ? sanitize_string($_POST['title']) : '';
-    $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
+    $raw_content = isset($_POST['content']) ? trim($_POST['content']) : '';
+    $content = markdown_to_html($raw_content);
     $selected_tags = isset($_POST['tags']) ? array_map('sanitize_int', (array)$_POST['tags']) : [];
     $new_tag = isset($_POST['new_tag']) ? sanitize_string($_POST['new_tag']) : '';
     $image_url = isset($_POST['image_url']) ? filter_var($_POST['image_url'], FILTER_SANITIZE_URL) : '';
