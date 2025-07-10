@@ -1,5 +1,5 @@
 <!-- Article Header -->
-<div class="page-header" style="background-color: var(--dark-blue); padding: 2rem 0;">
+<div class="page-header" style="background-color: var(--near-black); padding: 2rem 0;">
     <div class="container">
         <div class="breadcrumb" style="margin-bottom: 0.5rem; color: #999;">
             <a href="index.php" style="color: #999;">Accueil</a> &raquo; 
