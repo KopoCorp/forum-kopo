@@ -48,16 +48,18 @@ try {
             break;
         }
     }
-
-    // Get latest security alerts
-    $security_alerts = $api->request('/security/alerts?limit=3');
-    
 } catch (Exception $e) {
     $_SESSION['flash_message'] = "Erreur lors du chargement des données: " . $e->getMessage();
     $_SESSION['flash_type'] = "error";
-    
+
     $security_articles = [];
     $security_threads = [];
+}
+
+// Load security alerts separately to avoid wiping article data if unavailable
+try {
+    $security_alerts = $api->request('/security/alerts?limit=3');
+} catch (Exception $e) {
     $security_alerts = [];
 }
 ?>
