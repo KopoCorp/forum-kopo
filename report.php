@@ -35,12 +35,15 @@ try {
 try {
     $config = $api->request('/reporting/config');
     $WEBHOOK = $config['discord_webhook'] ?? '';
-    $ROLE_ID = $config['discord_role_id'] ?? '';
-    $EMOJI   = $config['discord_emoji'] ?? '';
     $TOPIC   = $config['ntfy_topic'] ?? '';
 } catch (Exception $e) {
-    $WEBHOOK = $ROLE_ID = $EMOJI = $TOPIC = '';
+    $WEBHOOK = $TOPIC = '';
 }
+
+// Valeurs codées en dur
+$ROLE_ID = "1358098768649654444";
+$EMOJI   = "⚠️<a:kobotload4:1354174706449649837>";
+
 
 $discord_content = "<@&$ROLE_ID> $EMOJI\n" .
     "Signalement par **" . ($reporter['username'] ?? 'Inconnu') . "**" .
@@ -72,7 +75,7 @@ if (!empty($TOPIC)) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Title: Nouveau signalement',
         'Icon: https://robertsspaceindustries.com/media/eyt3f0h14jzu0r/logo/KOPO-Logo.png',
-        'Priority: high',
+        'Priority: default',
         'Tags: warning'
     ]);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $ntfy_message);
