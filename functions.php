@@ -143,46 +143,4 @@ function get_username(array $data) {
     }
     return null;
 }
-
-/**
- * Fetch latest security alerts from CERT-FR RSS feed.
- *
- * @param int $limit Number of alerts to retrieve
- * @return array[] List of alerts with title, link, description and pubDate
- */
-function fetch_cert_alerts($limit = 1) {
-    $feed_url = 'https://www.cert.ssi.gouv.fr/alerte/feed/';
-    $alerts = [];
-
-    $context = stream_context_create([
-        'http' => [
-            'user_agent' => 'KopoForumBot/1.0',
-            'timeout' => 5
-        ]
-    ]);
-
-    $feed = @file_get_contents($feed_url, false, $context);
-    if ($feed === false) {
-        return $alerts;
-    }
-
-    $xml = @simplexml_load_string($feed);
-    if ($xml === false || empty($xml->channel->item)) {
-        return $alerts;
-    }
-
-    foreach ($xml->channel->item as $item) {
-        $alerts[] = [
-            'title' => (string)$item->title,
-            'link' => (string)$item->link,
-            'description' => strip_tags((string)$item->description),
-            'pubDate' => (string)$item->pubDate
-        ];
-        if (count($alerts) >= $limit) {
-            break;
-        }
-    }
-
-    return $alerts;
-}
 ?>
