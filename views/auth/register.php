@@ -46,7 +46,7 @@
                     <div class="form-group">
                         <div class="form-check">
                             <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
-                            <label for="terms">J'accepte les <a href="terms.php">conditions d'utilisation</a> et la <a href="privacy.php">politique de confidentialité</a>.</label>
+                            <label for="terms">J'accepte les <a href="index.php?route=terms">conditions d'utilisation</a> et la <a href="index.php?route=privacy">politique de confidentialité</a>.</label>
                         </div>
                     </div>
                     

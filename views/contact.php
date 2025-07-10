@@ -72,7 +72,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <input type="checkbox" id="privacy" name="privacy" class="form-check-input" required>
-                                        <label for="privacy">J'ai lu et j'accepte la <a href="privacy.php">politique de confidentialité</a>.</label>
+                                        <label for="privacy">J'ai lu et j'accepte la <a href="index.php?route=privacy">politique de confidentialité</a>.</label>
                                     </div>
                                 </div>
                                 
