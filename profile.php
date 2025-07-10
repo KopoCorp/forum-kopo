@@ -20,21 +20,22 @@ try {
     // Get user profile
     $profile = $api->request('/users/' . $user_id, 'GET', [], true);
     
-    // Threads
-    $all_threads = $api->request('/forum/threads', 'GET', [], true);
-    $recent_threads = array_filter(
-        $all_threads,
-        fn($t) => isset($t['author']['id']) && $t['author']['id'] == $user_id
-    );
-    $recent_threads = array_slice($recent_threads, 0, 5);
+    // Threads and articles of the user
+    $user_threads = $api->request('/users/' . $user_id . '/threads', 'GET', [], true);
+    $thread_count = is_array($user_threads) ? count($user_threads) : 0;
+    $recent_threads = array_slice($user_threads, 0, 5);
 
-    // Articles
-    $all_articles = $api->request('/articles', 'GET', [], true);
-    $recent_articles = array_filter(
-        $all_articles,
-        fn($a) => isset($a['author']['id']) && $a['author']['id'] == $user_id
-    );
-    $recent_articles = array_slice($recent_articles, 0, 5);
+    $user_articles = $api->request('/users/' . $user_id . '/articles', 'GET', [], true);
+    $article_count = is_array($user_articles) ? count($user_articles) : 0;
+    $recent_articles = array_slice($user_articles, 0, 5);
+
+    // Replies count (optional endpoint)
+    try {
+        $user_replies = $api->request('/users/' . $user_id . '/replies', 'GET', [], true);
+        $reply_count = is_array($user_replies) ? count($user_replies) : 0;
+    } catch (Exception $e) {
+        $reply_count = $profile['reply_count'] ?? 0;
+    }
 
     $page_title = $profile['username'] . " - Profil";
     $page_description = "Profil de " . $profile['username'] . " sur KOPO Forum";
@@ -91,18 +92,7 @@ include 'header.php';
                                 </div>
                             <?php endif; ?>
                             
-                            <div class="profile-bio" style="margin-bottom: 1rem; max-width: 600px;">
-                                <?php 
-                                if (isset($profile['bio']) && !empty($profile['bio'])) {
-                                    echo '<p>' . nl2br(htmlspecialchars($profile['bio'])) . '</p>';
-                                } else {
-                                    echo '<p style="color: #666; font-style: italic;">Aucune biographie disponible.</p>';
-                                }
-                                ?>
-                            </div>
-                            
                             <div class="profile-meta" style="display: flex; flex-wrap: wrap; gap: 1.5rem; color: #666; font-size: 0.875rem;">
-                                <div><i class="far fa-calendar-alt"></i> Membre depuis <?php echo date('M Y', strtotime($profile['created_at'])); ?></div>
                                 
                                 <?php if (isset($profile['location']) && !empty($profile['location'])): ?>
                                     <div><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($profile['location']); ?></div>
@@ -126,15 +116,15 @@ include 'header.php';
                     <!-- Profile Stats -->
                     <div class="profile-stats" style="display: flex; border-top: 1px solid var(--light-gray); padding: 1rem 2rem;">
                         <div style="flex: 1; text-align: center; padding: 0.5rem 0;">
-                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $profile['thread_count'] ?? 0; ?></div>
+                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $thread_count; ?></div>
                             <div style="color: #666; font-size: 0.875rem;">Discussions</div>
                         </div>
                         <div style="flex: 1; text-align: center; border-left: 1px solid var(--light-gray); padding: 0.5rem 0;">
-                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $profile['reply_count'] ?? 0; ?></div>
+                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $reply_count; ?></div>
                             <div style="color: #666; font-size: 0.875rem;">Réponses</div>
                         </div>
                         <div style="flex: 1; text-align: center; border-left: 1px solid var(--light-gray); padding: 0.5rem 0;">
-                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $profile['article_count'] ?? 0; ?></div>
+                            <div style="font-size: 1.5rem; font-weight: 600;"><?php echo $article_count; ?></div>
                             <div style="color: #666; font-size: 0.875rem;">Articles</div>
                         </div>
                     </div>
@@ -248,6 +238,20 @@ include 'header.php';
                     </div>
                     <div class="widget-content">
                         <ul style="list-style: none;">
+                            <li style="margin-bottom: 0.75rem;">
+                                <strong><i class="fas fa-user"></i> Bio:</strong>
+                                <div>
+                                    <?php if (isset($profile['bio']) && !empty($profile['bio'])): ?>
+                                        <?php echo nl2br(htmlspecialchars($profile['bio'])); ?>
+                                    <?php else: ?>
+                                        <span style="color: #666; font-style: italic;">Aucune biographie disponible.</span>
+                                    <?php endif; ?>
+                                </div>
+                            </li>
+                            <li style="margin-bottom: 0.75rem;">
+                                <strong><i class="far fa-calendar-alt"></i> Inscription:</strong>
+                                <?php echo date('d/m/Y', strtotime($profile['created_at'])); ?>
+                            </li>
                             <?php if (isset($profile['speciality']) && !empty($profile['speciality'])): ?>
                                 <li style="margin-bottom: 0.75rem;">
                                     <strong><i class="fas fa-laptop-code"></i> Spécialité:</strong> 
