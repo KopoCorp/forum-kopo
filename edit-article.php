@@ -83,12 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
             }
 
             // Handle tag update
-            if (!empty($new_tag)) {
-                $article_data['tag_name'] = $new_tag;
-            } elseif (!empty($selected_tags)) {
-                $article_data['tag_id'] = $selected_tags[0];
+            if (!empty($selected_tags)) {
+                $article_data['tag_ids'] = $selected_tags;
             } else {
-                $article_data['tag_id'] = null;
+                $article_data['tag_ids'] = [];
+            }
+            if (!empty($new_tag)) {
+                $article_data['tag_names'] = [$new_tag];
             }
 
             $api->request('/articles/' . $article_id, 'PATCH', $article_data, true);
