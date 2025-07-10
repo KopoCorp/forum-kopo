@@ -19,7 +19,6 @@ class ArticleController {
             $comments = $this->api->request($endpoint_base . '/comments');
             // Use numeric ID from returned data for view tracking and comment posting
             $article_id = $article['id'];
-            $this->api->request('/articles/' . $article_id . '/view', 'POST');
             $page_title = $article['title'];
             $page_description = substr(strip_tags($article['content']), 0, 160);
         } catch (Exception $e) {
@@ -27,6 +26,13 @@ class ArticleController {
             $_SESSION['flash_type'] = "error";
             header('Location: articles.php');
             exit();
+        }
+
+        // Attempt to record the view count but don't block if the endpoint is missing
+        try {
+            $this->api->request('/articles/' . $article_id . '/view', 'POST');
+        } catch (Exception $e) {
+            // Silently ignore if the API doesn't support view tracking
         }
 
         $comment_error = '';
