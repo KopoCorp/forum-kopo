@@ -5,8 +5,8 @@
             <h1>Bienvenue sur Kopo Forum</h1>
             <p>Rejoignez notre communauté dédiée à l'informatique, la cybersécurité et les technologies du numérique.</p>
             <div class="hero-buttons">
-                <a href="register.php" class="btn btn-primary">Rejoindre la communauté</a>
-                <a href="forums.php" class="btn btn-outline" style="background-color: transparent; border-color: var(--white); color: var(--white);">Explorer les discussions</a>
+                <a href="index.php?route=register" class="btn btn-primary">Rejoindre la communauté</a>
+                <a href="index.php?route=forums" class="btn btn-outline" style="background-color: transparent; border-color: var(--white); color: var(--white);">Explorer les discussions</a>
             </div>
         </div>
     </div>
@@ -177,8 +177,8 @@
                     <h2 style="color: var(--white); font-size: 2rem; margin-bottom: 1.5rem;">Rejoignez la conversation</h2>
                     <p style="max-width: 700px; margin: 0 auto 2rem; font-size: 1.125rem;">Participez aux discussions, partagez vos connaissances et connectez-vous avec une communauté passionnée d'informatique et de cybersécurité.</p>
                     <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                        <a href="register.php" class="btn btn-primary" style="min-width: 160px;">S'inscrire</a>
-                        <a href="forums.php" class="btn btn-outline" style="min-width: 160px; border-color: var(--white); color: var(--white);">Explorer les forums</a>
+                        <a href="index.php?route=register" class="btn btn-primary" style="min-width: 160px;">S'inscrire</a>
+                        <a href="index.php?route=forums" class="btn btn-outline" style="min-width: 160px; border-color: var(--white); color: var(--white);">Explorer les forums</a>
                     </div>
                 </section>
             </div>
@@ -191,7 +191,7 @@
                         <h3>Connectez-vous</h3>
                     </div>
                     <div class="widget-content">
-                        <form action="login.php" method="post">
+                        <form action="index.php?route=login" method="post">
                             <div class="form-group">
                                 <label for="username" class="form-label">Nom d'utilisateur</label>
                                 <input type="text" id="username" name="username" class="form-control" required>
@@ -210,7 +210,7 @@
                             <button type="submit" class="btn btn-primary" style="width: 100%;">Connexion</button>
                         </form>
                         <div style="text-align: center; margin-top: 1rem;">
-                            <a href="register.php">Créer un compte</a>
+                            <a href="index.php?route=register">Créer un compte</a>
                         </div>
                     </div>
                 </div>

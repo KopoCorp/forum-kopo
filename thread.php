@@ -246,8 +246,8 @@ include 'header.php';
                         <div style="text-align: center; padding: 1rem 0;">
                             <p>Vous devez être connecté pour répondre à cette discussion.</p>
                             <div style="margin-top: 1rem;">
-                                <a href="login.php?redirect=thread.php?id=<?php echo $thread_id; ?>" class="btn btn-primary">Connexion</a>
-                                <a href="register.php" class="btn btn-outline">Inscription</a>
+                                <a href="index.php?route=login&redirect=thread.php?id=<?php echo $thread_id; ?>" class="btn btn-primary">Connexion</a>
+                                <a href="index.php?route=register" class="btn btn-outline">Inscription</a>
                             </div>
                         </div>
                     <?php endif; ?>
