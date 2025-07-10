@@ -347,6 +347,20 @@ Supprimer une réponse *(token requis)*.
 curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/forum/replies/3
 ```
 
+### GET /security/alerts
+Lister les dernières alertes de sécurité publiées par CERT-FR.
+
+```bash
+curl http://localhost:8000/security/alerts
+```
+
+### GET /security/alerts/latest
+Obtenir la toute dernière alerte de sécurité CERT-FR.
+
+```bash
+curl http://localhost:8000/security/alerts/latest
+```
+
 ### GET /reporting/config
 Récupérer la configuration des signalements.
 
