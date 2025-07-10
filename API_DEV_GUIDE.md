@@ -1,24 +1,20 @@
-# Guide de d'integration de l'API Kopo Forum
+# Guide d'intégration de l'API Kopo Forum
 
-Ce document decrit les differents endpoints disponibles dans l'API REST du projet Kopo Forum. Chaque section explique l'utilite de l'endpoint, les parametres attendus et propose un exemple d'appel `curl`.
+Ce document décrit l'ensemble des routes réellement disponibles dans l'application FastAPI du projet Kopo Forum. Les exemples utilisent `curl` avec l'API démarrée en local sur `http://localhost:8000`.
 
-L'API est accessible par defaut sur `http://localhost:8000` lorsque le serveur est lance via `uvicorn backend.main:app`. Certains appels necessitent un token JWT obtenu avec l'endpoint `/login`.
+Certaines opérations nécessitent un jeton JWT obtenu via l'endpoint `/login` et transmis dans l'en‑tête `Authorization`.
 
 ## Authentification
 
 ### POST /login
-Obtenir un jeton d'acces JWT.
-
-Parametres formulaire :
-- `username` : nom de l'utilisateur
-- `password` : mot de passe
+Obtenir un jeton d'accès.
 
 ```bash
 curl -X POST -F "username=toto" -F "password=secret" http://localhost:8000/login
 ```
 
 ### POST /logout
-Revoque le token present dans l'en-tete `Authorization`.
+Révoque le jeton courant.
 
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" -X POST http://localhost:8000/logout
@@ -27,14 +23,14 @@ curl -H "Authorization: Bearer <TOKEN>" -X POST http://localhost:8000/logout
 ## Utilisateurs
 
 ### POST /users
-Creer un utilisateur.
+Créer un compte utilisateur.
 
-Corps JSON :
+Corps JSON :
 - `username`
 - `email`
 - `password`
-- `bio` (optionnel)
-- `avatar_url` (optionnel)
+- `bio` *(optionnel)*
+- `avatar_url` *(optionnel)*
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
@@ -43,174 +39,162 @@ curl -X POST -H "Content-Type: application/json" \
 ```
 
 ### GET /users/{id}
-Recuperer les informations d'un utilisateur.
+Récupérer un utilisateur par identifiant.
 
 ```bash
 curl http://localhost:8000/users/1
 ```
 
+### GET /users
+Lister les utilisateurs.
+Paramètres :
+- `skip` (défaut 0)
+- `limit` (défaut 10)
+- `sort` : `newest` ou `oldest`
 
+```bash
+curl "http://localhost:8000/users?skip=0&limit=10&sort=newest"
+```
 
+### GET /users/count
+Nombre total d'utilisateurs.
 
-### PUT /users/{id}
-Mettre a jour son compte (username, email, mot de passe, bio, avatar). Token requis.
-Ne pas inclure de barre oblique finale dans l'URL (`/users/1` et non `/users/1/`).
+```bash
+curl http://localhost:8000/users/count
+```
+
+### PUT/PATCH /users/{id}
+Modifier son compte *(token requis)*.
 
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" \
-     -X PUT -H "Content-Type: application/json" \
-     -d '{"username":"newname","avatar_url":"https://example.com/avatar.png"}' \
+     -X PATCH -H "Content-Type: application/json" \
+     -d '{"username":"newname"}' \
      http://localhost:8000/users/1
 ```
 
-### PUT /users/{id}/bio
-Mettre a jour **uniquement** sa bio *(token requis)*.
+### PUT/PATCH /users/{id}/bio
+Mettre à jour uniquement la bio *(token requis)*.
 
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" \
-     -X PUT -H "Content-Type: application/json" \
-     -d '{"bio":"Ma nouvelle bio"}' \
+     -X PATCH -H "Content-Type: application/json" \
+     -d '{"bio":"Nouvelle bio"}' \
      http://localhost:8000/users/1/bio
 ```
 
+### DELETE /users/{id}
+Supprimer son compte *(token requis)*.
+
+```bash
+curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/users/1
+```
+
 ### GET /users/{id}/profile
-Afficher le profil detaille d'un utilisateur.
+Afficher le profil d'un utilisateur.
 
 ```bash
 curl http://localhost:8000/users/1/profile
 ```
 
 ### PUT /users/{id}/profile
-Mettre a jour un profil utilisateur (`display_name`, `website`, `location`, `birth_date`, `gender`).
+Mettre à jour un profil utilisateur.
 
 ```bash
 curl -X PUT -H "Content-Type: application/json" \
-    -d '{"display_name":"John"}' \
+     -d '{"display_name":"John"}' \
      http://localhost:8000/users/1/profile
 ```
 
-## Articles
-Revoque le token present dans l'en-tete `Authorization`.
+### GET /users/{id}/threads
+Lister les fils créés par un utilisateur.
 
 ```bash
-curl -H "Authorization: Bearer <TOKEN>" -X POST http://localhost:8000/logout
+curl http://localhost:8000/users/1/threads
 ```
 
-## Utilisateurs
-
-### POST /users
-Creer un utilisateur.
-
-Corps JSON :
-- `username`
-- `email`
-- `password`
-- `bio` (optionnel)
-- `avatar_url` (optionnel)
+### GET /users/{id}/articles
+Lister les articles créés par un utilisateur.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"username":"toto","email":"toto@example.com","password":"secret"}' \
-     http://localhost:8000/users
-```
-
-### GET /users/{id}
-Recuperer les informations d'un utilisateur.
-
-```bash
-curl http://localhost:8000/users/1
-```
-
-### PUT /users/{id}/bio
-Mettre a jour **uniquement** sa bio *(token requis)*.
-
-```bash
-curl -H "Authorization: Bearer <TOKEN>" \
-     -X PUT -H "Content-Type: application/json" \
-     -d '{"bio":"Ma nouvelle bio"}' \
-     http://localhost:8000/users/1/bio
-```
-
-### GET /users/{id}/profile
-Afficher le profil detaille d'un utilisateur.
-
-```bash
-curl http://localhost:8000/users/1/profile
-```
-
-### PUT /users/{id}/profile
-Mettre a jour un profil utilisateur (`display_name`, `website`, `location`, `birth_date`, `gender`).
-
-```bash
-curl -X PUT -H "Content-Type: application/json" \
-    -d '{"display_name":"John"}' \
-     http://localhost:8000/users/1/profile
+curl http://localhost:8000/users/1/articles
 ```
 
 ## Articles
 
 ### POST /articles
-Creer un nouvel article.
+Créer un article *(token requis)*.
 
-Corps JSON :
- - `title`
- - `content`
- - `user_id` (requis)
- - `is_pub` (bool, defaut `false`)
+Corps JSON :
+- `title`
+- `content`
+- `image_url` *(optionnel)*
+- `user_id` *(optionnel)*
+- `is_pub` *(bool)*
+- `tag_ids` ou `tag_names` *(listes optionnelles)*
 
 ```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"title":"Hello","content":"First post","user_id":1}' \
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X POST -H "Content-Type: application/json" \
+     -d '{"title":"Hello","content":"First post"}' \
      http://localhost:8000/articles
 ```
 
 ### GET /articles
 Lister les articles.
-
-Parametres query :
-- `skip` (defaut 0)
-- `limit` (defaut 10)
-- `tag` (optionnel)
+Paramètres :
+- `skip` (défaut 0)
+- `limit` (défaut 10)
+- `tag` (filtrer par identifiant de tag)
 
 ```bash
 curl "http://localhost:8000/articles?skip=0&limit=10"
 ```
 
+### GET /articles/count
+Nombre total d'articles.
+
+```bash
+curl http://localhost:8000/articles/count
+```
+
 ### GET /articles/{id}
-Obtenir un article precis.
+Lire un article.
 
 ```bash
 curl http://localhost:8000/articles/1
 ```
 
-### PATCH /articles/{id}
-Modifier un article.
+### PUT/PATCH /articles/{id}
+Mettre à jour un article *(token requis)*.
 
 ```bash
-curl -X PATCH -H "Content-Type: application/json" \
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PATCH -H "Content-Type: application/json" \
      -d '{"title":"Nouveau titre"}' \
      http://localhost:8000/articles/1
 ```
 
 ### DELETE /articles/{id}
-Supprimer un article.
+Supprimer un article *(token requis)*.
 
 ```bash
-curl -X DELETE http://localhost:8000/articles/1
+curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/articles/1
 ```
 
 ### POST /articles/{id}/comments
-Ajouter un commentaire.
+Ajouter un commentaire *(token requis)*.
 
-Corps JSON :
+Corps JSON :
 - `post_id`
 - `content`
-- `user_id` (optionnel)
-- `parent_id` (optionnel)
+- `user_id` *(optionnel)*
+- `parent_id` *(optionnel)*
 
 ```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"post_id":1,"content":"Super","user_id":2}' \
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X POST -H "Content-Type: application/json" \
+     -d '{"post_id":1,"content":"Super"}' \
      http://localhost:8000/articles/1/comments
 ```
 
@@ -221,227 +205,45 @@ Lister les commentaires d'un article.
 curl http://localhost:8000/articles/1/comments
 ```
 
-### PATCH /comments/{id}
-Mettre a jour un commentaire.
+### PUT/PATCH /comments/{id}
+Modifier un commentaire *(token requis)*.
 
 ```bash
-curl -X PATCH -H "Content-Type: application/json" \
-     -d '{"content":"Edite"}' \
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PATCH -H "Content-Type: application/json" \
+     -d '{"content":"Édité"}' \
      http://localhost:8000/comments/5
 ```
 
 ### DELETE /comments/{id}
-Supprimer un commentaire.
+Supprimer un commentaire *(token requis)*.
 
 ```bash
-curl -X DELETE http://localhost:8000/comments/5
+curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/comments/5
 ```
-
-## Forum
-
-### POST /forum/categories
-Creer une categorie de forum.
-
-Corps JSON :
-- `name`
-- `description` (optionnel)
-- `order_index` (optionnel)
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name":"General"}' http://localhost:8000/forum/categories
-```
-
-### GET /forum/categories
-Lister les categories.
-
-```bash
-curl http://localhost:8000/forum/categories
-```
-
-### POST /forum/threads
-Creer un fil de discussion.
-
-Corps JSON :
-- `title`
-- `content`
-- `category_id` (optionnel)
-- `user_id` (optionnel)
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"title":"Bienvenue","content":"Presentez vous","category_id":1,"user_id":1}' \
-     http://localhost:8000/forum/threads
-```
-
-### GET /forum/threads
-Lister les fils de discussion.
-
-Parametres query :
-- `skip` (defaut 0)
-- `limit` (defaut 10)
-
-```bash
-curl "http://localhost:8000/forum/threads?skip=0&limit=10"
-```
-
-### GET /forum/threads/{id}
-Afficher un fil specifique.
-
-```bash
-curl http://localhost:8000/forum/threads/1
-```
-
-### PATCH /forum/threads/{id}
-Mettre a jour un fil (`title`, `content`, `category_id`, `user_id`, `is_locked`, `is_pinned`).
-
-```bash
-curl -X PATCH -H "Content-Type: application/json" -d '{"is_locked":true}' http://localhost:8000/forum/threads/1
-```
-
-### DELETE /forum/threads/{id}
-Supprimer un fil.
-
-```bash
-curl -X DELETE http://localhost:8000/forum/threads/1
-```
-
-### POST /forum/threads/{id}/replies
-Ajouter une reponse dans un fil.
-
-Corps JSON :
-- `thread_id`
-- `content`
-- `user_id` (optionnel)
-- `parent_id` (optionnel)
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"thread_id":1,"content":"Salut","user_id":2}' \
-     http://localhost:8000/forum/threads/1/replies
-```
-
-### GET /forum/threads/{id}/replies
-Lister les reponses d'un fil.
-
-```bash
-curl http://localhost:8000/forum/threads/1/replies
-```
-
-### PATCH /forum/replies/{id}
-Modifier une reponse.
-
-```bash
-curl -X PATCH -H "Content-Type: application/json" -d '{"content":"Modifie"}' http://localhost:8000/forum/replies/3
-```
-
-### DELETE /forum/replies/{id}
-Supprimer une reponse.
-
-```bash
-curl -X DELETE http://localhost:8000/forum/replies/3
-```
-
-## Likes
-
-### POST /likes
-Ajouter un "j'aime" sur un contenu.
-
-Corps JSON :
-- `user_id`
-- `target_type`
-- `target_id`
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"user_id":1,"target_type":"article","target_id":1}' \
-     http://localhost:8000/likes
-```
-
-## Signalements
-
-### POST /reports
-Signaler un contenu.
-
-Corps JSON :
-- `reporter_id` (optionnel)
-- `target_type`
-- `target_id`
-- `reason`
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"target_type":"article","target_id":1,"reason":"spam"}' \
-     http://localhost:8000/reports
-```
-
-### GET /reports
-Lister les signalements.
-
-```bash
-curl http://localhost:8000/reports
-```
-
-### PATCH /reports/{id}/resolve
-Marquer un signalement comme resolu.
-
-```bash
-curl -X PATCH http://localhost:8000/reports/1/resolve
-```
-
-## Bannissements
-
-### POST /bans
-Bannir un utilisateur.
-
-Corps JSON :
-- `user_id`
-- `reason`
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"user_id":1,"reason":"abus"}' http://localhost:8000/bans
-```
-
-### GET /bans
-Lister les bannissements actifs.
-
-```bash
-curl http://localhost:8000/bans
-```
-
-### DELETE /bans/{id}
-Lever un bannissement.
-
-```bash
-curl -X DELETE http://localhost:8000/bans/1
-```
-
-## Tags
 
 ### POST /tags
-Creer un tag.
-
-Corps JSON :
-- `name`
+Créer un tag.
 
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"name":"news"}' http://localhost:8000/tags
 ```
 
 ### GET /tags
-Lister les tags existants.
+Lister les tags.
 
 ```bash
 curl http://localhost:8000/tags
 ```
 
 ### POST /articles/{id}/tags
-Associer un tag a un article.
-
-Corps JSON :
-- `tag_id`
+Associer un tag à un article *(token requis)*.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"tag_id":1}' http://localhost:8000/articles/1/tags
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X POST -H "Content-Type: application/json" \
+     -d '{"tag_id":1}' \
+     http://localhost:8000/articles/1/tags
 ```
 
 ### GET /articles?tag={id}
@@ -451,203 +253,99 @@ Filtrer les articles par tag.
 curl "http://localhost:8000/articles?tag=1"
 ```
 
-## Reinitialisation de mot de passe
+## Forum
 
-### POST /password-reset/request
-Generer un jeton de reinitialisation.
-
-Corps JSON :
-- `email`
+### POST /forum/categories
+Créer une catégorie *(token requis)*.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"email":"user@example.com"}' http://localhost:8000/password-reset/request
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X POST -H "Content-Type: application/json" \
+     -d '{"name":"Général"}' \
+     http://localhost:8000/forum/categories
 ```
 
-### POST /password-reset/confirm
-Valider le jeton et definir le nouveau mot de passe (hash).
-
-Corps JSON :
-- `token`
-- `new_pass_hash`
+### GET /forum/categories
+Lister les catégories.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"token":"<TOKEN>","new_pass_hash":"<HASH>"}' http://localhost:8000/password-reset/confirm
+curl http://localhost:8000/forum/categories
 ```
 
-## Messagerie
-
-### POST /messages
-Envoyer un message direct.
-
-Corps JSON :
-- `sender_id` (optionnel)
-- `receiver_id`
-- `content`
+### POST /forum/threads
+Créer un fil de discussion *(token requis)*.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"receiver_id":2,"content":"Bonjour"}' http://localhost:8000/messages
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X POST -H "Content-Type: application/json" \
+     -d '{"title":"Sujet","content":"Contenu"}' \
+     http://localhost:8000/forum/threads
 ```
 
-### GET /messages/{user_id}
-Recuperer les messages pour un utilisateur.
+### GET /forum/threads
+Lister les fils de discussion.
 
 ```bash
-curl http://localhost:8000/messages/2
+curl http://localhost:8000/forum/threads
 ```
 
-## Notifications
-
-### POST /notifications
-Creer une notification.
-
-Corps JSON :
-- `user_id` (optionnel)
-- `message`
+### GET /forum/threads/{id}
+Afficher un fil.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"user_id":2,"message":"Salut"}' http://localhost:8000/notifications
+curl http://localhost:8000/forum/threads/1
 ```
 
-### GET /notifications/{user_id}
-Lister les notifications d'un utilisateur.
+### PUT/PATCH /forum/threads/{id}
+Modifier un fil *(token requis)*.
 
 ```bash
-curl http://localhost:8000/notifications/2
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PATCH -H "Content-Type: application/json" \
+     -d '{"is_locked":true}' \
+     http://localhost:8000/forum/threads/1
 ```
 
-### POST /notifications/{id}/read
-Marquer une notification comme lue.
+### DELETE /forum/threads/{id}
+Supprimer un fil *(token requis)*.
 
 ```bash
-curl -X POST http://localhost:8000/notifications/1/read
+curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/forum/threads/1
 ```
 
-## Roles et permissions
-
-### POST /roles
-Creer un role.
-
-Corps JSON :
-- `name`
-- `description` (optionnel)
+### POST /forum/threads/{thread_id}/replies
+Répondre à un fil *(token requis)*.
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name":"admin"}' http://localhost:8000/roles
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X POST -H "Content-Type: application/json" \
+     -d '{"thread_id":1,"content":"Salut"}' \
+     http://localhost:8000/forum/threads/1/replies
 ```
 
-### GET /roles
-Lister les roles.
+### GET /forum/threads/{thread_id}/replies
+Lister les réponses d'un fil.
 
 ```bash
-curl http://localhost:8000/roles
+curl http://localhost:8000/forum/threads/1/replies
 ```
 
-### GET /roles/{id}
-Detail d'un role.
+### PUT/PATCH /forum/replies/{id}
+Éditer une réponse *(token requis)*.
 
 ```bash
-curl http://localhost:8000/roles/1
+curl -H "Authorization: Bearer <TOKEN>" \
+     -X PATCH -H "Content-Type: application/json" \
+     -d '{"content":"Modifié"}' \
+     http://localhost:8000/forum/replies/3
 ```
 
-### PATCH /roles/{id}
-Mettre a jour un role.
+### DELETE /forum/replies/{id}
+Supprimer une réponse *(token requis)*.
 
 ```bash
-curl -X PATCH -H "Content-Type: application/json" -d '{"description":"Mod"}' http://localhost:8000/roles/1
-```
-
-### DELETE /roles/{id}
-Supprimer un role.
-
-```bash
-curl -X DELETE http://localhost:8000/roles/1
-```
-
-### POST /permissions
-Creer une permission.
-
-Corps JSON :
-- `name`
-- `description` (optionnel)
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name":"delete_post"}' http://localhost:8000/permissions
-```
-
-### GET /permissions
-Lister les permissions.
-
-```bash
-curl http://localhost:8000/permissions
-```
-
-### GET /permissions/{id}
-Detail d'une permission.
-
-```bash
-curl http://localhost:8000/permissions/1
-```
-
-### PATCH /permissions/{id}
-Mettre a jour une permission.
-
-```bash
-curl -X PATCH -H "Content-Type: application/json" -d '{"description":"Peut supprimer"}' http://localhost:8000/permissions/1
-```
-
-### DELETE /permissions/{id}
-Supprimer une permission.
-
-```bash
-curl -X DELETE http://localhost:8000/permissions/1
-```
-
-### POST /users/{user_id}/roles
-Assigner un role a un utilisateur.
-
-Corps JSON :
-- `role_id`
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"role_id":1}' http://localhost:8000/users/1/roles
-```
-
-### GET /users/{user_id}/roles
-Lister les roles d'un utilisateur.
-
-```bash
-curl http://localhost:8000/users/1/roles
-```
-
-### DELETE /users/{user_id}/roles/{role_id}
-Retirer un role.
-
-```bash
-curl -X DELETE http://localhost:8000/users/1/roles/1
-```
-
-## Fichiers joints
-
-### POST /attachments
-Envoyer un fichier via `multipart/form-data`.
-
-```bash
-curl -X POST -F "file=@image.png" http://localhost:8000/attachments
-```
-
-### GET /attachments/{id}
-Telecharger un fichier.
-
-```bash
-curl http://localhost:8000/attachments/1 -O
-```
-
-### DELETE /attachments/{id}
-Supprimer un fichier envoye.
-
-```bash
-curl -X DELETE http://localhost:8000/attachments/1
+curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/forum/replies/3
 ```
 
 ---
-Ce guide resume les principales interactions avec l'API Kopo Forum. Consultez `backend/schemas.py` pour la liste complete des champs disponibles.
+Ce guide reprend tous les points d'entrée actuellement implémentés dans l'API. Les schémas Pydantic sont disponibles dans `backend/schemas.py` pour plus de détails sur les champs acceptés.
