@@ -19,16 +19,21 @@ try {
 }
 
 try {
-    // Load recent articles then filter by cybersecurity keywords
-    $all_articles = $api->request('/articles?limit=20');
-    $security_articles = [];
-    foreach ($all_articles as $article) {
-        $tags = array_column($article['tags'] ?? [], 'name');
-        if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'security') {
-            $security_articles[] = $article;
-        }
-        if (count($security_articles) >= 6) {
-            break;
+    // Fetch articles using the security tag when available
+    if ($security_tag_id !== null) {
+        $security_articles = $api->request('/articles?tag=' . $security_tag_id . '&limit=6');
+    } else {
+        // Fallback to keyword detection on recent articles
+        $all_articles = $api->request('/articles?limit=20');
+        $security_articles = [];
+        foreach ($all_articles as $article) {
+            $tags = array_column($article['tags'] ?? [], 'name');
+            if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'security') {
+                $security_articles[] = $article;
+            }
+            if (count($security_articles) >= 6) {
+                break;
+            }
         }
     }
 
