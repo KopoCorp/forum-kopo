@@ -39,28 +39,30 @@ class UserBioUpdate(BaseModel):
 class ArticleBase(BaseModel):
     title: str
     content: str
+    image_url: Optional[str] = None
     is_pub: Optional[bool] = False
 
 
 class ArticleCreate(ArticleBase):
     user_id: Optional[int]
-    tag_id: Optional[int] = None
-    tag_name: Optional[str] = None
+    tag_ids: Optional[list[int]] = None
+    tag_names: Optional[list[str]] = None
 
 
 class ArticleUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
+    image_url: Optional[str] = None
     is_pub: Optional[bool] = None
     user_id: Optional[int] = None
-    tag_id: Optional[int] = None
-    tag_name: Optional[str] = None
+    tag_ids: Optional[list[int]] = None
+    tag_names: Optional[list[str]] = None
 
 
 class ArticleOut(ArticleBase):
     id: int
     user_id: Optional[int]
-    tag_id: Optional[int] = None
+    tags: list[int] = []
     created_at: datetime
     updated_at: datetime
 
