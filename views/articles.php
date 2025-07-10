@@ -24,8 +24,17 @@
                         <h2>Articles avec le tag: <?php echo htmlspecialchars($tag); ?></h2>
             <a href="index.php?route=articles" class="btn btn-outline btn-sm">Voir tous les articles</a>
                     </div>
+
                 <?php endif; ?>
-                
+
+                <div class="article-controls" style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+                    <?php if ($api->isLoggedIn()): ?>
+                        <a href="new-article.php" class="btn btn-primary"><i class="fas fa-plus"></i> Nouvel article</a>
+                    <?php else: ?>
+                        <a href="login.php" class="btn btn-outline">Connectez-vous pour publier</a>
+                    <?php endif; ?>
+                </div>
+
                 <?php if (!empty($articles_data)): ?>
                     <div class="grid grid-3">
                         <?php foreach ($articles_data as $article): ?>
