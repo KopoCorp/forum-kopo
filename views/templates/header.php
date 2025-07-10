@@ -28,7 +28,7 @@ global $api;
         <div class="header-container">
             <div class="logo">
                 <a href="index.php">
-                    <img style="vertical-align: middle;" src="assets/kopologo.png" alt="Kopo Forum Logo">
+                    <img style="vertical-align: middle;" src="assets/favicon.ico" alt="Kopo Forum Logo">
                 </a>
                 <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
