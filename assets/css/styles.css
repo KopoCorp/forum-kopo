@@ -185,6 +185,7 @@ pre code {
 /* User dropdown */
 .user-dropdown {
   position: relative;
+  padding-bottom: 0.5rem;
 }
 
 .user-dropdown-toggle {
@@ -213,7 +214,6 @@ pre code {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   min-width: 200px;
   z-index: 100;
-  margin-top: 0.5rem;
   display: none;
 }
 
