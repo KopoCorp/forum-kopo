@@ -225,9 +225,17 @@ def create_article(
 ):
     data = article.dict()
     tag_id = data.pop("tag_id", None)
+    tag_name = data.pop("tag_name", None)
     db_article = models.Article(**data)
     db.add(db_article)
     db.commit()
+    if tag_name:
+        tag = db.query(models.Tag).filter(models.Tag.name == tag_name).first()
+        if not tag:
+            tag = models.Tag(name=tag_name)
+            db.add(tag)
+            db.commit()
+        tag_id = tag.id
     if tag_id:
         db.add(models.ArticleTag(article_id=db_article.id, tag_id=tag_id))
         db.commit()
@@ -236,14 +244,39 @@ def create_article(
 
 
 @app.get("/articles", response_model=List[schemas.ArticleOut])
-def read_articles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.Article).offset(skip).limit(limit).all()
+def read_articles(
+    skip: int = 0,
+    limit: int = 10,
+    tag: Optional[int] = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(models.Article)
+    if tag:
+        query = query.join(models.ArticleTag).filter(models.ArticleTag.tag_id == tag)
+    return query.offset(skip).limit(limit).all()
 
 
 @app.get("/articles/count", response_model=schemas.CountOut)
 def count_articles(db: Session = Depends(get_db)):
     """Return the total number of articles."""
     return {"count": db.query(models.Article).count()}
+
+
+@app.post("/tags", response_model=schemas.TagOut)
+def create_tag(tag: schemas.TagCreate, db: Session = Depends(get_db)):
+    existing = db.query(models.Tag).filter(models.Tag.name == tag.name).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Tag already exists")
+    db_tag = models.Tag(name=tag.name)
+    db.add(db_tag)
+    db.commit()
+    db.refresh(db_tag)
+    return db_tag
+
+
+@app.get("/tags", response_model=List[schemas.TagOut])
+def list_tags(db: Session = Depends(get_db)):
+    return db.query(models.Tag).all()
 
 
 @app.get("/articles/{article_id}", response_model=schemas.ArticleOut)
@@ -267,8 +300,16 @@ def update_article(
         raise HTTPException(status_code=404, detail="Article not found")
     data = article.dict(exclude_unset=True)
     tag_id = data.pop("tag_id", None)
+    tag_name = data.pop("tag_name", None)
     for key, value in data.items():
         setattr(db_article, key, value)
+    if tag_name:
+        tag = db.query(models.Tag).filter(models.Tag.name == tag_name).first()
+        if not tag:
+            tag = models.Tag(name=tag_name)
+            db.add(tag)
+            db.commit()
+        tag_id = tag.id
     if tag_id is not None:
         db.query(models.ArticleTag).filter(models.ArticleTag.article_id == article_id).delete()
         if tag_id:
@@ -368,13 +409,9 @@ def create_thread(
     current_user: models.User = Depends(get_current_user),
 ):
     data = thread.dict()
-    tag_id = data.pop("tag_id", None)
     db_thread = models.ForumThread(**data)
     db.add(db_thread)
     db.commit()
-    if tag_id:
-        db.add(models.ThreadTag(thread_id=db_thread.id, tag_id=tag_id))
-        db.commit()
     db.refresh(db_thread)
     return db_thread
 
@@ -404,13 +441,8 @@ def update_thread(
     if not db_thread:
         raise HTTPException(status_code=404, detail="Thread not found")
     data = thread.dict(exclude_unset=True)
-    tag_id = data.pop("tag_id", None)
     for key, value in data.items():
         setattr(db_thread, key, value)
-    if tag_id is not None:
-        db.query(models.ThreadTag).filter(models.ThreadTag.thread_id == thread_id).delete()
-        if tag_id:
-            db.add(models.ThreadTag(thread_id=thread_id, tag_id=tag_id))
     db.commit()
     db.refresh(db_thread)
     return db_thread
@@ -479,6 +511,3 @@ def delete_reply(
         raise HTTPException(status_code=404, detail="Reply not found")
     db.delete(db_reply)
     db.commit()
-
-
-#BIDON
