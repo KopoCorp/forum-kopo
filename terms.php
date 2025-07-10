@@ -39,7 +39,7 @@
             </p>
             
             <p style="margin-top: 2rem;">
-                Si vous avez des questions sur ces conditions, n’hésitez pas à nous contacter via le formulaire disponible sur le site.
+                Si vous avez des questions sur ces conditions, n’hésitez pas à nous contacter via le formulaire disponible dans la page contact.
             </p>
         </div>
     </section>
