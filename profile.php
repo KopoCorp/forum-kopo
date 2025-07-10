@@ -29,12 +29,10 @@ try {
     $article_count = is_array($user_articles) ? count($user_articles) : 0;
     $recent_articles = array_slice($user_articles, 0, 5);
 
-    // Replies count (optional endpoint)
-    try {
-        $user_replies = $api->request('/users/' . $user_id . '/replies', 'GET', [], true);
-        $reply_count = is_array($user_replies) ? count($user_replies) : 0;
-    } catch (Exception $e) {
-        $reply_count = $profile['reply_count'] ?? 0;
+    // Replies count computed from thread data
+    $reply_count = 0;
+    foreach ($user_threads as $t) {
+        $reply_count += $t['reply_count'] ?? 0;
     }
 
     $page_title = $profile['username'] . " - Profil";
