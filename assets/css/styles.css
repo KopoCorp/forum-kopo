@@ -374,10 +374,10 @@ pre code {
   gap: 1rem;
 }
 .hero .btn-primary {
-  background-color: var(--purple);
+  background-color: var(--dark-blue);
 }
 .hero .btn-primary:hover {
-  background-color: #5d56a8;
+  background-color: var(--dark-blue);
 }
 
 /* Forum Components */
