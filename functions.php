@@ -31,13 +31,17 @@ function verify_csrf_token($token) {
  * @return string|null
  */
 function detect_topic(array $tags = [], string $content = '') {
+    // Expanded keyword lists for more reliable matching
     $dev_keywords = [
-        'dev', 'développement', 'programmation', 'code', 'framework', 'web',
-        'mobile', 'ia', 'devops'
+        'dev', 'développement', 'developpement', 'development', 'développeur',
+        'developpeur', 'developer', 'programmation', 'coding', 'code',
+        'framework', 'web', 'mobile', 'ia', 'devops'
     ];
     $security_keywords = [
-        'cyber', 'sécurité', 'securite', 'hacking', 'pentest', 'vuln',
-        'vulnérabilité', 'vulnerabilite', 'cryptographie', 'protection des données'
+        'cyber', 'cybersécurité', 'cybersecurite', 'cyber sécurité',
+        'cybersecurity', 'sécurité', 'securite', 'hacking', 'pentest', 'vuln',
+        'vulnérabilité', 'vulnerabilite', 'cryptographie', 'malware',
+        'protection des données', 'attaque', 'intrusion', 'ransomware'
     ];
 
     $text = strtolower($content . ' ' . implode(' ', $tags));
