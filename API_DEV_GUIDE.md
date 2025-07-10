@@ -440,27 +440,6 @@ Corps JSON :
 curl -X POST -H "Content-Type: application/json" -d '{"token":"<TOKEN>","new_pass_hash":"<HASH>"}' http://localhost:8000/password-reset/confirm
 ```
 
-## Messagerie
-
-### POST /messages
-Envoyer un message direct.
-
-Corps JSON :
-- `sender_id` (optionnel)
-- `receiver_id`
-- `content`
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"receiver_id":2,"content":"Bonjour"}' http://localhost:8000/messages
-```
-
-### GET /messages/{user_id}
-Recuperer les messages pour un utilisateur.
-
-```bash
-curl http://localhost:8000/messages/2
-```
-
 ## Notifications
 
 ### POST /notifications
