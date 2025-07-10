@@ -43,45 +43,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         $error = "Veuillez sélectionner au moins un tag.";
     } else {
         try {
-            // Create tag if user provided one
-            if (!empty($new_tag)) {
-                try {
-                    $tagResult = $api->request('/tags', 'POST', ['name' => $new_tag], true);
-                    if (isset($tagResult['id'])) {
-                        $selected_tags[] = $tagResult['id'];
-                        $tags[] = ['id' => $tagResult['id'], 'name' => $new_tag];
-                    }
-                } catch (Exception $e) {
-                    $error = "Erreur lors de la création du tag: " . $e->getMessage();
-                }
-            }
-
-            // Create article first
+            // Build article data
             $user = $api->getCurrentUser();
             $article_data = [
-                'title' => $title,
+                'title'   => $title,
                 'content' => $content,
-                'is_pub' => $is_published,
+                'is_pub'  => $is_published,
                 'user_id' => $user['id'] ?? null
             ];
-            
+
+            // Associate tag with the article
+            if (!empty($new_tag)) {
+                $article_data['tag_name'] = $new_tag;
+            } elseif (!empty($selected_tags)) {
+                $article_data['tag_id'] = $selected_tags[0];
+            }
+
             $result = $api->request('/articles', 'POST', $article_data, true);
-            
-            // If article created successfully, add tags
+
             if (isset($result['id'])) {
                 $article_id = $result['id'];
-                
-                // Add selected tags
-                if (!empty($selected_tags)) {
-                    foreach ($selected_tags as $tag_id) {
-                        try {
-                            $api->request('/articles/' . $article_id . '/tags', 'POST', ['tag_id' => $tag_id], true);
-                        } catch (Exception $e) {
-                            // Continue even if tag association fails
-                        }
-                    }
-                }
-                
+
                 // Set image via URL if provided
                 if (!empty($image_url)) {
                     try {
@@ -93,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                     }
                 }
 
-                
                 $success = true;
             }
         } catch (Exception $e) {

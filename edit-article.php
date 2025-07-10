@@ -71,48 +71,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
         $error = "Le contenu ne peut pas être vide.";
     } else {
         try {
-            // Create tag if user provided one
-            if (!empty($new_tag)) {
-                try {
-                    $tagResult = $api->request('/tags', 'POST', ['name' => $new_tag], true);
-                    if (isset($tagResult['id'])) {
-                        $selected_tags[] = $tagResult['id'];
-                        $tags[] = ['id' => $tagResult['id'], 'name' => $new_tag];
-                    }
-                } catch (Exception $e) {
-                    $error = "Erreur lors de la création du tag: " . $e->getMessage();
-                }
-            }
-
-            // Update article
+            // Prepare article data
             $article_data = [
-                'title' => $title,
+                'title'   => $title,
                 'content' => $content,
-                'is_pub' => $is_published
+                'is_pub'  => $is_published
             ];
+
             if (!empty($image_url)) {
                 $article_data['image_url'] = $image_url;
             }
 
+            // Handle tag update
+            if (!empty($new_tag)) {
+                $article_data['tag_name'] = $new_tag;
+            } elseif (!empty($selected_tags)) {
+                $article_data['tag_id'] = $selected_tags[0];
+            } else {
+                $article_data['tag_id'] = null;
+            }
+
             $api->request('/articles/' . $article_id, 'PATCH', $article_data, true);
-            
-            // Update tags - first remove existing tags
-            try {
-                $api->request('/articles/' . $article_id . '/tags', 'DELETE', [], true);
-            } catch (Exception $e) {
-                // Continue even if tag deletion fails
-            }
-            
-            // Add selected tags
-            if (!empty($selected_tags)) {
-                foreach ($selected_tags as $tag_id) {
-                    try {
-                        $api->request('/articles/' . $article_id . '/tags', 'POST', ['tag_id' => $tag_id], true);
-                    } catch (Exception $e) {
-                        // Continue even if tag association fails
-                    }
-                }
-            }
             
             // Handle image upload if present
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
