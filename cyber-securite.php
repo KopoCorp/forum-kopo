@@ -69,9 +69,9 @@ try {
     $security_threads = [];
 }
 
-// Load security alerts from CERT-FR RSS feed
+// Load security alerts separately to avoid wiping article data if unavailable
 try {
-    $security_alerts = fetch_cert_alerts(3);
+    $security_alerts = $api->request('/security/alerts?limit=3');
 } catch (Exception $e) {
     $security_alerts = [];
 }
@@ -101,23 +101,27 @@ try {
         <section class="security-alerts-section" style="margin-bottom: 3rem;">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 style="display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-shield-alt" style="color: var(--accent-red);"></i> Alertes de Sécurité</h2>
-                <a href="https://www.cert.ssi.gouv.fr/alerte/" target="_blank" rel="noopener" class="view-all">Toutes les alertes <i class="fas fa-arrow-right"></i></a>
+                <a href="#" class="view-all">Toutes les alertes <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <?php if (!empty($security_alerts)): ?>
                 <div class="alerts-container">
                     <?php foreach ($security_alerts as $alert): ?>
-                        <div class="security-alert" style="border-left-color: var(--accent-red);">
+                        <div class="security-alert" style="border-left-color: <?php echo $alert['severity'] === 'high' ? 'var(--accent-red)' : ($alert['severity'] === 'medium' ? 'var(--bright-blue)' : 'var(--purple)'); ?>;">
                             <h4>
-                                <i class="fas fa-exclamation-triangle" style="color: var(--accent-red);"></i>
+                                <i class="fas fa-exclamation-triangle" style="color: <?php echo $alert['severity'] === 'high' ? 'var(--accent-red)' : ($alert['severity'] === 'medium' ? 'var(--bright-blue)' : 'var(--purple)'); ?>;"></i>
                                 <?php echo htmlspecialchars($alert['title']); ?>
+                                
+                                <span class="badge" style="font-size: 0.7rem; background-color: <?php echo $alert['severity'] === 'high' ? 'var(--accent-red)' : ($alert['severity'] === 'medium' ? 'var(--bright-blue)' : 'var(--purple)'); ?>; float: right;">
+                                    <?php echo $alert['severity'] === 'high' ? 'CRITIQUE' : ($alert['severity'] === 'medium' ? 'MODÉRÉ' : 'FAIBLE'); ?>
+                                </span>
                             </h4>
-
-                            <p><?php echo htmlspecialchars(mb_strimwidth($alert['description'], 0, 200, '...')); ?></p>
-
+                            
+                            <p><?php echo htmlspecialchars($alert['description']); ?></p>
+                            
                             <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
-                                <span>Publié le <?php echo date('d/m/Y', strtotime($alert['pubDate'])); ?></span>
-                                <a href="<?php echo htmlspecialchars($alert['link']); ?>" class="btn btn-sm btn-outline" target="_blank" rel="noopener">
+                                <span>Publié le <?php echo date('d/m/Y', strtotime($alert['created_at'])); ?></span>
+                                <a href="#" class="btn btn-sm btn-outline">
                                     Plus de détails
                                 </a>
                             </div>
