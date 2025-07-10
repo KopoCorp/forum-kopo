@@ -19,16 +19,21 @@ try {
 }
 
 try {
-    // Load recent articles then filter by development keywords
-    $all_articles = $api->request('/articles?limit=20');
-    $dev_articles = [];
-    foreach ($all_articles as $article) {
-        $tags = array_column($article['tags'] ?? [], 'name');
-        if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'dev') {
-            $dev_articles[] = $article;
-        }
-        if (count($dev_articles) >= 6) {
-            break;
+    // Fetch articles using the development tag when available
+    if ($dev_tag_id !== null) {
+        $dev_articles = $api->request('/articles?tag=' . $dev_tag_id . '&limit=6');
+    } else {
+        // Fallback to keyword detection on recent articles
+        $all_articles = $api->request('/articles?limit=20');
+        $dev_articles = [];
+        foreach ($all_articles as $article) {
+            $tags = array_column($article['tags'] ?? [], 'name');
+            if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'dev') {
+                $dev_articles[] = $article;
+            }
+            if (count($dev_articles) >= 6) {
+                break;
+            }
         }
     }
 
