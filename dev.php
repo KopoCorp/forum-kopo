@@ -4,6 +4,20 @@ $page_description = "Ressources, articles et discussions sur le développement i
 require_once 'functions.php';
 require_once 'header.php';
 
+// Retrieve tag id for "développement"
+$dev_tag_id = null;
+try {
+    $tags_list = $api->request('/tags');
+    foreach ($tags_list as $t) {
+        if (strtolower($t['name']) === 'développement') {
+            $dev_tag_id = $t['id'];
+            break;
+        }
+    }
+} catch (Exception $e) {
+    $dev_tag_id = null;
+}
+
 try {
     // Load recent articles then filter by development keywords
     $all_articles = $api->request('/articles?limit=20');
@@ -113,7 +127,7 @@ console.table(users, ['name', 'role']);</code></pre>
                 <section style="margin-bottom: 3rem;">
                     <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <h2>Articles sur le développement</h2>
-                        <a href="articles.php?tag=développement" class="view-all">Tous les articles <i class="fas fa-arrow-right"></i></a>
+                        <a href="articles.php?tag=<?php echo $dev_tag_id !== null ? $dev_tag_id : urlencode('développement'); ?>" class="view-all">Tous les articles <i class="fas fa-arrow-right"></i></a>
                     </div>
                     
                     <?php if (!empty($dev_articles)): ?>

@@ -164,7 +164,7 @@ function highlightSearchTerms($text, $search) {
                                             &bull;
                                             <span>
                                                 <?php foreach ($article['tags'] as $index => $tag): ?>
-                                                    <a href="articles.php?tag=<?php echo urlencode($tag['name']); ?>" class="article-tag" style="font-size: 0.75rem; background-color: var(--light-gray); padding: 0.1rem 0.5rem; border-radius: 10px;"><?php echo htmlspecialchars($tag['name']); ?></a>
+                                                    <a href="articles.php?tag=<?php echo $tag['id']; ?>" class="article-tag" style="font-size: 0.75rem; background-color: var(--light-gray); padding: 0.1rem 0.5rem; border-radius: 10px;"><?php echo htmlspecialchars($tag['name']); ?></a>
                                                     <?php if ($index < count($article['tags']) - 1) echo ' '; ?>
                                                 <?php endforeach; ?>
                                             </span>

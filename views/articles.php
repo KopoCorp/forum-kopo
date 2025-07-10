@@ -4,8 +4,8 @@
     <div class="container">
         <div class="breadcrumb" style="margin-bottom: 0.5rem; color: #999;">
             <a href="index.php" style="color: #999;">Accueil</a> &raquo; Articles
-            <?php if (!empty($tag)): ?>
-                &raquo; Tag: <?php echo htmlspecialchars($tag); ?>
+            <?php if (!empty($tag_name)): ?>
+                &raquo; Tag: <?php echo htmlspecialchars($tag_name); ?>
             <?php endif; ?>
         </div>
         <h1 style="color: var(--white); margin-bottom: 0.5rem;">Articles</h1>
@@ -19,9 +19,9 @@
         <div class="grid grid-sidebar">
             <!-- Articles List -->
             <div class="articles-list">
-                <?php if (!empty($tag)): ?>
+                <?php if (!empty($tag_name)): ?>
                     <div style="margin-bottom: 1.5rem;">
-                        <h2>Articles avec le tag: <?php echo htmlspecialchars($tag); ?></h2>
+                        <h2>Articles avec le tag: <?php echo htmlspecialchars($tag_name); ?></h2>
             <a href="index.php?route=articles" class="btn btn-outline btn-sm">Voir tous les articles</a>
                     </div>
 
@@ -100,7 +100,7 @@
                     <?php if ($total_pages > 1): ?>
                         <div class="pagination" style="margin-top: 2rem;">
                             <?php if ($page > 1): ?>
-                                <a href="?page=<?php echo $page - 1; ?><?php echo !empty($tag) ? '&tag=' . urlencode($tag) : ''; ?>">
+                                <a href="?page=<?php echo $page - 1; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
                                     <i class="fas fa-chevron-left"></i> Précédent
                                 </a>
                             <?php endif; ?>
@@ -109,14 +109,14 @@
                                 <?php if ($i == $page): ?>
                                     <span class="current"><?php echo $i; ?></span>
                                 <?php else: ?>
-                                    <a href="?page=<?php echo $i; ?><?php echo !empty($tag) ? '&tag=' . urlencode($tag) : ''; ?>">
+                                    <a href="?page=<?php echo $i; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
                                         <?php echo $i; ?>
                                     </a>
                                 <?php endif; ?>
                             <?php endfor; ?>
                             
                             <?php if ($page < $total_pages): ?>
-                                <a href="?page=<?php echo $page + 1; ?><?php echo !empty($tag) ? '&tag=' . urlencode($tag) : ''; ?>">
+                                <a href="?page=<?php echo $page + 1; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
                                     Suivant <i class="fas fa-chevron-right"></i>
                 
                                 </a>
@@ -156,7 +156,7 @@
                     <div class="widget-content">
                         <div class="article-tags">
                             <?php foreach ($tags as $t): ?>
-                                <a href="index.php?route=articles&amp;tag=<?php echo urlencode($t['name']); ?>" class="article-tag">
+                                <a href="index.php?route=articles&amp;tag=<?php echo $t['id']; ?>" class="article-tag">
                                     <?php echo htmlspecialchars($t['name']); ?>
                                 </a>
                             <?php endforeach; ?>
