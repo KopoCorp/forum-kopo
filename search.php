@@ -26,39 +26,30 @@ $total_pages = 1;
 // Execute search if query provided
 if (!empty($q)) {
     try {
-        // Build search query
-        $search_query = '/search?q=' . urlencode($q) . '&skip=' . $skip . '&limit=' . $limit;
-        
+        // Build search query for all results and count locally
+        $search_query = '/search?q=' . urlencode($q) . '&limit=1000';
         if ($type !== 'all') {
             $search_query .= '&type=' . urlencode($type);
         }
-        
-        // Execute search
-        $search_results = $api->request($search_query);
-        
-        // Extract results based on type
-        if ($search_articles && isset($search_results['articles'])) {
-            $articles = $search_results['articles'];
+
+        $all_results = $api->request($search_query);
+
+        if ($search_articles && isset($all_results['articles'])) {
+            $articles = array_slice($all_results['articles'], $skip, $limit);
+            $total_results += count($all_results['articles']);
         }
-        
-        if ($search_threads && isset($search_results['threads'])) {
-            $threads = $search_results['threads'];
+
+        if ($search_threads && isset($all_results['threads'])) {
+            $threads = array_slice($all_results['threads'], $skip, $limit);
+            $total_results += count($all_results['threads']);
         }
-        
-        if ($search_users && isset($search_results['users'])) {
-            $users = $search_results['users'];
+
+        if ($search_users && isset($all_results['users'])) {
+            $users = array_slice($all_results['users'], $skip, $limit);
+            $total_results += count($all_results['users']);
         }
-        
-        // Get total count for pagination
-        $total_count_query = '/search/count?q=' . urlencode($q);
-        if ($type !== 'all') {
-            $total_count_query .= '&type=' . urlencode($type);
-        }
-        
-        $count_result = $api->request($total_count_query);
-        $total_results = $count_result['count'] ?? 0;
-        $total_pages = ceil($total_results / $limit);
-        
+
+        $total_pages = max(1, ceil($total_results / $limit));
     } catch (Exception $e) {
         $_SESSION['flash_message'] = "Erreur lors de la recherche: " . $e->getMessage();
         $_SESSION['flash_type'] = "error";
