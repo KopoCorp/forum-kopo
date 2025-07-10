@@ -71,4 +71,7 @@ The API will be available on port **8000** of the container. Replace
 - `PUT/PATCH /forum/replies/{id}` – edit a reply *(requires token)*
 - `DELETE /forum/replies/{id}` – delete a reply *(requires token)*
 
+- `GET /security/alerts` – list recent CERT-FR security alerts
+- `GET /security/alerts/latest` – fetch the latest CERT-FR alert
+
 This is only a starting point. More models and endpoints can be added following the same pattern.

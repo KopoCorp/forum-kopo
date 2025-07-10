@@ -14,6 +14,8 @@ import os
 import uuid
 import shutil
 import html
+import requests
+import feedparser
 
 from . import models, schemas
 from .database import Base, engine, get_db
@@ -607,3 +609,42 @@ def get_reporting_config(db: Session = Depends(get_db)):
     if not config:
         raise HTTPException(status_code=404, detail="Config not found")
     return config
+
+
+CERTFR_FEED_URL = "https://www.cert.ssi.gouv.fr/feed/"
+
+
+def _fetch_certfr_feed(limit: int = 10):
+    """Retrieve and parse the CERT-FR RSS feed."""
+    try:
+        resp = requests.get(CERTFR_FEED_URL, timeout=10)
+        resp.raise_for_status()
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Failed to fetch RSS feed: {exc}") from exc
+    feed = feedparser.parse(resp.text)
+    alerts = []
+    for entry in feed.entries[:limit]:
+        alerts.append(
+            schemas.SecurityAlertOut(
+                title=entry.get("title", ""),
+                link=entry.get("link", ""),
+                summary=entry.get("summary"),
+                published=entry.get("published"),
+            )
+        )
+    return alerts
+
+
+@app.get("/security/alerts", response_model=list[schemas.SecurityAlertOut])
+def list_security_alerts(limit: int = 5):
+    """Return the most recent security alerts from CERT-FR."""
+    return _fetch_certfr_feed(limit)
+
+
+@app.get("/security/alerts/latest", response_model=schemas.SecurityAlertOut)
+def latest_security_alert():
+    """Return the latest security alert from CERT-FR."""
+    alerts = _fetch_certfr_feed(limit=1)
+    if not alerts:
+        raise HTTPException(status_code=404, detail="No alerts found")
+    return alerts[0]
