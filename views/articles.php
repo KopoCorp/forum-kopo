@@ -100,7 +100,7 @@
                     <?php if ($total_pages > 1): ?>
                         <div class="pagination" style="margin-top: 2rem;">
                             <?php if ($page > 1): ?>
-                                <a href="?page=<?php echo $page - 1; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
+                                <a href="index.php?route=articles&page=<?php echo $page - 1; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
                                     <i class="fas fa-chevron-left"></i> Précédent
                                 </a>
                             <?php endif; ?>
@@ -109,14 +109,14 @@
                                 <?php if ($i == $page): ?>
                                     <span class="current"><?php echo $i; ?></span>
                                 <?php else: ?>
-                                    <a href="?page=<?php echo $i; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
+                                    <a href="index.php?route=articles&page=<?php echo $i; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
                                         <?php echo $i; ?>
                                     </a>
                                 <?php endif; ?>
                             <?php endfor; ?>
                             
                             <?php if ($page < $total_pages): ?>
-                                <a href="?page=<?php echo $page + 1; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
+                                <a href="index.php?route=articles&page=<?php echo $page + 1; ?><?php echo $tag_id > 0 ? '&tag=' . $tag_id : ''; ?>">
                                     Suivant <i class="fas fa-chevron-right"></i>
                 
                                 </a>
