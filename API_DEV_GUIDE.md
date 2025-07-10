@@ -49,69 +49,15 @@ Recuperer les informations d'un utilisateur.
 curl http://localhost:8000/users/1
 ```
 
-### GET /users/{id}/profile
-Afficher le profil detaille d'un utilisateur.
-
-```bash
-curl http://localhost:8000/users/1/profile
-```
-
-### PUT /users/{id}/profile
-Mettre a jour un profil utilisateur (`display_name`, `website`, `location`, `birth_date`, `gender`).
+### PUT /users/{id}
+Mettre a jour un profil utilisateur (`username`, `bio`, `avatar_url`, `display_name`, `website`, `location`, `birth_date`, `gender`).
 
 ```bash
 curl -X PUT -H "Content-Type: application/json" \
-    -d '{"display_name":"John"}' \
-     http://localhost:8000/users/1/profile
+    -d '{"bio":"Ma nouvelle bio"}' \
+    http://localhost:8000/users/1
 ```
 
-## Articles
-Revoque le token present dans l'en-tete `Authorization`.
-
-```bash
-curl -H "Authorization: Bearer <TOKEN>" -X POST http://localhost:8000/logout
-```
-
-## Utilisateurs
-
-### POST /users
-Creer un utilisateur.
-
-Corps JSON :
-- `username`
-- `email`
-- `password`
-- `bio` (optionnel)
-- `avatar_url` (optionnel)
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
-     -d '{"username":"toto","email":"toto@example.com","password":"secret"}' \
-     http://localhost:8000/users
-```
-
-### GET /users/{id}
-Recuperer les informations d'un utilisateur.
-
-```bash
-curl http://localhost:8000/users/1
-```
-
-### GET /users/{id}/profile
-Afficher le profil detaille d'un utilisateur.
-
-```bash
-curl http://localhost:8000/users/1/profile
-```
-
-### PUT /users/{id}/profile
-Mettre a jour un profil utilisateur (`display_name`, `website`, `location`, `birth_date`, `gender`).
-
-```bash
-curl -X PUT -H "Content-Type: application/json" \
-    -d '{"display_name":"John"}' \
-     http://localhost:8000/users/1/profile
-```
 
 ## Articles
 
