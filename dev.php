@@ -58,7 +58,7 @@ try {
 ?>
 
 <!-- Hero Banner -->
-<section class="hero" style="background-color: var(--near-black); color: var(--white); padding: 4rem 0; background-image: url('assets/images/development-bg.jpg'); background-size: cover; background-position: center; position: relative;">
+<section class="hero" style="background-color: var(--near-black); color: var(--white); padding: 4rem 0; position: relative;">
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(25,25,32,0.85);"></div>
     <div class="container" style="position: relative; z-index: 2;">
         <div style="max-width: 800px; margin: 0 auto; text-align: center;">
@@ -81,7 +81,7 @@ try {
         <section class="code-snippet-section" style="margin-bottom: 3rem;">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 style="display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-code" style="color: var(--purple);"></i> Astuce du jour</h2>
-                <a href="snippets.php" class="view-all">Plus d'astuces <i class="fas fa-arrow-right"></i></a>
+                <a href="#" class="view-all">Plus d'astuces <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="forum-container">
@@ -172,7 +172,7 @@ console.table(users, ['name', 'role']);</code></pre>
                 <section>
                     <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <h2>Discussions sur le développement</h2>
-                        <a href="forums.php?category=dev" class="view-all">Toutes les discussions <i class="fas fa-arrow-right"></i></a>
+                        <a href="index.php?route=forums&category=dev" class="view-all">Toutes les discussions <i class="fas fa-arrow-right"></i></a>
                     </div>
                     
                     <div class="forum-container">
