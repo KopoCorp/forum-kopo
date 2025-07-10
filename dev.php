@@ -1,15 +1,35 @@
 <?php
 $page_title = "Développement";
 $page_description = "Ressources, articles et discussions sur le développement informatique, la programmation et les langages de code";
+require_once 'functions.php';
 require_once 'header.php';
 
 try {
-    // Get dev articles
-    $dev_articles = $api->request('/articles?tag=développement&limit=6');
-    
-    // Get dev forum threads
-    $dev_threads = $api->request('/forum/threads?category=dev&limit=5');
-    
+    // Load recent articles then filter by development keywords
+    $all_articles = $api->request('/articles?limit=20');
+    $dev_articles = [];
+    foreach ($all_articles as $article) {
+        $tags = array_column($article['tags'] ?? [], 'name');
+        if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'dev') {
+            $dev_articles[] = $article;
+        }
+        if (count($dev_articles) >= 6) {
+            break;
+        }
+    }
+
+    // Load forum threads and filter them as well
+    $all_threads = $api->request('/forum/threads?limit=20');
+    $dev_threads = [];
+    foreach ($all_threads as $thread) {
+        if (detect_topic([], ($thread['title'] ?? '') . ' ' . ($thread['content'] ?? '')) === 'dev') {
+            $dev_threads[] = $thread;
+        }
+        if (count($dev_threads) >= 5) {
+            break;
+        }
+    }
+
     // Get trending technologies
     $trending_techs = $api->request('/technologies/trending?limit=5');
     
