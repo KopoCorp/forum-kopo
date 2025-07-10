@@ -36,6 +36,7 @@ The API will be available on port **8000** of the container. Replace
 
 - `POST /users` – create a new user (passwords are hashed server-side)
 - `GET /users/{id}` – retrieve a user
+- `PUT/PATCH /users/{id}` – update account information *(requires token)*
 - `PUT/PATCH /users/{id}/bio` – update your bio *(requires token)*
 - `POST /login` – obtain a JWT access token
 - `POST /logout` – revoke the current token
