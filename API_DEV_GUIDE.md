@@ -316,6 +316,12 @@ curl -H "Authorization: Bearer <TOKEN>" -X DELETE http://localhost:8000/forum/th
 ### POST /forum/threads/{thread_id}/replies
 Répondre à un fil *(token requis)*.
 
+Corps JSON :
+- `thread_id`
+- `content`
+- `user_id` *(optionnel)*
+- `parent_id` *(optionnel)*
+
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" \
      -X POST -H "Content-Type: application/json" \
