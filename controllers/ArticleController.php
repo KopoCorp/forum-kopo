@@ -4,6 +4,45 @@ class ArticleController {
     public function __construct($api) {
         $this->api = $api;
     }
+
+    /**
+     * Retrieve a single article and ensure tags contain id and name
+     *
+     * @param mixed $identifier numeric id or slug
+     * @param bool $use_slug whether identifier is a slug
+     * @return array article data
+     */
+    private function fetchArticleWithTags($identifier, $use_slug) {
+        $endpoint = $use_slug
+            ? '/articles/slug/' . urlencode($identifier)
+            : '/articles/' . (int)$identifier;
+
+        $article = $this->api->request($endpoint);
+
+        // Normalize tags. Some API responses return only tag IDs.
+        if (isset($article['tags']) && !empty($article['tags'])) {
+            $first = $article['tags'][0];
+            if (!is_array($first) || !isset($first['name'])) {
+                try {
+                    $allTags = $this->api->request('/tags');
+                    $map = [];
+                    foreach ($allTags as $t) {
+                        $map[$t['id']] = $t['name'];
+                    }
+                    $article['tags'] = array_map(function ($id) use ($map) {
+                        return [
+                            'id' => $id,
+                            'name' => $map[$id] ?? $id
+                        ];
+                    }, $article['tags']);
+                } catch (Exception $e) {
+                    $article['tags'] = [];
+                }
+            }
+        }
+
+        return $article;
+    }
     public function show($id) {
         if (!isset($id)) {
             header('Location: articles.php');
@@ -15,7 +54,7 @@ class ArticleController {
             ? '/articles/slug/' . urlencode($id)
             : '/articles/' . (int)$id;
         try {
-            $article = $this->api->request($endpoint_base);
+            $article = $this->fetchArticleWithTags($id, $use_slug);
             $comments = $this->api->request($endpoint_base . '/comments');
             // Use numeric ID from returned data for view tracking and comment posting
             $article_id = $article['id'];
