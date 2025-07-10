@@ -91,28 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                     }
                 }
 
-                // Handle image upload if present
-                if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                    // Upload image and associate with article
-                    $image_data = file_get_contents($_FILES['image']['tmp_name']);
-                    $image_name = $_FILES['image']['name'];
-                    
-                    // First upload the attachment
-                    $attachment_data = [
-                        'file' => base64_encode($image_data),
-                        'filename' => $image_name,
-                        'content_type' => $_FILES['image']['type']
-                    ];
-                    
-                    $attachment = $api->request('/attachments', 'POST', $attachment_data, true);
-                    
-                    if (isset($attachment['id'])) {
-                        // Associate the image with the article
-                        $api->request('/articles/' . $article_id, 'PATCH', [
-                            'image_url' => '/attachments/' . $attachment['id']
-                        ], true);
-                    }
-                }
                 
                 $success = true;
             }
@@ -162,7 +140,7 @@ include 'header.php';
                         </div>
                     <?php endif; ?>
                     
-                    <form method="post" action="new-article.php" enctype="multipart/form-data">
+                    <form method="post" action="new-article.php">
                         <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
                             <label for="title" class="form-label">Titre de l'article</label>
@@ -226,11 +204,6 @@ code sur plusieurs lignes
                             <div class="form-text">Si le tag n'existe pas encore, il sera créé puis associé à l'article.</div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="image" class="form-label">Image d'en-tête (optionnelle)</label>
-                            <input type="file" id="image" name="image" class="form-control" accept="image/jpeg,image/png,image/gif">
-                            <div class="form-text">Format recommandé: 1200 x 630 pixels. Taille maximale: 5 Mo.</div>
-                        </div>
 
                         <div class="form-group">
                             <label for="image_url" class="form-label">URL de l'image d'en-tête (optionnelle)</label>
