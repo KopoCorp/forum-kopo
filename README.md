@@ -20,6 +20,14 @@ Set the `DATABASE_URL` environment variable to point to your PostgreSQL instance
 export DATABASE_URL=postgresql://user:password@localhost/forumdb
 ```
 
+### Database setup
+
+The application expects the database schema to already exist. If you run the API
+with an account that does not have permission to create tables, make sure to
+apply the SQL schema manually before starting the server.
+
+Once the tables are present you can launch the API normally.
+
 ## Running the API
 
 Start the API with `uvicorn`:

@@ -105,6 +105,10 @@ class Article(Base):
     comments = relationship('Comment', back_populates='article')
     article_tags = relationship('ArticleTag', back_populates='article')
 
+    @property
+    def tag_id(self):
+        return self.article_tags[0].tag_id if self.article_tags else None
+
 
 class Tag(Base):
     __tablename__ = 'tags'
@@ -122,6 +126,7 @@ class ArticleTag(Base):
 
     article = relationship('Article', back_populates='article_tags')
     tag = relationship('Tag', back_populates='article_tags')
+
 
 
 class Comment(Base):

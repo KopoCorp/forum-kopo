@@ -16,10 +16,11 @@ import shutil
 import html
 
 from . import models, schemas
-from .database import Base, engine, get_db
+from .database import engine, get_db
 
-# Create database tables if they don't exist
-Base.metadata.create_all(bind=engine)
+# The database schema must be created ahead of time; the application will not
+# attempt to create tables automatically.  This avoids permission issues when
+# the executing user lacks CREATE privileges.
 
 app = FastAPI(title="Kopo Forum API")
 
@@ -223,16 +224,31 @@ def create_article(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    db_article = models.Article(**article.dict())
+    data = article.dict()
+    tag_id = data.pop("tag_id", None)
+    db_article = models.Article(**data)
     db.add(db_article)
     db.commit()
+    if tag_id:
+        if not db.query(models.Tag).get(tag_id):
+            raise HTTPException(status_code=400, detail="Tag not found")
+        db.add(models.ArticleTag(article_id=db_article.id, tag_id=tag_id))
+        db.commit()
     db.refresh(db_article)
     return db_article
 
 
 @app.get("/articles", response_model=List[schemas.ArticleOut])
-def read_articles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.Article).offset(skip).limit(limit).all()
+def read_articles(
+    tag_id: Optional[int] = None,
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+):
+    query = db.query(models.Article)
+    if tag_id is not None:
+        query = query.join(models.ArticleTag).filter(models.ArticleTag.tag_id == tag_id)
+    return query.offset(skip).limit(limit).all()
 
 
 @app.get("/articles/count", response_model=schemas.CountOut)
@@ -260,8 +276,16 @@ def update_article(
     db_article = db.query(models.Article).get(article_id)
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
-    for key, value in article.dict(exclude_unset=True).items():
+    data = article.dict(exclude_unset=True)
+    tag_id = data.pop("tag_id", None)
+    for key, value in data.items():
         setattr(db_article, key, value)
+    if tag_id is not None:
+        if tag_id and not db.query(models.Tag).get(tag_id):
+            raise HTTPException(status_code=400, detail="Tag not found")
+        db.query(models.ArticleTag).filter(models.ArticleTag.article_id == article_id).delete()
+        if tag_id:
+            db.add(models.ArticleTag(article_id=article_id, tag_id=tag_id))
     db.commit()
     db.refresh(db_article)
     return db_article
@@ -457,6 +481,3 @@ def delete_reply(
         raise HTTPException(status_code=404, detail="Reply not found")
     db.delete(db_reply)
     db.commit()
-
-
-#BIDON

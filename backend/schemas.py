@@ -44,6 +44,7 @@ class ArticleBase(BaseModel):
 
 class ArticleCreate(ArticleBase):
     user_id: Optional[int]
+    tag_id: Optional[int] = None
 
 
 class ArticleUpdate(BaseModel):
@@ -51,11 +52,13 @@ class ArticleUpdate(BaseModel):
     content: Optional[str] = None
     is_pub: Optional[bool] = None
     user_id: Optional[int] = None
+    tag_id: Optional[int] = None
 
 
 class ArticleOut(ArticleBase):
     id: int
     user_id: Optional[int]
+    tag_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 
@@ -289,6 +292,7 @@ class ArticleTagCreate(BaseModel):
 
 class ArticleTagOut(ArticleTagCreate):
     article_id: int
+
 
 
 class PasswordResetRequest(BaseModel):
