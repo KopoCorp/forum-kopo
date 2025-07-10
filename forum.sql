@@ -231,3 +231,13 @@ CREATE TABLE settings (
     value TEXT,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- REPORTING CONFIGURATION
+CREATE TABLE reporting_config (
+    id SERIAL PRIMARY KEY,
+    discord_webhook TEXT NOT NULL,
+    ntfy_topic TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
