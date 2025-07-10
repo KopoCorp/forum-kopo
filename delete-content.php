@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 // Check if user is logged in
@@ -21,11 +22,11 @@ if (!isset($_GET['type']) || !isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit();
 }
 
-$type = $_GET['type'];
-$content_id = (int)$_GET['id'];
+$type = sanitize_string($_GET['type']);
+$content_id = sanitize_int($_GET['id']);
 
 // Get confirmation
-$confirmed = isset($_GET['confirm']) && $_GET['confirm'] === 'yes';
+$confirmed = isset($_GET['confirm']) && sanitize_string($_GET['confirm']) === 'yes';
 
 // If not confirmed, show confirmation page
 if (!$confirmed) {

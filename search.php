@@ -1,12 +1,13 @@
 <?php
 $page_title = "Recherche";
 $page_description = "Rechercher du contenu sur le forum Kopo";
+require_once 'functions.php';
 require_once 'header.php';
 
 // Get search parameters
-$q = isset($_GET['q']) ? trim($_GET['q']) : '';
-$type = isset($_GET['type']) ? $_GET['type'] : 'all';
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$q = isset($_GET['q']) ? sanitize_string($_GET['q']) : '';
+$type = isset($_GET['type']) ? sanitize_string($_GET['type']) : 'all';
+$page = isset($_GET['page']) ? sanitize_int($_GET['page']) : 1;
 $limit = 10;
 $skip = ($page - 1) * $limit;
 
