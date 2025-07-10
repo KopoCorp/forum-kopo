@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 import os
 import uuid
 import shutil
+import html
 
 from . import models, schemas
 from .database import Base, engine, get_db
@@ -106,6 +107,26 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@app.put("/users/{user_id}/bio", response_model=schemas.UserOut)
+@app.patch("/users/{user_id}/bio", response_model=schemas.UserOut)
+def update_user_bio(
+    user_id: int,
+    data: schemas.UserBioUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to modify this user")
+    db_user = db.query(models.User).get(user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    sanitized_bio = html.escape(data.bio.strip()) if data.bio else ""
+    db_user.bio = sanitized_bio
+    db.commit()
+    db.refresh(db_user)
+    return db_user
 
 
 @app.get("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
