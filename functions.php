@@ -67,4 +67,58 @@ function detect_topic(array $tags = [], string $content = '') {
     }
     return null;
 }
+/**
+ * Calculate forum statistics client-side.
+ *
+ * @param API $api
+ * @return array
+ */
+function calculate_forum_stats($api) {
+    $stats = [
+        'user_count' => 0,
+        'thread_count' => 0,
+        'reply_count' => 0,
+        'most_active_user' => null
+    ];
+
+    try {
+        $stats['user_count'] = (int)$api->request('/users/count');
+    } catch (Exception $e) {
+        // ignore errors
+    }
+
+    try {
+        $categories = $api->request('/forum/categories');
+        foreach ($categories as $cat) {
+            $stats['thread_count'] += $cat['thread_count'] ?? 0;
+            $stats['reply_count'] += $cat['reply_count'] ?? 0;
+        }
+    } catch (Exception $e) {
+        // ignore errors
+    }
+
+    if ($stats['user_count'] > 0) {
+        try {
+            $users = $api->request('/users?skip=0&limit=' . $stats['user_count']);
+            $bestUser = null;
+            $bestScore = -1;
+            foreach ($users as $user) {
+                $score = ($user['thread_count'] ?? 0)
+                       + ($user['reply_count'] ?? 0)
+                       + ($user['article_count'] ?? 0);
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $bestUser = $user;
+                }
+            }
+            if ($bestUser) {
+                $stats['most_active_user'] = $bestUser;
+            }
+        } catch (Exception $e) {
+            // ignore errors
+        }
+    }
+
+    return $stats;
+}
 ?>
