@@ -1,15 +1,35 @@
 <?php
 $page_title = "Cybersécurité";
 $page_description = "Information et discussions sur la cybersécurité, les vulnérabilités, la sécurité informatique et la protection des données";
+require_once 'functions.php';
 require_once 'header.php';
 
 try {
-    // Get security articles with cybersecurity tag
-    $security_articles = $api->request('/articles?tag=cybersécurité&limit=6');
-    
-    // Get security forum threads
-    $security_threads = $api->request('/forum/threads?category=security&limit=5');
-    
+    // Load recent articles then filter by cybersecurity keywords
+    $all_articles = $api->request('/articles?limit=20');
+    $security_articles = [];
+    foreach ($all_articles as $article) {
+        $tags = array_column($article['tags'] ?? [], 'name');
+        if (detect_topic($tags, ($article['title'] ?? '') . ' ' . ($article['content'] ?? '')) === 'security') {
+            $security_articles[] = $article;
+        }
+        if (count($security_articles) >= 6) {
+            break;
+        }
+    }
+
+    // Load forum threads and filter them as well
+    $all_threads = $api->request('/forum/threads?limit=20');
+    $security_threads = [];
+    foreach ($all_threads as $thread) {
+        if (detect_topic([], ($thread['title'] ?? '') . ' ' . ($thread['content'] ?? '')) === 'security') {
+            $security_threads[] = $thread;
+        }
+        if (count($security_threads) >= 5) {
+            break;
+        }
+    }
+
     // Get latest security alerts
     $security_alerts = $api->request('/security/alerts?limit=3');
     
