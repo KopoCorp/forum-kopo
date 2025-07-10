@@ -41,7 +41,6 @@
                     </div>
                     <div><i class="far fa-calendar"></i> <?php echo date('d/m/Y', strtotime($article['created_at'])); ?></div>
                     <div><i class="far fa-clock"></i> <?php echo isset($article['read_time']) ? $article['read_time'] . ' min de lecture' : 'Lecture'; ?></div>
-                    <div><i class="far fa-eye"></i> <?php echo $article['view_count'] ?? 0; ?> vues</div>
                 </div>
             </div>
             

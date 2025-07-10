@@ -95,7 +95,6 @@ include 'header.php';
                             <tr>
                                 <th style="text-align: left; padding: 1rem;">Titre</th>
                                 <th style="text-align: center; padding: 1rem;">Date de publication</th>
-                                <th style="text-align: center; padding: 1rem;">Vues</th>
                                 <th style="text-align: center; padding: 1rem;">Commentaires</th>
                                 <th style="text-align: center; padding: 1rem;">Actions</th>
                             </tr>
@@ -110,9 +109,6 @@ include 'header.php';
                                     </td>
                                     <td style="text-align: center; padding: 1rem; border-top: 1px solid var(--light-gray);">
                                         <?php echo date('d/m/Y', strtotime($article['created_at'])); ?>
-                                    </td>
-                                    <td style="text-align: center; padding: 1rem; border-top: 1px solid var(--light-gray);">
-                                        <?php echo $article['view_count'] ?? 0; ?>
                                     </td>
                                     <td style="text-align: center; padding: 1rem; border-top: 1px solid var(--light-gray);">
                                         <?php echo $article['comment_count'] ?? 0; ?>

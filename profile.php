@@ -175,7 +175,6 @@ include 'header.php';
                                                 </div>
                                                 <div style="display: flex; gap: 1rem; color: #666; font-size: 0.875rem;">
                                                     <div><i class="fas fa-comment"></i> <?php echo $thread['reply_count'] ?? 0; ?></div>
-                                                    <div><i class="fas fa-eye"></i> <?php echo $thread['view_count'] ?? 0; ?></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -221,7 +220,6 @@ include 'header.php';
                                                 </div>
                                                 <div style="display: flex; gap: 1rem; color: #666; font-size: 0.875rem;">
                                                     <div><i class="far fa-comment"></i> <?php echo $article['comment_count'] ?? 0; ?></div>
-                                                    <div><i class="far fa-eye"></i> <?php echo $article['view_count'] ?? 0; ?></div>
                                                 </div>
                                             </div>
                                         </div>
