@@ -42,6 +42,7 @@ The API will be available on port **8000** of the container. Replace
 - `GET /users/{id}/articles` – list an author's articles
 - `PUT/PATCH /users/{id}` – update account information *(requires token)*
 - `PUT/PATCH /users/{id}/bio` – update your bio *(requires token)*
+- `DELETE /users/{id}` – delete a user account *(requires token)*
 - `POST /login` – obtain a JWT access token
 - `POST /logout` – revoke the current token
 - `POST /articles` – create an article *(requires token)*
