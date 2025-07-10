@@ -51,7 +51,7 @@
             
             <h2 style="margin-top: 2rem; font-size: 1.3rem;">5. Confidentialité et sécurité</h2>
             <p>
-                Chaque membre est responsable de ses données personnelles et doit veiller à ne pas partager d’informations sensibles publiquement. Kopo met en place des mesures pour sécuriser vos données, conformément à la <a href="/privacy.php">politique de confidentialité</a>.
+                Chaque membre est responsable de ses données personnelles et doit veiller à ne pas partager d’informations sensibles publiquement. Kopo met en place des mesures pour sécuriser vos données, conformément à la <a href="index.php?route=privacy">politique de confidentialité</a>.
             </p>
             
             <h2 style="margin-top: 2rem; font-size: 1.3rem;">6. Contribution à la communauté</h2>

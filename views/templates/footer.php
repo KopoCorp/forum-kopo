@@ -23,11 +23,11 @@
                 <div class="footer-section">
                     <h4>Informations</h4>
                     <ul class="footer-links">
-                        <li><a href="about.php">À propos de Kopo</a></li>
-                        <li><a href="charte.php">Charte du forum</a></li>
-                        <li><a href="terms.php">Conditions d'utilisation</a></li>
-                        <li><a href="privacy.php">Politique de confidentialité</a></li>
-                        <li><a href="contact.php">Contact</a></li>
+                        <li><a href="index.php?route=about">À propos de Kopo</a></li>
+                        <li><a href="index.php?route=charte">Charte du forum</a></li>
+                        <li><a href="index.php?route=terms">Conditions d'utilisation</a></li>
+                        <li><a href="index.php?route=privacy">Politique de confidentialité</a></li>
+                        <li><a href="index.php?route=contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
