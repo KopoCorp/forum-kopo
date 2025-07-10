@@ -1,8 +1,13 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
-$route = isset($_GET['route']) ? $_GET['route'] : 'home';
+$route = isset($_GET['route']) ? sanitize_string($_GET['route']) : 'home';
+
+// Whitelist allowed routes to avoid path traversal
+$allowed_routes = ['home','article','articles','forums','contact','login','register'];
+$route = in_array($route, $allowed_routes, true) ? $route : 'home';
 
 switch ($route) {
     case 'home':

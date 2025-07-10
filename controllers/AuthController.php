@@ -12,8 +12,8 @@ class AuthController {
             exit();
         }
         $error = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = isset($_POST['username']) ? $_POST['username'] : '';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+            $username = isset($_POST['username']) ? sanitize_string($_POST['username']) : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
             if (empty($username) || empty($password)) {
                 $error = "Veuillez remplir tous les champs.";
@@ -45,9 +45,9 @@ class AuthController {
         }
         $error = '';
         $success = false;
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = isset($_POST['username']) ? $_POST['username'] : '';
-            $email = isset($_POST['email']) ? $_POST['email'] : '';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+            $username = isset($_POST['username']) ? sanitize_string($_POST['username']) : '';
+            $email = isset($_POST['email']) ? filter_var($_POST['email'], FILTER_SANITIZE_EMAIL) : '';
             $password = isset($_POST['password']) ? $_POST['password'] : '';
             $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
             if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {

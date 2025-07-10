@@ -39,6 +39,7 @@
                             <?php endif; ?>
                             
                             <form method="post" action="index.php?route=contact" data-validate>
+                                <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                                 <div class="form-group">
                                     <label for="name" class="form-label">Nom</label>
                                     <input type="text" id="name" name="name" class="form-control" value="<?php echo isset($name) ? htmlspecialchars($name) : ($api->isLoggedIn() ? htmlspecialchars($_SESSION['user']['username']) : ''); ?>" required>

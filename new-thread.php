@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'functions.php';
 require_once 'api.php';
 
 $page_title = "Nouvelle discussion";
@@ -15,7 +16,7 @@ if (!$api->isLoggedIn()) {
 }
 
 // Get category ID from query string if present
-$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+$category_id = isset($_GET['category_id']) ? sanitize_int($_GET['category_id']) : null;
 
 // Get categories for dropdown
 try {
@@ -29,10 +30,10 @@ $success = false;
 $thread_id = null;
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = isset($_POST['title']) ? $_POST['title'] : '';
-    $content = isset($_POST['content']) ? $_POST['content'] : '';
-    $selected_category = isset($_POST['category_id']) ? (int)$_POST['category_id'] : null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    $title = isset($_POST['title']) ? sanitize_string($_POST['title']) : '';
+    $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
+    $selected_category = isset($_POST['category_id']) ? sanitize_int($_POST['category_id']) : null;
 
     // Basic validation
     if (empty($title)) {
@@ -102,6 +103,7 @@ include 'header.php';
                     <?php endif; ?>
                     
                     <form method="post" action="new-thread.php">
+                        <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
                             <label for="category_id" class="form-label">Catégorie</label>
                             <select id="category_id" name="category_id" class="form-control" required>
