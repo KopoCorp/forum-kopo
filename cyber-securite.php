@@ -58,7 +58,7 @@ try {
 ?>
 
 <!-- Hero Banner -->
-<section class="hero" style="background-color: var(--near-black); color: var(--white); padding: 4rem 0; background-image: url('assets/images/cybersecurity-bg.jpg'); background-size: cover; background-position: center; position: relative;">
+<section class="hero" style="background-color: var(--near-black); color: var(--white); padding: 4rem 0; position: relative;">
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(25,25,32,0.85);"></div>
     <div class="container" style="position: relative; z-index: 2;">
         <div style="max-width: 800px; margin: 0 auto; text-align: center;">
@@ -81,7 +81,7 @@ try {
         <section class="security-alerts-section" style="margin-bottom: 3rem;">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 style="display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-shield-alt" style="color: var(--accent-red);"></i> Alertes de Sécurité</h2>
-                <a href="security-alerts.php" class="view-all">Toutes les alertes <i class="fas fa-arrow-right"></i></a>
+                <a href="#" class="view-all">Toutes les alertes <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <?php if (!empty($security_alerts)): ?>
@@ -101,7 +101,7 @@ try {
                             
                             <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
                                 <span>Publié le <?php echo date('d/m/Y', strtotime($alert['created_at'])); ?></span>
-                                <a href="security-alert.php?id=<?php echo $alert['id']; ?>" class="btn btn-sm btn-outline">
+                                <a href="#" class="btn btn-sm btn-outline">
                                     Plus de détails
                                 </a>
                             </div>
@@ -167,7 +167,7 @@ try {
                 <section>
                     <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <h2>Discussions sur la Sécurité</h2>
-                        <a href="forums.php?category=security" class="view-all">Toutes les discussions <i class="fas fa-arrow-right"></i></a>
+                        <a href="index.php?route=forums&category=security" class="view-all">Toutes les discussions <i class="fas fa-arrow-right"></i></a>
                     </div>
                     
                     <div class="forum-container">
