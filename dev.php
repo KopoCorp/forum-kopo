@@ -48,16 +48,18 @@ try {
             break;
         }
     }
-
-    // Get trending technologies
-    $trending_techs = $api->request('/technologies/trending?limit=5');
-    
 } catch (Exception $e) {
     $_SESSION['flash_message'] = "Erreur lors du chargement des données: " . $e->getMessage();
     $_SESSION['flash_type'] = "error";
-    
+
     $dev_articles = [];
     $dev_threads = [];
+}
+
+// Try to load trending technologies separately so a 404 doesn't clear articles
+try {
+    $trending_techs = $api->request('/technologies/trending?limit=5');
+} catch (Exception $e) {
     $trending_techs = [];
 }
 ?>
