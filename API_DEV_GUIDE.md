@@ -153,10 +153,10 @@ curl -X PUT -H "Content-Type: application/json" \
 Creer un nouvel article.
 
 Corps JSON :
-- `title`
-- `content`
-- `user_id` (optionnel)
-- `is_pub` (bool, defaut `false`)
+ - `title`
+ - `content`
+ - `user_id` (requis)
+ - `is_pub` (bool, defaut `false`)
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
