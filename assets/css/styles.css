@@ -131,7 +131,7 @@ pre code {
 }
 
 .logo img {
-  height: 40px;
+  height: 50px;
   margin-right: 0.75rem;
 }
 
@@ -345,7 +345,7 @@ pre code {
 
 /* Hero section */
 .hero {
-  background-color: var(--dark-blue);
+  background-color: var(--light-blue);
   color: var(--white);
   padding: 4rem 0;
   text-align: center;
@@ -372,6 +372,12 @@ pre code {
   display: flex;
   justify-content: center;
   gap: 1rem;
+}
+.hero .btn-primary {
+  background-color: var(--purple);
+}
+.hero .btn-primary:hover {
+  background-color: #5d56a8;
 }
 
 /* Forum Components */
