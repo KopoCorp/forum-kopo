@@ -50,23 +50,19 @@
                 <?php echo $article['content']; // We assume this is sanitized by the API ?>
             </div>
 
-            <?php if (isset($article['tags'])): ?>
-                <pre class="debug-tags">
-<?php echo htmlspecialchars(print_r($article['tags'], true)); ?>
-                </pre>
-            <?php endif; ?>
             
             <div class="article-footer">
-                <div class="article-tags">
-                    <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
-                        <?php foreach ($article['tags'] as $tag): ?>
-                            <a href="articles.php?tag=<?php echo $tag['id']; ?>" class="article-tag">
-                                <?php echo htmlspecialchars($tag['name']); ?>
-                            </a>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
+                <div class="article-tags" style="margin-bottom: 1rem;">
+                    <strong style="margin-right:0.25rem;">Tags:</strong>
+                    <?php foreach ($article['tags'] as $tag): ?>
+                        <a href="articles.php?tag=<?php echo $tag['id']; ?>" class="article-tag">
+                            <?php echo htmlspecialchars($tag['name']); ?>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
-                
+                <?php endif; ?>
+
                 <div class="article-actions">
                     <?php if ($api->isLoggedIn()): ?>
                         <button type="button" class="btn btn-outline btn-sm" onclick="likeArticle(<?php echo $article_id; ?>)">
@@ -82,9 +78,9 @@
                                 <i class="fas fa-edit"></i> Éditer
                             </a>
                         <?php endif; ?>
-                    <?php endif; ?>
-                    </div>
+                        <?php endif; ?>
                 </div>
+            </div>
             </article>
             </div>
             <aside class="sidebar">
