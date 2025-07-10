@@ -275,20 +275,22 @@ def create_article(
     current_user: models.User = Depends(get_current_user),
 ):
     data = article.dict()
-    tag_id = data.pop("tag_id", None)
-    tag_name = data.pop("tag_name", None)
+    tag_ids = data.pop("tag_ids", None) or []
+    tag_names = data.pop("tag_names", None) or []
     db_article = models.Article(**data)
     db.add(db_article)
     db.commit()
-    if tag_name:
-        tag = db.query(models.Tag).filter(models.Tag.name == tag_name).first()
+    tags_to_add = set(tag_ids)
+    for name in tag_names:
+        tag = db.query(models.Tag).filter(models.Tag.name == name).first()
         if not tag:
-            tag = models.Tag(name=tag_name)
+            tag = models.Tag(name=name)
             db.add(tag)
             db.commit()
-        tag_id = tag.id
-    if tag_id:
-        db.add(models.ArticleTag(article_id=db_article.id, tag_id=tag_id))
+        tags_to_add.add(tag.id)
+    for t_id in tags_to_add:
+        db.add(models.ArticleTag(article_id=db_article.id, tag_id=t_id))
+    if tags_to_add:
         db.commit()
     db.refresh(db_article)
     return db_article
@@ -350,21 +352,24 @@ def update_article(
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
     data = article.dict(exclude_unset=True)
-    tag_id = data.pop("tag_id", None)
-    tag_name = data.pop("tag_name", None)
+    tag_ids = data.pop("tag_ids", None)
+    tag_names = data.pop("tag_names", None)
     for key, value in data.items():
         setattr(db_article, key, value)
-    if tag_name:
-        tag = db.query(models.Tag).filter(models.Tag.name == tag_name).first()
-        if not tag:
-            tag = models.Tag(name=tag_name)
-            db.add(tag)
-            db.commit()
-        tag_id = tag.id
-    if tag_id is not None:
+    tags_specified = tag_ids is not None or tag_names is not None
+    tags_to_set = set(tag_ids or [])
+    if tag_names:
+        for name in tag_names:
+            tag = db.query(models.Tag).filter(models.Tag.name == name).first()
+            if not tag:
+                tag = models.Tag(name=name)
+                db.add(tag)
+                db.commit()
+            tags_to_set.add(tag.id)
+    if tags_specified:
         db.query(models.ArticleTag).filter(models.ArticleTag.article_id == article_id).delete()
-        if tag_id:
-            db.add(models.ArticleTag(article_id=article_id, tag_id=tag_id))
+        for t_id in tags_to_set:
+            db.add(models.ArticleTag(article_id=article_id, tag_id=t_id))
     db.commit()
     db.refresh(db_article)
     return db_article

@@ -45,7 +45,9 @@ def main():
         article_payload = {
             "user_id": user_id,
             "title": "Article de test",
-            "content": "Ceci est un article factice créé automatiquement pour la vitrine."
+            "content": "Ceci est un article factice créé automatiquement pour la vitrine.",
+            "image_url": "https://example.com/test.png",
+            "tag_names": ["demo"]
         }
         resp = requests.post(f"{BASE_URL}/articles", json=article_payload, headers=headers)
         print_result("Create article", resp)
