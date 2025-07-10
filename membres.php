@@ -33,12 +33,15 @@ switch ($sort) {
 
 // Récupération des membres
 try {
-    $query = '/users?skip=' . $skip . '&limit=' . $limit . $sort_param;
     if (!empty($search)) {
-        $query .= '&search=' . urlencode($search);
+        // Utiliser l'endpoint de recherche lorsque l'utilisateur saisit une requête
+        $search_query = '/search?q=' . urlencode($search) . '&type=users&skip=' . $skip . '&limit=' . $limit;
+        $search_result = $api->request($search_query);
+        $members_data = $search_result['users'] ?? [];
+    } else {
+        $query = '/users?skip=' . $skip . '&limit=' . $limit . $sort_param;
+        $members_data = $api->request($query);
     }
-
-    $members_data = $api->request($query);
 } catch (Exception $e) {
     $_SESSION['flash_message'] = "Erreur lors du chargement des membres: " . $e->getMessage();
     $_SESSION['flash_type'] = "error";
@@ -47,8 +50,13 @@ try {
 
 // Pagination (ne doit pas masquer la liste si le comptage échoue)
 try {
-    $total_count = $api->request('/users/count' . (!empty($search) ? '?search=' . urlencode($search) : ''));
-    $total_pages = ceil(($total_count['count'] ?? 24) / $limit);
+    if (!empty($search)) {
+        $count_result = $api->request('/search/count?q=' . urlencode($search) . '&type=users');
+        $total_pages = ceil(($count_result['count'] ?? 24) / $limit);
+    } else {
+        $total_count = $api->request('/users/count');
+        $total_pages = ceil(($total_count['count'] ?? 24) / $limit);
+    }
 } catch (Exception $e) {
     if (!isset($_SESSION['flash_message'])) {
         $_SESSION['flash_message'] = "Erreur lors du chargement du nombre de membres: " . $e->getMessage();
@@ -101,7 +109,7 @@ try {
                     <div class="member-card" style="background-color: var(--white); border-radius: var(--border-radius); overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
                         <div style="padding: 1.5rem; text-align: center; border-bottom: 1px solid var(--light-gray);">
                             <div class="member-avatar" style="position: relative; display: inline-block; margin-bottom: 1rem;">
-                                <img src="<?php echo isset($member['avatar_url']) && !empty($member['avatar_url']) ? htmlspecialchars($member['avatar_url']) : 'assets/images/default-avatar.png'; ?>" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                                <img src="<?php echo isset($member['avatar_url']) && !empty($member['avatar_url']) ? htmlspecialchars($member['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
                                 
                                 <?php if (isset($member['is_online']) && $member['is_online']): ?>
                                     <div class="online-indicator" style="position: absolute; bottom: 0; right: 0; width: 16px; height: 16px; background-color: #28a745; border-radius: 50%; border: 2px solid white;"></div>
