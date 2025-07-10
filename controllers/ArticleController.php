@@ -5,14 +5,20 @@ class ArticleController {
         $this->api = $api;
     }
     public function show($id) {
-        if (!isset($id) || !is_numeric($id)) {
+        if (!isset($id)) {
             header('Location: articles.php');
             exit();
         }
-        $article_id = (int)$id;
+
+        $use_slug = !is_numeric($id);
+        $endpoint_base = $use_slug
+            ? '/articles/slug/' . urlencode($id)
+            : '/articles/' . (int)$id;
         try {
-            $article = $this->api->request('/articles/' . $article_id);
-            $comments = $this->api->request('/articles/' . $article_id . '/comments');
+            $article = $this->api->request($endpoint_base);
+            $comments = $this->api->request($endpoint_base . '/comments');
+            // Use numeric ID from returned data for view tracking and comment posting
+            $article_id = $article['id'];
             $this->api->request('/articles/' . $article_id . '/view', 'POST');
             $page_title = $article['title'];
             $page_description = substr(strip_tags($article['content']), 0, 160);
