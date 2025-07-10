@@ -168,8 +168,12 @@
                 <!-- Cybersecurity Alert -->
                 <section class="security-alert" style="margin-top: 3rem;">
                     <h4><i class="fas fa-shield-alt"></i> Alerte de sécurité</h4>
-                    <p>Mise à jour importante concernant la vulnérabilité critique Log4Shell (CVE-2021-44228). Assurez-vous que vos systèmes sont protégés contre cette faille.</p>
-                    <p><a href="article.php?id=cybersecurity-alert" class="btn btn-accent" style="margin-top: 0.5rem;">En savoir plus</a></p>
+                    <?php if (!empty($latest_security_alert)): ?>
+                        <p><?php echo htmlspecialchars($latest_security_alert['title']); ?></p>
+                        <p><a href="<?php echo htmlspecialchars($latest_security_alert['link']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-accent" style="margin-top: 0.5rem;">En savoir plus</a></p>
+                    <?php else: ?>
+                        <p>Aucune alerte de sécurité disponible actuellement.</p>
+                    <?php endif; ?>
                 </section>
                 <!-- CTA Section -->
                 <section class="cta-section" style="margin: 3rem 0; padding: 3rem; background-color: var(--dark-blue); color: var(--white); border-radius: var(--border-radius); text-align: center;">
