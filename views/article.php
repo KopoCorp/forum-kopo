@@ -22,15 +22,6 @@
             <?php endif; ?>
             
             <div class="article-header">
-                <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
-                    <div style="margin-bottom: 1rem;">
-                        <?php foreach ($article['tags'] as $tag): ?>
-                            <a href="articles.php?tag=<?php echo urlencode($tag['name']); ?>" class="article-category" style="margin-right: 0.5rem;">
-                                <?php echo htmlspecialchars($tag['name']); ?>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
                 
                 <h1 class="article-title"><?php echo htmlspecialchars($article['title']); ?></h1>
                 
@@ -44,6 +35,15 @@
                     <div><i class="far fa-calendar"></i> <?php echo date('d/m/Y', strtotime($article['created_at'])); ?></div>
                     <div><i class="far fa-clock"></i> <?php echo isset($article['read_time']) ? $article['read_time'] . ' min de lecture' : 'Lecture'; ?></div>
                 </div>
+                <?php if (isset($article['tags']) && !empty($article['tags'])): ?>
+                    <div class="article-tags" style="margin-top: 1rem;">
+                        <?php foreach ($article['tags'] as $tag): ?>
+                            <a href="articles.php?tag=<?php echo urlencode($tag['name']); ?>" class="article-tag">
+                                <?php echo htmlspecialchars($tag['name']); ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
             
             <div class="article-content">
