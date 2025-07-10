@@ -105,6 +105,10 @@ class Article(Base):
     comments = relationship('Comment', back_populates='article')
     article_tags = relationship('ArticleTag', back_populates='article')
 
+    @property
+    def tag_id(self):
+        return self.article_tags[0].tag_id if self.article_tags else None
+
 
 class Tag(Base):
     __tablename__ = 'tags'
@@ -113,6 +117,7 @@ class Tag(Base):
     name = Column(String(50), unique=True, nullable=False)
 
     article_tags = relationship('ArticleTag', back_populates='tag')
+    thread_tags = relationship('ThreadTag', back_populates='tag')
 
 
 class ArticleTag(Base):
@@ -122,6 +127,15 @@ class ArticleTag(Base):
 
     article = relationship('Article', back_populates='article_tags')
     tag = relationship('Tag', back_populates='article_tags')
+
+
+class ThreadTag(Base):
+    __tablename__ = 'thread_tags'
+    thread_id = Column(Integer, ForeignKey('forum_threads.id', ondelete='CASCADE'), primary_key=True)
+    tag_id = Column(Integer, ForeignKey('tags.id', ondelete='CASCADE'), primary_key=True)
+
+    thread = relationship('ForumThread', back_populates='thread_tags')
+    tag = relationship('Tag', back_populates='thread_tags')
 
 
 class Comment(Base):
@@ -166,6 +180,11 @@ class ForumThread(Base):
     user = relationship('User', back_populates='threads')
     category = relationship('ForumCategory', back_populates='threads')
     replies = relationship('ForumReply', back_populates='thread')
+    thread_tags = relationship('ThreadTag', back_populates='thread')
+
+    @property
+    def tag_id(self):
+        return self.thread_tags[0].tag_id if self.thread_tags else None
 
 
 class ForumReply(Base):
