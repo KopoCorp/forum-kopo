@@ -49,6 +49,12 @@
             <div class="article-content">
                 <?php echo $article['content']; // We assume this is sanitized by the API ?>
             </div>
+
+            <?php if (isset($article['tags'])): ?>
+                <pre class="debug-tags">
+<?php echo htmlspecialchars(print_r($article['tags'], true)); ?>
+                </pre>
+            <?php endif; ?>
             
             <div class="article-footer">
                 <div class="article-tags">
