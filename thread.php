@@ -18,6 +18,95 @@ try {
     // Get thread replies
     $replies = $api->request('/forum/threads/' . $thread_id . '/replies');
 
+    // Organize replies by parent for nested display
+    $replies_by_parent = [];
+    $replies_by_id = [];
+    foreach ($replies as $r) {
+        $pid = $r['parent_id'] ?? 0;
+        if (!isset($replies_by_parent[$pid])) {
+            $replies_by_parent[$pid] = [];
+        }
+        $replies_by_parent[$pid][] = $r;
+        $replies_by_id[$r['id']] = $r;
+    }
+
+    /**
+     * Recursive helper to render replies with nesting
+     */
+    function render_replies($parent_id, $level, $replies_by_parent, $replies_by_id, $api) {
+        if (!isset($replies_by_parent[$parent_id])) {
+            return;
+        }
+        foreach ($replies_by_parent[$parent_id] as $reply) {
+            $parent = $reply['parent_id'] ?? 0;
+            $parent_username = '';
+            if ($parent && isset($replies_by_id[$parent])) {
+                $parent_username = $replies_by_id[$parent]['username'] ?? '';
+            }
+            ?>
+            <div class="post reply-level-<?php echo $level; ?>" id="reply-<?php echo $reply['id']; ?>">
+                <div class="post-sidebar">
+                    <img src="<?php echo isset($reply['user']['avatar_url']) && !empty($reply['user']['avatar_url']) ? htmlspecialchars($reply['user']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="user-avatar">
+                    <div class="user-name"><?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?></div>
+                    <div class="user-info">
+                        <?php
+                        $role = isset($reply['user']['role']) ? $reply['user']['role'] : '';
+                        if (!empty($role)) {
+                            echo '<span style="color: ' . ($role === 'admin' ? 'var(--accent-red)' : 'var(--bright-blue)') . ';">' . htmlspecialchars($role) . '</span><br>';
+                        }
+                        ?>
+                        Messages: <?php echo $reply['user']['post_count'] ?? 0; ?><br>
+                        Inscrit: <?php echo isset($reply['user']['created_at']) ? date('M Y', strtotime($reply['user']['created_at'])) : ''; ?>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <?php if ($parent_username): ?>
+                        <div class="replying-to" style="margin-bottom: 0.5rem; color: #666;">
+                            En réponse à <a href="#reply-<?php echo $parent; ?>">@<?php echo htmlspecialchars($parent_username); ?></a>
+                        </div>
+                    <?php endif; ?>
+                    <div class="post-text">
+                        <?php echo $reply['content']; ?>
+                    </div>
+
+                    <div class="post-meta" style="display: flex; justify-content: space-between; color: #666; font-size: 0.875rem; margin-top: 1rem;">
+                        <div>
+                            <i class="far fa-clock"></i> <?php echo date('d/m/Y à H:i', strtotime($reply['created_at'])); ?>
+                            <?php if (isset($reply['updated_at']) && $reply['updated_at'] !== $reply['created_at']): ?>
+                                <em>(édité le <?php echo date('d/m/Y à H:i', strtotime($reply['updated_at'])); ?>)</em>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="post-actions">
+                            <?php if ($api->isLoggedIn()): ?>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?>')">
+                                    <i class="fas fa-quote-right"></i> Citer
+                                </button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="replyTo(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?>')">
+                                    <i class="fas fa-reply"></i> Répondre
+                                </button>
+                                <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] === $reply['user_id']): ?>
+                                    <a href="edit-reply.php?id=<?php echo $reply['id']; ?>" class="btn btn-outline btn-sm">
+                                        <i class="fas fa-edit"></i> Éditer
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (isset($_SESSION['user']['is_admin']) && $_SESSION['user']['is_admin']): ?>
+                                    <a href="admin/moderate-reply.php?id=<?php echo $reply['id']; ?>" class="btn btn-outline btn-sm">
+                                        <i class="fas fa-gavel"></i> Modérer
+                                    </a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+            render_replies($reply['id'], $level + 1, $replies_by_parent, $replies_by_id, $api);
+        }
+    }
+
     // Update view count but continue even if the endpoint does not exist
     try {
         $api->request('/forum/threads/' . $thread_id . '/view', 'POST');
@@ -41,15 +130,20 @@ $reply_success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $api->isLoggedIn() && verify_csrf_token($_POST['csrf_token'] ?? '')) {
     $content = isset($_POST['content']) ? sanitize_string($_POST['content']) : '';
-    
+    $parent_id = isset($_POST['parent_id']) ? sanitize_int($_POST['parent_id']) : null;
+
     if (empty($content)) {
         $reply_error = "Le contenu de la réponse ne peut pas être vide.";
     } else {
         try {
-            $result = $api->request('/forum/threads/' . $thread_id . '/replies', 'POST', [
+            $data = [
                 'thread_id' => $thread_id,
                 'content' => $content
-            ], true);
+            ];
+            if ($parent_id) {
+                $data['parent_id'] = $parent_id;
+            }
+            $result = $api->request('/forum/threads/' . $thread_id . '/replies', 'POST', $data, true);
             
             // Refresh the page to show the new reply
             header('Location: thread.php?id=' . $thread_id . '&reply=success#reply-' . $result['id']);
@@ -126,6 +220,9 @@ include 'header.php';
                                 <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $thread_id; ?>, '<?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?>')">
                                     <i class="fas fa-quote-right"></i> Citer
                                 </button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="replyTo(0, '<?php echo htmlspecialchars($thread['username'] ?? 'Utilisateur'); ?>')">
+                                    <i class="fas fa-reply"></i> Répondre
+                                </button>
                                 
                                 <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] === $thread['user_id']): ?>
                                     <a href="edit-thread.php?id=<?php echo $thread_id; ?>" class="btn btn-outline btn-sm">
@@ -147,59 +244,7 @@ include 'header.php';
             <!-- Replies -->
             <?php if (!empty($replies)): ?>
                 <div class="thread-replies">
-                    <?php foreach ($replies as $reply): ?>
-                        <div class="post" id="reply-<?php echo $reply['id']; ?>">
-                            <div class="post-sidebar">
-                                <img src="<?php echo isset($reply['user']['avatar_url']) && !empty($reply['user']['avatar_url']) ? htmlspecialchars($reply['user']['avatar_url']) : DEFAULT_AVATAR_URL; ?>" alt="Avatar" class="user-avatar">
-                                <div class="user-name"><?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?></div>
-                                <div class="user-info">
-                                    <?php
-                                    $role = isset($reply['user']['role']) ? $reply['user']['role'] : '';
-                                    if (!empty($role)) {
-                                        echo '<span style="color: ' . ($role === 'admin' ? 'var(--accent-red)' : 'var(--bright-blue)') . ';">' . htmlspecialchars($role) . '</span><br>';
-                                    }
-                                    ?>
-                                    Messages: <?php echo $reply['user']['post_count'] ?? 0; ?><br>
-                                    Inscrit: <?php echo isset($reply['user']['created_at']) ? date('M Y', strtotime($reply['user']['created_at'])) : ''; ?>
-                                </div>
-                            </div>
-                            
-                            <div class="post-content">
-                                <div class="post-text">
-                                    <?php echo $reply['content']; // We assume this is sanitized by the API ?>
-                                </div>
-                                
-                                <div class="post-meta" style="display: flex; justify-content: space-between; color: #666; font-size: 0.875rem; margin-top: 1rem;">
-                                    <div>
-                                        <i class="far fa-clock"></i> <?php echo date('d/m/Y à H:i', strtotime($reply['created_at'])); ?>
-                                        <?php if (isset($reply['updated_at']) && $reply['updated_at'] !== $reply['created_at']): ?>
-                                            <em>(édité le <?php echo date('d/m/Y à H:i', strtotime($reply['updated_at'])); ?>)</em>
-                                        <?php endif; ?>
-                                    </div>
-                                    
-                                    <div class="post-actions">
-                                        <?php if ($api->isLoggedIn()): ?>
-                                            <button type="button" class="btn btn-outline btn-sm" onclick="quotePost(<?php echo $reply['id']; ?>, '<?php echo htmlspecialchars($reply['username'] ?? 'Utilisateur'); ?>')">
-                                                <i class="fas fa-quote-right"></i> Citer
-                                            </button>
-                                            
-                                            <?php if (isset($_SESSION['user']['id']) && $_SESSION['user']['id'] === $reply['user_id']): ?>
-                                                <a href="edit-reply.php?id=<?php echo $reply['id']; ?>" class="btn btn-outline btn-sm">
-                                                    <i class="fas fa-edit"></i> Éditer
-                                                </a>
-                                            <?php endif; ?>
-                                            
-                                            <?php if (isset($_SESSION['user']['is_admin']) && $_SESSION['user']['is_admin']): ?>
-                                                <a href="admin/moderate-reply.php?id=<?php echo $reply['id']; ?>" class="btn btn-outline btn-sm">
-                                                    <i class="fas fa-gavel"></i> Modérer
-                                                </a>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+                    <?php render_replies(0, 0, $replies_by_parent, $replies_by_id, $api); ?>
                 </div>
             <?php endif; ?>
         </div>
@@ -229,6 +274,10 @@ include 'header.php';
                         
                         <form method="post" action="thread.php?id=<?php echo $thread_id; ?>" id="reply-form">
                             <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
+                            <input type="hidden" name="parent_id" id="parent_id" value="">
+                            <div id="replying-to-box" style="display:none; margin-bottom:0.5rem;">
+                                Réponse à <span id="replying-to-user"></span> <a href="#" onclick="cancelReply();return false;">Annuler</a>
+                            </div>
                             <div class="form-group">
                                 <label for="content" class="form-label">Votre réponse</label>
                                 <textarea id="content" name="content" class="form-control" rows="8" required></textarea>
@@ -277,6 +326,27 @@ function quotePost(postId, username) {
         textarea.focus();
         textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+}
+
+function replyTo(postId, username) {
+    const parentInput = document.getElementById('parent_id');
+    const box = document.getElementById('replying-to-box');
+    const userSpan = document.getElementById('replying-to-user');
+    if (parentInput) parentInput.value = postId;
+    if (userSpan) userSpan.textContent = '@' + username;
+    if (box) box.style.display = 'block';
+    const textarea = document.getElementById('content');
+    if (textarea) {
+        textarea.focus();
+    }
+    document.getElementById('reply-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelReply() {
+    const parentInput = document.getElementById('parent_id');
+    const box = document.getElementById('replying-to-box');
+    if (parentInput) parentInput.value = '';
+    if (box) box.style.display = 'none';
 }
 
 function insertFormatting(tag) {
