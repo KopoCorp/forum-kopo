@@ -16,8 +16,8 @@
                         <li><a href="index.php">Accueil</a></li>
                         <li><a href="forums.php">Forums</a></li>
                         <li><a href="articles.php">Articles</a></li>
-                        <li><a href="cyber-securite.php">Cybersécurité</a></li>
-                        <li><a href="dev.php">Développement</a></li>
+                        <li><a href="index.php?route=cyber-securite">Cybersécurité</a></li>
+                        <li><a href="index.php?route=dev">Développement</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
