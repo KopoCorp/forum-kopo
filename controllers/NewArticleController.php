@@ -53,12 +53,8 @@ class NewArticleController {
                         $data['tag_names'] = [$new_tag];
                     }
 
-                    // If the article should remain unpublished, create a draft
-                    $endpoint = $is_published ? '/articles' : '/drafts';
-                    if (!$is_published) {
-                        $data['type'] = 'article';
-                    }
-                    $result = $this->api->request($endpoint, 'POST', $data, true);
+                    // Always use /articles endpoint. Rely on is_pub flag for drafts
+                    $result = $this->api->request('/articles', 'POST', $data, true);
                     if (isset($result['id'])) {
                         $article_id = $result['id'];
                         if (!empty($image_url)) {
