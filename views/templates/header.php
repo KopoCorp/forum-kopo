@@ -44,7 +44,7 @@ global $api;
                     <li><a href="index.php?route=articles" <?php echo isset($_GET['route']) && $_GET['route'] == 'articles' ? 'class="active"' : ''; ?>>Articles</a></li>
                     <li><a href="index.php?route=cyber-securite" <?php echo isset($_GET['route']) && $_GET['route'] == 'cyber-securite' ? 'class="active"' : ''; ?>>Cyber-Sécurité</a></li>
                     <li><a href="index.php?route=dev" <?php echo isset($_GET['route']) && $_GET['route'] == 'dev' ? 'class="active"' : ''; ?>>Développement</a></li>
-                    <li><a href="membres.php" <?php echo basename($_SERVER['PHP_SELF']) == 'membres.php' ? 'class="active"' : ''; ?>>Membres</a></li>
+                    <li><a href="index.php?route=members" <?php echo isset($_GET['route']) && $_GET['route'] == 'members' ? 'class="active"' : ''; ?>>Membres</a></li>
                 </ul>
             </nav>
             <div class="user-actions">
