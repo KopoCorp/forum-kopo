@@ -98,7 +98,7 @@ try {
             break;
             
         case 'draft':
-            $result = $api->request('/drafts/' . $content_id, 'DELETE', [], true);
+            $result = $api->request('/articles/' . $content_id, 'DELETE', [], true);
             $_SESSION['flash_message'] = "Le brouillon a été supprimé avec succès.";
             break;
             
