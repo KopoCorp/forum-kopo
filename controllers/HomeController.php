@@ -16,6 +16,9 @@ class HomeController {
             $categories = $this->api->request('/forum/categories');
             // Get popular threads
             $popular_threads = $this->api->request('/forum/threads?skip=0&limit=5');
+            // Latest security alert from CERT-FR
+            $alerts = $this->api->request('/security/alerts?limit=1');
+            $latest_security_alert = !empty($alerts) ? $alerts[0] : null;
         } catch (Exception $e) {
             $_SESSION['flash_message'] = "Erreur lors du chargement des données: " . $e->getMessage();
             $_SESSION['flash_type'] = "error";
