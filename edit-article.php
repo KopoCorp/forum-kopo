@@ -47,20 +47,13 @@ try {
     }, $article_tags);
     
 } catch (Exception $e) {
-    try {
-        $article = $api->request('/drafts/' . $article_id, 'GET', [], true);
-        $is_draft = true;
-        // Get available tags
-        $tags = $api->request('/tags');
-        $article_tags = isset($article['tags']) ? $article['tags'] : [];
-        $selected_tag_ids = array_map(function($tag) { return $tag['id']; }, $article_tags);
-    } catch (Exception $e2) {
-        $_SESSION['flash_message'] = "Erreur: " . $e2->getMessage();
-        $_SESSION['flash_type'] = "error";
-        header('Location: my-content.php');
-        exit();
-    }
+    $_SESSION['flash_message'] = "Erreur: " . $e->getMessage();
+    $_SESSION['flash_type'] = "error";
+    header('Location: my-content.php');
+    exit();
 }
+
+$is_draft = !$article['is_pub'];
 
 $error = '';
 $success = false;
@@ -105,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                 $article_data['tag_names'] = [$new_tag];
             }
 
-            $endpoint = $is_draft ? '/drafts/' . $article_id : '/articles/' . $article_id;
+            $endpoint = '/articles/' . $article_id;
             $api->request($endpoint, 'PATCH', $article_data, true);
             
             // Handle image upload if present

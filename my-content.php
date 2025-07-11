@@ -43,10 +43,24 @@ try {
     // Get user's threads
     $my_threads = $api->request('/users/' . $user_id . '/threads', 'GET', [], true);
     
-    // Get user's drafts if on drafts tab
+    // Get user's drafts if on drafts tab by filtering articles and threads
     $my_drafts = [];
     if ($active_tab === 'drafts') {
-        $my_drafts = $api->request('/users/' . $user_id . '/drafts', 'GET', [], true);
+        $my_drafts = [];
+        $user_articles = $api->request('/users/' . $user_id . '/articles', 'GET', [], true);
+        foreach ($user_articles as $a) {
+            if (empty($a['is_pub'])) {
+                $a['type'] = 'article';
+                $my_drafts[] = $a;
+            }
+        }
+        $user_threads = $api->request('/users/' . $user_id . '/threads', 'GET', [], true);
+        foreach ($user_threads as $t) {
+            if (empty($t['is_pub'])) {
+                $t['type'] = 'thread';
+                $my_drafts[] = $t;
+            }
+        }
     }
 } catch (Exception $e) {
     $_SESSION['flash_message'] = "Erreur lors du chargement de vos publications: " . $e->getMessage();
