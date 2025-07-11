@@ -40,10 +40,8 @@
                         <?php foreach ($articles_data as $article): ?>
                             <article class="article-card">
                                 <div class="article-card-image">
-                                    <?php if (isset($article['image_url']) && !empty($article['image_url'])): ?>
-                                        <img src="<?php echo htmlspecialchars($article['image_url']); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
-                                    <?php endif; ?>
-                                    <?php 
+                                    <img src="<?php echo htmlspecialchars(get_article_banner_url($article)); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>">
+                                    <?php
                                     $label_text = '';
                                     $label_color = '';
                                     
