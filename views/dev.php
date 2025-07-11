@@ -23,7 +23,6 @@
         <section class="code-snippet-section" style="margin-bottom: 3rem;">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 style="display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-code" style="color: var(--purple);"></i> Astuce du jour</h2>
-                <a href="#" class="view-all">Plus d'astuces <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="forum-container">
@@ -152,32 +151,6 @@ console.table(users, ['name', 'role']);</code></pre>
             
             <!-- Sidebar -->
             <aside class="sidebar">
-                <!-- Trending Technologies -->
-                <div class="widget">
-                    <div class="widget-header" style="background-color: var(--purple);">
-                        <h3>Technologies en tendance</h3>
-                    </div>
-                    <div class="widget-content">
-                        <?php if (!empty($trending_techs)): ?>
-                            <ul style="list-style: none;">
-                                <?php foreach ($trending_techs as $tech): ?>
-                                    <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--light-gray); display: flex; align-items: center; justify-content: space-between;">
-                                        <div>
-                                            <strong><?php echo htmlspecialchars($tech['name']); ?></strong>
-                                            <div style="font-size: 0.875rem; color: #666;"><?php echo htmlspecialchars($tech['category']); ?></div>
-                                        </div>
-                                        <div class="trend-indicator <?php echo $tech['trend'] === 'up' ? 'up' : 'down'; ?>" style="color: <?php echo $tech['trend'] === 'up' ? '#28a745' : '#dc3545'; ?>; font-weight: bold;">
-                                            <i class="fas fa-arrow-<?php echo $tech['trend'] === 'up' ? 'up' : 'down'; ?>"></i>
-                                            <?php echo $tech['percentage']; ?>%
-                                        </div>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <p style="text-align: center;">Données non disponibles.</p>
-                        <?php endif; ?>
-                    </div>
-                </div>
                 
                 <!-- Dev Tools -->
                 <div class="widget">
