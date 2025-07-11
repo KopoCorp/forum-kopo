@@ -49,8 +49,25 @@ class ArticleController {
 
         try {
             $article = $this->fetchArticleWithTags($article_id, $this->api->isLoggedIn());
+
+            // If the article is a draft, only the author or an admin may view it
+            if (isset($article['is_pub']) && !$article['is_pub']) {
+                $authorized = false;
+                if ($this->api->isLoggedIn()) {
+                    $current = $this->api->getCurrentUser();
+                    if (($current['id'] ?? null) === ($article['user_id'] ?? null) || ($current['is_admin'] ?? false)) {
+                        $authorized = true;
+                    }
+                }
+                if (!$authorized) {
+                    http_response_code(404);
+                    require '404.html';
+                    return;
+                }
+            }
+
             $comments = $this->api->request('/articles/' . $article_id . '/comments');
-            $recent_articles = $this->api->request('/articles?skip=0&limit=5');
+            $recent_articles = filter_published($this->api->request('/articles?skip=0&limit=5'));
         } catch (Exception $e) {
             $_SESSION['flash_message'] = "Erreur: " . $e->getMessage();
             $_SESSION['flash_type'] = "error";

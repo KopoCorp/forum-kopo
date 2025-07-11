@@ -59,7 +59,7 @@ class MembersController {
                 $threads = [];
             }
             try {
-                $articles = $this->api->request('/users/' . $member['id'] . '/articles');
+                $articles = filter_published($this->api->request('/users/' . $member['id'] . '/articles'));
             } catch (Exception $e) {
                 $articles = [];
             }
