@@ -203,6 +203,21 @@ function get_username(array $data) {
 }
 
 /**
+ * Retrieve the banner image URL for an article, generating a random one
+ * when none is provided.
+ *
+ * @param array $article Article data
+ * @return string URL of the banner image
+ */
+function get_article_banner_url(array $article) {
+    if (!empty($article['image_url'])) {
+        return $article['image_url'];
+    }
+    $seed = mt_rand(0, 1000000);
+    return RANDOM_BANNER_BASE . $seed . '/' . RANDOM_BANNER_SIZE;
+}
+
+/**
  * Filter an array of items to only keep published content when available.
  *
  * Items without an `is_pub` flag are left untouched.
