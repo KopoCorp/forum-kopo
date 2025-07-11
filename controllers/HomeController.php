@@ -21,6 +21,34 @@ class HomeController {
             }
             // Get forum categories
             $categories = $this->api->request('/forum/categories');
+            if (is_array($categories)) {
+                foreach ($categories as &$cat) {
+                    $catThread = $cat['thread_count'] ?? null;
+                    $catReply = $cat['reply_count'] ?? null;
+                    if ($catThread === null || $catReply === null) {
+                        try {
+                            $threads = $this->api->request('/forum/threads?category_id=' . $cat['id']);
+                            $catThread = is_array($threads) ? count($threads) : 0;
+                            $catReply = 0;
+                            if (is_array($threads)) {
+                                foreach ($threads as $th) {
+                                    $catReply += $th['reply_count'] ?? 0;
+                                }
+                            }
+                        } catch (Exception $e) {
+                            $catThread = 0;
+                            $catReply = 0;
+                        }
+                    }
+                    $cat['thread_count'] = $catThread;
+                    $cat['reply_count'] = $catReply;
+                    $cat['content_score'] = $catThread + $catReply;
+                }
+                unset($cat);
+                usort($categories, function ($a, $b) {
+                    return ($b['content_score'] ?? 0) <=> ($a['content_score'] ?? 0);
+                });
+            }
             // Get popular threads
             $popular_threads = $this->api->request('/forum/threads?skip=0&limit=5');
             // Latest security alert from CERT-FR
