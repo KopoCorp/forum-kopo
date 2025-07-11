@@ -27,10 +27,12 @@ class AdminController {
         }
 
         $users = $articles = $threads = $comments = [];
+        $alert = null;
         try { $users = $this->api->request('/admin/users?limit=5', 'GET', [], true); } catch (Exception $e) {}
         try { $articles = $this->api->request('/admin/articles?limit=5', 'GET', [], true); } catch (Exception $e) {}
         try { $threads = $this->api->request('/admin/threads?limit=5', 'GET', [], true); } catch (Exception $e) {}
         try { $comments = $this->api->request('/admin/comments?limit=5', 'GET', [], true); } catch (Exception $e) {}
+        try { $alert = $this->api->request('/security/alerts/latest'); } catch (Exception $e) { $alert = null; }
 
         require __DIR__ . '/../views/templates/header.php';
         require __DIR__ . '/../views/admin/dashboard.php';
