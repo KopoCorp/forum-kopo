@@ -71,6 +71,11 @@ global $api;
                             <a href="new-article.php">
                                 <i class="fas fa-pen"></i> Créer un Article
                             </a>
+                            <?php if ($api->isModerator()): ?>
+                            <a href="index.php?route=admin">
+                                <i class="fas fa-tools"></i> Dashboard
+                            </a>
+                            <?php endif; ?>
                             <a href="logout.php">
                                 <i class="fas fa-sign-out-alt"></i> Déconnexion
                             </a>

@@ -174,6 +174,44 @@ class API {
     public function getCurrentUser() {
         return isset($_SESSION['user']) ? $_SESSION['user'] : null;
     }
+
+    /**
+     * Retrieve roles for a given user via moderator API.
+     *
+     * @param int $user_id
+     * @return array
+     */
+    public function getUserRoles($user_id) {
+        return $this->request('/admin/users/' . $user_id . '/roles', 'GET', [], true);
+    }
+
+    /**
+     * Check if the current user has the moderator role.
+     *
+     * The result is cached in the session to avoid repeated API calls.
+     *
+     * @return bool
+     */
+    public function isModerator() {
+        if (!isset($_SESSION['is_moderator'])) {
+            $_SESSION['is_moderator'] = false;
+            if ($this->isLoggedIn()) {
+                $user = $this->getCurrentUser();
+                try {
+                    $roles = $this->getUserRoles($user['id']);
+                    foreach ($roles as $role) {
+                        if (($role['name'] ?? '') === 'moderator') {
+                            $_SESSION['is_moderator'] = true;
+                            break;
+                        }
+                    }
+                } catch (Exception $e) {
+                    $_SESSION['is_moderator'] = false;
+                }
+            }
+        }
+        return $_SESSION['is_moderator'];
+    }
 }
 
 // Initialize API instance
