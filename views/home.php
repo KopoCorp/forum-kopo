@@ -166,11 +166,23 @@
                     </div>
                 </section>
                 <!-- Cybersecurity Alert -->
+                <?php if (isset($latest_security_alert) && !empty($latest_security_alert)): ?>
                 <section class="security-alert" style="margin-top: 3rem;">
-                    <h4><i class="fas fa-shield-alt"></i> Alerte de sécurité</h4>
-                    <p>Mise à jour importante concernant la vulnérabilité critique Log4Shell (CVE-2021-44228). Assurez-vous que vos systèmes sont protégés contre cette faille.</p>
-                    <p><a href="article.php?id=cybersecurity-alert" class="btn btn-accent" style="margin-top: 0.5rem;">En savoir plus</a></p>
+                    <h4>
+                        <i class="fas fa-shield-alt"></i> Alerte de sécurité
+                        <?php if (isset($latest_security_alert['severity'])): ?>
+                            <span class="badge" style="font-size: 0.7rem; background-color: <?php echo $latest_security_alert['severity'] === 'high' ? 'var(--accent-red)' : ($latest_security_alert['severity'] === 'medium' ? 'var(--bright-blue)' : 'var(--purple)'); ?>; float: right;">
+                                <?php echo strtoupper($latest_security_alert['severity']); ?>
+                            </span>
+                        <?php endif; ?>
+                    </h4>
+                    <p><?php echo htmlspecialchars($latest_security_alert['title']); ?></p>
+                    <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
+                        <span><?php echo date('d/m/Y', strtotime($latest_security_alert['published'] ?? $latest_security_alert['created_at'])); ?></span>
+                        <a href="<?php echo htmlspecialchars($latest_security_alert['link']); ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline">Voir sur CERT-FR</a>
+                    </div>
                 </section>
+                <?php endif; ?>
                 <!-- CTA Section -->
                 <section class="cta-section" style="margin: 3rem 0; padding: 3rem; background: linear-gradient(135deg, #504A97, #23255D); color: var(--white); border-radius: var(--border-radius); text-align: center;">
                     <h2 style="color: var(--white); font-size: 2rem; margin-bottom: 1.5rem;">Rejoignez la conversation</h2>
