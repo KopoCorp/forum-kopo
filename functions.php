@@ -78,12 +78,20 @@ function calculate_forum_stats($api) {
         'user_count' => 0,
         'thread_count' => 0,
         'reply_count' => 0,
+        'article_count' => 0,
         'most_active_user' => null
     ];
 
     try {
         $count_res = $api->request('/users/count');
         $stats['user_count'] = $count_res['count'] ?? 0;
+    } catch (Exception $e) {
+        // ignore errors
+    }
+
+    try {
+        $articles_res = $api->request('/articles/count');
+        $stats['article_count'] = $articles_res['count'] ?? 0;
     } catch (Exception $e) {
         // ignore errors
     }
