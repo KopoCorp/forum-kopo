@@ -21,6 +21,7 @@ class NewArticleController {
         }
         $error = '';
         $success = false;
+        $was_published = false;
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
             $title = isset($_POST['title']) ? sanitize_string($_POST['title']) : '';
             $raw_content = isset($_POST['content']) ? trim($_POST['content']) : '';
@@ -29,6 +30,7 @@ class NewArticleController {
             $new_tag = isset($_POST['new_tag']) ? sanitize_string($_POST['new_tag']) : '';
             $image_url = isset($_POST['image_url']) ? filter_var($_POST['image_url'], FILTER_SANITIZE_URL) : '';
             $is_published = isset($_POST['is_published']);
+            $was_published = $is_published;
             if (empty($title)) {
                 $error = "Le titre ne peut pas être vide.";
             } elseif (empty($content)) {
@@ -50,7 +52,13 @@ class NewArticleController {
                     if (!empty($new_tag)) {
                         $data['tag_names'] = [$new_tag];
                     }
-                    $result = $this->api->request('/articles', 'POST', $data, true);
+
+                    // If the article should remain unpublished, create a draft
+                    $endpoint = $is_published ? '/articles' : '/drafts';
+                    if (!$is_published) {
+                        $data['type'] = 'article';
+                    }
+                    $result = $this->api->request($endpoint, 'POST', $data, true);
                     if (isset($result['id'])) {
                         $article_id = $result['id'];
                         if (!empty($image_url)) {

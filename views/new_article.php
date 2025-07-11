@@ -14,10 +14,19 @@
         <?php if ($success): ?>
             <div class="notification notification-success">
                 <i class="fas fa-check-circle"></i>
-                Votre article a été publié avec succès!
+                <?php if ($was_published): ?>
+                    Votre article a été publié avec succès!
+                <?php else: ?>
+                    Votre brouillon a été enregistré avec succès!
+                <?php endif; ?>
                 <div style="margin-top: 0.5rem;">
-                    <a href="articles.php" class="btn btn-primary">Voir tous les articles</a>
-                    <a href="new-article.php" class="btn btn-outline">Publier un autre article</a>
+                    <?php if ($was_published): ?>
+                        <a href="articles.php" class="btn btn-primary">Voir tous les articles</a>
+                        <a href="new-article.php" class="btn btn-outline">Publier un autre article</a>
+                    <?php else: ?>
+                        <a href="my-content.php?tab=drafts" class="btn btn-primary">Voir mes brouillons</a>
+                        <a href="new-article.php" class="btn btn-outline">Créer un autre brouillon</a>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php else: ?>
