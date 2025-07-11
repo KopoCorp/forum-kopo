@@ -72,13 +72,6 @@ class DevController {
             $dev_threads = [];
         }
 
-        // Try to load trending technologies separately so a 404 doesn't clear articles
-        try {
-            $trending_techs = $this->api->request('/technologies/trending?limit=5');
-        } catch (Exception $e) {
-            $trending_techs = [];
-        }
-
         require __DIR__ . '/../views/templates/header.php';
         require __DIR__ . '/../views/dev.php';
         require __DIR__ . '/../views/templates/footer.php';
