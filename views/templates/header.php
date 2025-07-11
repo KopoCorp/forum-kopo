@@ -1,6 +1,6 @@
 <?php
-require_once 'config.php';
-require_once 'api.php';
+require_once dirname(__DIR__, 2) . '/config.php';
+require_once dirname(__DIR__, 2) . '/api.php';
 // Access the API instance when included from controllers
 global $api;
 ?>
