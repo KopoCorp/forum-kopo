@@ -2,7 +2,7 @@
 <div class="page-header" style="background-color: var(--near-black); padding: 2rem 0;">
     <div class="container">
         <div class="breadcrumb" style="margin-bottom: 0.5rem; color: #999;">
-            <a href="index.php" style="color: #999;">Accueil</a> &raquo; Administration
+            <a href="<?php echo BASE_URL; ?>index.php" style="color: #999;">Accueil</a> &raquo; Administration
         </div>
         <h1 style="color: var(--white); margin-bottom: 0.5rem;">Tableau de bord</h1>
         <p style="color: #ccc; max-width: 700px;">Outils de modération et statistiques du forum.</p>
@@ -79,7 +79,7 @@
                     <?php foreach ($articles as $a): ?>
                     <tr>
                         <td><?php echo $a['id']; ?></td>
-                        <td><a href="index.php?route=article&amp;id=<?php echo $a['id']; ?>"><?php echo htmlspecialchars($a['title']); ?></a></td>
+                        <td><a href="<?php echo BASE_URL; ?>index.php?route=article&amp;id=<?php echo $a['id']; ?>"><?php echo htmlspecialchars($a['title']); ?></a></td>
                         <td><?php echo get_username($a); ?></td>
                     </tr>
                     <?php endforeach; ?>
