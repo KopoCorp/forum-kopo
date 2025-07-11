@@ -60,7 +60,12 @@
                                         <?php
                                         $threads = [];
                                         try {
-                                            $threads = $this->api->request('/forum/threads?category_id=' . $category['id'] . '&limit=2&skip=0');
+                                            $threads = $this->api->request('/forum/threads?category_id=' . $category['id'] . '&limit=3&skip=0');
+                                            if (is_array($threads)) {
+                                                $threads = array_values(array_filter($threads, function($t) use ($category) {
+                                                    return isset($t['category_id']) && (int)$t['category_id'] === (int)$category['id'];
+                                                }));
+                                            }
                                         } catch (Exception $e) {
                                             // Silently fail if we can't get threads
                                         }
