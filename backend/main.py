@@ -10,6 +10,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from sqlalchemy.orm import Session
+from threading import Lock
 import os
 import uuid
 import shutil
@@ -277,23 +278,28 @@ def create_article(
     current_user: models.User = Depends(get_current_user),
 ):
     data = article.dict()
-    tag_ids = data.pop("tag_ids", None) or []
-    tag_names = data.pop("tag_names", None) or []
+    tag_ids = set(data.pop("tag_ids", []) or [])
+    tag_names = data.pop("tag_names", []) or []
     db_article = models.Article(**data)
     db.add(db_article)
+    db.flush()
+
+    if tag_names:
+        existing = db.query(models.Tag).filter(models.Tag.name.in_(tag_names)).all()
+        name_to_id = {t.name: t.id for t in existing}
+        new_names = [n for n in tag_names if n not in name_to_id]
+        new_tags = [models.Tag(name=n) for n in new_names]
+        if new_tags:
+            db.add_all(new_tags)
+            db.flush()
+            name_to_id.update({t.name: t.id for t in new_tags})
+        tag_ids.update(name_to_id[n] for n in tag_names)
+
+    if tag_ids:
+        links = [models.ArticleTag(article_id=db_article.id, tag_id=tid) for tid in tag_ids]
+        db.bulk_save_objects(links)
+
     db.commit()
-    tags_to_add = set(tag_ids)
-    for name in tag_names:
-        tag = db.query(models.Tag).filter(models.Tag.name == name).first()
-        if not tag:
-            tag = models.Tag(name=name)
-            db.add(tag)
-            db.commit()
-        tags_to_add.add(tag.id)
-    for t_id in tags_to_add:
-        db.add(models.ArticleTag(article_id=db_article.id, tag_id=t_id))
-    if tags_to_add:
-        db.commit()
     db.refresh(db_article)
     return db_article
 
@@ -386,20 +392,27 @@ def update_article(
     tag_names = data.pop("tag_names", None)
     for key, value in data.items():
         setattr(db_article, key, value)
+
     tags_specified = tag_ids is not None or tag_names is not None
     tags_to_set = set(tag_ids or [])
-    if tag_names:
-        for name in tag_names:
-            tag = db.query(models.Tag).filter(models.Tag.name == name).first()
-            if not tag:
-                tag = models.Tag(name=name)
-                db.add(tag)
-                db.commit()
-            tags_to_set.add(tag.id)
+
+    if tag_names is not None:
+        existing = db.query(models.Tag).filter(models.Tag.name.in_(tag_names)).all()
+        name_to_id = {t.name: t.id for t in existing}
+        new_names = [n for n in tag_names if n not in name_to_id]
+        new_tags = [models.Tag(name=n) for n in new_names]
+        if new_tags:
+            db.add_all(new_tags)
+            db.flush()
+            name_to_id.update({t.name: t.id for t in new_tags})
+        tags_to_set.update(name_to_id[n] for n in tag_names)
+
     if tags_specified:
         db.query(models.ArticleTag).filter(models.ArticleTag.article_id == article_id).delete()
-        for t_id in tags_to_set:
-            db.add(models.ArticleTag(article_id=article_id, tag_id=t_id))
+        if tags_to_set:
+            links = [models.ArticleTag(article_id=article_id, tag_id=t) for t in tags_to_set]
+            db.bulk_save_objects(links)
+
     db.commit()
     db.refresh(db_article)
     return db_article
@@ -612,6 +625,9 @@ def get_reporting_config(db: Session = Depends(get_db)):
 
 
 CERTFR_FEED_URL = "https://www.cert.ssi.gouv.fr/feed/"
+_certfr_cache = {"timestamp": datetime.min, "data": []}
+_certfr_cache_lock = Lock()
+_certfr_cache_ttl = timedelta(minutes=5)
 
 
 def _fetch_certfr_feed(limit: int = 10):
@@ -622,29 +638,38 @@ def _fetch_certfr_feed(limit: int = 10):
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Failed to fetch RSS feed: {exc}") from exc
     feed = feedparser.parse(resp.text)
-    alerts = []
-    for entry in feed.entries[:limit]:
-        alerts.append(
-            schemas.SecurityAlertOut(
-                title=entry.get("title", ""),
-                link=entry.get("link", ""),
-                summary=entry.get("summary"),
-                published=entry.get("published"),
-            )
+    alerts = [
+        schemas.SecurityAlertOut(
+            title=entry.get("title", ""),
+            link=entry.get("link", ""),
+            summary=entry.get("summary"),
+            published=entry.get("published"),
         )
+        for entry in feed.entries[:limit]
+    ]
     return alerts
+
+
+def _get_certfr_feed_cached(limit: int = 5):
+    """Return cached CERT-FR alerts, refreshing if expired."""
+    with _certfr_cache_lock:
+        now = datetime.utcnow()
+        if now - _certfr_cache["timestamp"] > _certfr_cache_ttl:
+            _certfr_cache["data"] = _fetch_certfr_feed(limit=20)
+            _certfr_cache["timestamp"] = now
+        return _certfr_cache["data"][:limit]
 
 
 @app.get("/security/alerts", response_model=list[schemas.SecurityAlertOut])
 def list_security_alerts(limit: int = 5):
     """Return the most recent security alerts from CERT-FR."""
-    return _fetch_certfr_feed(limit)
+    return _get_certfr_feed_cached(limit)
 
 
 @app.get("/security/alerts/latest", response_model=schemas.SecurityAlertOut)
 def latest_security_alert():
     """Return the latest security alert from CERT-FR."""
-    alerts = _fetch_certfr_feed(limit=1)
+    alerts = _get_certfr_feed_cached(1)
     if not alerts:
         raise HTTPException(status_code=404, detail="No alerts found")
     return alerts[0]
