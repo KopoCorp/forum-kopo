@@ -1,6 +1,6 @@
 <?php
-require_once 'config.php';
-require_once 'api.php';
+require_once dirname(__DIR__, 2) . '/config.php';
+require_once dirname(__DIR__, 2) . '/api.php';
 // Access the API instance when included from controllers
 global $api;
 ?>
@@ -12,13 +12,13 @@ global $api;
     <title><?php echo isset($page_title) ? $page_title . ' - ' . SITE_NAME : SITE_NAME; ?></title>
     <meta name="description" content="<?php echo isset($page_description) ? $page_description : SITE_DESCRIPTION; ?>">
     <!-- Favicon -->
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="<?php echo BASE_URL; ?>assets/favicon.ico" type="image/x-icon">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/styles.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Tagify -->
@@ -29,8 +29,8 @@ global $api;
     <header class="site-header">
         <div class="header-container">
             <div class="logo">
-                <a href="index.php">
-                    <img style="vertical-align: middle;" src="assets/favicon.ico" alt="Kopo Forum Logo">
+                <a href="<?php echo BASE_URL; ?>index.php">
+                    <img style="vertical-align: middle;" src="<?php echo BASE_URL; ?>assets/favicon.ico" alt="Kopo Forum Logo">
                 </a>
                 <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
@@ -39,12 +39,12 @@ global $api;
             
             <nav class="main-nav" id="main-nav">
                 <ul>
-                    <li><a href="index.php" <?php echo !isset($_GET['route']) || $_GET['route'] == 'home' ? 'class="active"' : ''; ?>>Accueil</a></li>
-                    <li><a href="index.php?route=forums" <?php echo isset($_GET['route']) && $_GET['route'] == 'forums' ? 'class="active"' : ''; ?>>Forums</a></li>
-                    <li><a href="index.php?route=articles" <?php echo isset($_GET['route']) && $_GET['route'] == 'articles' ? 'class="active"' : ''; ?>>Articles</a></li>
-                    <li><a href="index.php?route=cyber-securite" <?php echo isset($_GET['route']) && $_GET['route'] == 'cyber-securite' ? 'class="active"' : ''; ?>>Cyber-Sécurité</a></li>
-                    <li><a href="index.php?route=dev" <?php echo isset($_GET['route']) && $_GET['route'] == 'dev' ? 'class="active"' : ''; ?>>Développement</a></li>
-                    <li><a href="index.php?route=members" <?php echo isset($_GET['route']) && $_GET['route'] == 'members' ? 'class="active"' : ''; ?>>Membres</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php" <?php echo !isset($_GET['route']) || $_GET['route'] == 'home' ? 'class="active"' : ''; ?>>Accueil</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php?route=forums" <?php echo isset($_GET['route']) && $_GET['route'] == 'forums' ? 'class="active"' : ''; ?>>Forums</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php?route=articles" <?php echo isset($_GET['route']) && $_GET['route'] == 'articles' ? 'class="active"' : ''; ?>>Articles</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php?route=cyber-securite" <?php echo isset($_GET['route']) && $_GET['route'] == 'cyber-securite' ? 'class="active"' : ''; ?>>Cyber-Sécurité</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php?route=dev" <?php echo isset($_GET['route']) && $_GET['route'] == 'dev' ? 'class="active"' : ''; ?>>Développement</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php?route=members" <?php echo isset($_GET['route']) && $_GET['route'] == 'members' ? 'class="active"' : ''; ?>>Membres</a></li>
                 </ul>
             </nav>
             <div class="user-actions">
@@ -62,28 +62,28 @@ global $api;
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="user-dropdown-menu">
-                            <a href="profile.php?id=<?php echo $user['id']; ?>">
+                            <a href="<?php echo BASE_URL; ?>profile.php?id=<?php echo $user['id']; ?>">
                                 <i class="fas fa-user"></i> Mon Profil
                             </a>
-                            <a href="settings.php">
+                            <a href="<?php echo BASE_URL; ?>settings.php">
                                 <i class="fas fa-cog"></i> Paramètres
                             </a>
-                            <a href="new-article.php">
+                            <a href="<?php echo BASE_URL; ?>new-article.php">
                                 <i class="fas fa-pen"></i> Créer un Article
                             </a>
                             <?php if ($api->isModerator()): ?>
-                            <a href="index.php?route=admin">
+                            <a href="<?php echo BASE_URL; ?>index.php?route=admin">
                                 <i class="fas fa-tools"></i> Dashboard
                             </a>
                             <?php endif; ?>
-                            <a href="logout.php">
+                            <a href="<?php echo BASE_URL; ?>logout.php">
                                 <i class="fas fa-sign-out-alt"></i> Déconnexion
                             </a>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="index.php?route=login" class="btn btn-outline">Connexion</a>
-                    <a href="index.php?route=register" class="btn btn-primary">Inscription</a>
+                    <a href="<?php echo BASE_URL; ?>index.php?route=login" class="btn btn-outline">Connexion</a>
+                    <a href="<?php echo BASE_URL; ?>index.php?route=register" class="btn btn-primary">Inscription</a>
                 <?php endif; ?>
             </div>
         </div>
