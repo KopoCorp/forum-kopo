@@ -70,6 +70,27 @@ def get_current_user(
     return user
 
 
+def _user_has_role(db: Session, user: models.User, role_name: str) -> bool:
+    """Return True if the given user has the specified role."""
+    return (
+        db.query(models.UserRole)
+        .join(models.Role, models.UserRole.role_id == models.Role.id)
+        .filter(models.UserRole.user_id == user.id, models.Role.name == role_name)
+        .first()
+        is not None
+    )
+
+
+def require_moderator(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Ensure the current user has the `moderator` role."""
+    if not _user_has_role(db, current_user, "moderator"):
+        raise HTTPException(status_code=403, detail="Moderator access required")
+    return current_user
+
+
 @app.post("/users", response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = (
@@ -736,3 +757,225 @@ async def latest_security_alert():
     if not alerts:
         raise HTTPException(status_code=404, detail="No alerts found")
     return alerts[0]
+
+
+# ---------------------------------------------------------------------------
+# Admin / Moderator endpoints
+# ---------------------------------------------------------------------------
+
+
+@app.get("/admin/users", response_model=List[schemas.UserOut])
+def admin_list_users(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    """List all users (moderator only)."""
+    return db.query(models.User).offset(skip).limit(limit).all()
+
+
+@app.delete("/admin/users/{user_id}", status_code=204)
+def admin_delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    user = db.query(models.User).get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(user)
+    db.commit()
+
+
+@app.get("/admin/users/{user_id}/roles", response_model=List[schemas.RoleOut])
+def list_user_roles(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    if not db.query(models.User).get(user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+    return (
+        db.query(models.Role)
+        .join(models.UserRole, models.UserRole.role_id == models.Role.id)
+        .filter(models.UserRole.user_id == user_id)
+        .all()
+    )
+
+
+@app.post("/admin/users/{user_id}/roles", response_model=schemas.RoleOut)
+def assign_role(
+    user_id: int,
+    data: schemas.UserRoleAssign,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    if not db.query(models.User).get(user_id):
+        raise HTTPException(status_code=404, detail="User not found")
+    role = db.query(models.Role).get(data.role_id)
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+    existing = (
+        db.query(models.UserRole)
+        .filter(
+            models.UserRole.user_id == user_id,
+            models.UserRole.role_id == data.role_id,
+        )
+        .first()
+    )
+    if existing:
+        return role
+    link = models.UserRole(user_id=user_id, role_id=data.role_id)
+    db.add(link)
+    db.commit()
+    return role
+
+
+@app.delete("/admin/users/{user_id}/roles/{role_id}", status_code=204)
+def remove_role(
+    user_id: int,
+    role_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    link = (
+        db.query(models.UserRole)
+        .filter(
+            models.UserRole.user_id == user_id,
+            models.UserRole.role_id == role_id,
+        )
+        .first()
+    )
+    if not link:
+        raise HTTPException(status_code=404, detail="Role assignment not found")
+    db.delete(link)
+    db.commit()
+
+
+@app.get("/admin/articles", response_model=List[schemas.ArticleOut])
+def admin_list_articles(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    return db.query(models.Article).offset(skip).limit(limit).all()
+
+
+@app.delete("/admin/articles/{article_id}", status_code=204)
+def admin_delete_article(
+    article_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    article = db.query(models.Article).get(article_id)
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    db.delete(article)
+    db.commit()
+
+
+@app.get("/admin/comments", response_model=List[schemas.CommentOut])
+def admin_list_comments(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    return db.query(models.Comment).offset(skip).limit(limit).all()
+
+
+@app.delete("/admin/comments/{comment_id}", status_code=204)
+def admin_delete_comment(
+    comment_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    comment = db.query(models.Comment).get(comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    db.delete(comment)
+    db.commit()
+
+
+@app.get("/admin/threads", response_model=List[schemas.ForumThreadOut])
+def admin_list_threads(
+    skip: int = 0,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    return db.query(models.ForumThread).offset(skip).limit(limit).all()
+
+
+@app.delete("/admin/threads/{thread_id}", status_code=204)
+def admin_delete_thread(
+    thread_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    thread = db.query(models.ForumThread).get(thread_id)
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    db.delete(thread)
+    db.commit()
+
+
+
+@app.post("/admin/categories", response_model=schemas.ForumCategoryOut)
+def admin_create_category(
+    category: schemas.ForumCategoryCreate,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    """Create a forum category (moderator only)."""
+    db_cat = models.ForumCategory(**category.dict())
+    db.add(db_cat)
+    db.commit()
+    db.refresh(db_cat)
+    return db_cat
+
+
+@app.delete("/admin/categories/{category_id}", status_code=204)
+def admin_delete_category(
+    category_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    """Delete a forum category (moderator only)."""
+    cat = db.query(models.ForumCategory).get(category_id)
+    if not cat:
+        raise HTTPException(status_code=404, detail="Category not found")
+    db.delete(cat)
+    db.commit()
+
+
+@app.post("/admin/tags", response_model=schemas.TagOut)
+def admin_create_tag(
+    tag: schemas.TagCreate,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    """Create a tag (moderator only)."""
+    if db.query(models.Tag).filter(models.Tag.name == tag.name).first():
+        raise HTTPException(status_code=400, detail="Tag already exists")
+    db_tag = models.Tag(name=tag.name)
+    db.add(db_tag)
+    db.commit()
+    db.refresh(db_tag)
+    return db_tag
+
+
+@app.delete("/admin/tags/{tag_id}", status_code=204)
+def admin_delete_tag(
+    tag_id: int,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_moderator),
+):
+    """Delete a tag (moderator only)."""
+    tag_obj = db.query(models.Tag).get(tag_id)
+    if not tag_obj:
+        raise HTTPException(status_code=404, detail="Tag not found")
+    db.delete(tag_obj)
+    db.commit()
