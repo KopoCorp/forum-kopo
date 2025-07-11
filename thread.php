@@ -17,6 +17,12 @@ try {
     
     // Get thread replies
     $replies = $api->request('/forum/threads/' . $thread_id . '/replies');
+    // API may return {items: [...]} or {replies: [...]} depending on version
+    if (isset($replies['items']) && is_array($replies['items'])) {
+        $replies = $replies['items'];
+    } elseif (isset($replies['replies']) && is_array($replies['replies'])) {
+        $replies = $replies['replies'];
+    }
 
     // Organize replies by parent for nested display
     $replies_by_parent = [];
@@ -67,7 +73,7 @@ try {
                         </div>
                     <?php endif; ?>
                     <div class="post-text">
-                        <?php echo $reply['content']; ?>
+                        <?php echo markdown_to_html($reply['content']); ?>
                     </div>
 
                     <div class="post-meta" style="display: flex; justify-content: space-between; color: #666; font-size: 0.875rem; margin-top: 1rem;">
