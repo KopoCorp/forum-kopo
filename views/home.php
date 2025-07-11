@@ -325,8 +325,8 @@
                                 <strong><?php echo $stats['thread_count'] ?? 0; ?></strong>
                             </li>
                             <li style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-                                <span>Messages:</span>
-                                <strong><?php echo $stats['reply_count'] ?? 0; ?></strong>
+                                <span>Articles:</span>
+                                <strong><?php echo $stats['article_count'] ?? 0; ?></strong>
                             </li>
                             <?php if (isset($stats['most_active_user']) && !empty($stats['most_active_user'])): ?>
                                 <li style="display: flex; justify-content: space-between;">
