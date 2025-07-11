@@ -30,12 +30,27 @@
                                 <div class="forum-category">
                                     <div class="category-header">
                                         <h3 class="category-title"><?php echo htmlspecialchars($category['name']); ?></h3>
+                                        <?php
+                                            $catThread = $category['thread_count'] ?? null;
+                                            $catReply = $category['reply_count'] ?? null;
+                                            if ($catThread === null || $catReply === null) {
+                                                try {
+                                                    $allThreads = $this->api->request('/forum/threads?category_id=' . $category['id']);
+                                                    $catThread = is_array($allThreads) ? count($allThreads) : 0;
+                                                    $catReply = 0;
+                                                    if (is_array($allThreads)) {
+                                                        foreach ($allThreads as $th) {
+                                                            $catReply += $th['reply_count'] ?? 0;
+                                                        }
+                                                    }
+                                                } catch (Exception $e) {
+                                                    $catThread = 0;
+                                                    $catReply = 0;
+                                                }
+                                            }
+                                        ?>
                                         <span class="category-stats">
-                                            <?php
-                                            echo isset($category['thread_count']) ? $category['thread_count'] . ' discussions' : '0 discussions';
-                                            echo ' · ';
-                                            echo isset($category['reply_count']) ? $category['reply_count'] . ' messages' : '0 messages';
-                                            ?>
+                                            <?php echo $catThread . ' discussions · ' . $catReply . ' messages'; ?>
                                         </span>
                                     </div>
                                     <?php if (isset($category['description'])): ?>
