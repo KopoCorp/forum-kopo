@@ -101,7 +101,7 @@ try {
         <section class="security-alerts-section" style="margin-bottom: 3rem;">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 style="display: flex; align-items: center; gap: 0.75rem;"><i class="fas fa-shield-alt" style="color: var(--accent-red);"></i> Alertes de Sécurité</h2>
-                <a href="#" class="view-all">Toutes les alertes <i class="fas fa-arrow-right"></i></a>
+                <a href="https://www.cert.ssi.gouv.fr/alerte/" target="_blank" rel="noopener" class="view-all">Toutes les alertes <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <?php if (!empty($security_alerts)): ?>
@@ -121,8 +121,8 @@ try {
                             
                             <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
                                 <span>Publié le <?php echo date('d/m/Y', strtotime($alert['created_at'])); ?></span>
-                                <a href="#" class="btn btn-sm btn-outline">
-                                    Plus de détails
+                                <a href="<?php echo htmlspecialchars($alert['link']); ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline">
+                                    Voir sur CERT-FR
                                 </a>
                             </div>
                         </div>
