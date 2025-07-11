@@ -25,18 +25,13 @@ CREATE TABLE user_profiles (
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ROLES & PERMISSIONS
+-- ROLES
 CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     description TEXT
 );
 
-CREATE TABLE permissions (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    description TEXT
-);
 
 CREATE TABLE user_roles (
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -44,20 +39,7 @@ CREATE TABLE user_roles (
     PRIMARY KEY (user_id, role_id)
 );
 
-CREATE TABLE role_permissions (
-    role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
-    permission_id INTEGER REFERENCES permissions(id) ON DELETE CASCADE,
-    PRIMARY KEY (role_id, permission_id)
-);
 
--- ADMIN
-CREATE TABLE admin (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    pass_hash TEXT NOT NULL,
-    bio TEXT,
-    avatar_url TEXT
-);
 
 -- ARTICLES
 CREATE TABLE articles (
@@ -167,7 +149,7 @@ CREATE TABLE bans (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     reason TEXT NOT NULL,
-    banned_by INTEGER REFERENCES admin(id),
+    banned_by INTEGER REFERENCES users(id),
     expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -241,3 +223,15 @@ CREATE TABLE reporting_config (
 );
 
 
+
+-- Default roles and admin account
+INSERT INTO roles (name, description) VALUES
+    ('user', 'Standard user'),
+    ('moderator', 'Forum moderator');
+
+INSERT INTO users (username, email, pass_hash)
+VALUES ('admin', 'admin@example.com', '21232f297a57a5a743894a0e4a801fc3');
+
+INSERT INTO user_roles (user_id, role_id)
+SELECT id, (SELECT id FROM roles WHERE name='moderator')
+FROM users WHERE username='admin';
