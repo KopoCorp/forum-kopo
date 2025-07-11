@@ -32,6 +32,9 @@
             </div>
         </div>
         <?php endif; ?>
+        <div class="admin-links" style="margin-bottom:2rem;">
+            <a href="../admin/categories.php" class="btn btn-secondary">Gérer les catégories</a>
+        </div>
 
         <?php if (!empty($alert)): ?>
         <div class="security-alert" style="background:#fff4f4;border-left:4px solid var(--accent-red);padding:1rem;margin-bottom:2rem;">
