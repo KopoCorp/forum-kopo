@@ -28,7 +28,6 @@
                 <div class="btn-group" style="display: inline-flex;">
                     <a href="?sort=newest<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="btn btn-sm <?php echo $sort === 'newest' ? 'btn-primary' : 'btn-outline'; ?>">Récent</a>
                     <a href="?sort=activity<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="btn btn-sm <?php echo $sort === 'activity' ? 'btn-primary' : 'btn-outline'; ?>">Activité</a>
-                    <a href="?sort=reputation<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="btn btn-sm <?php echo $sort === 'reputation' ? 'btn-primary' : 'btn-outline'; ?>">Réputation</a>
                     <a href="?sort=a-z<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="btn btn-sm <?php echo $sort === 'a-z' ? 'btn-primary' : 'btn-outline'; ?>">A-Z</a>
                 </div>
             </div>
@@ -76,10 +75,6 @@
                                     <div style="font-size: 0.75rem; color: #666;">Posts</div>
                                 </div>
                                 
-                                <div class="stat-item">
-                                    <div style="font-weight: 600;"><?php echo $member['reputation'] ?? 0; ?></div>
-                                    <div style="font-size: 0.75rem; color: #666;">Réputation</div>
-                                </div>
                                 
                                 <div class="stat-item">
                                     <div style="font-weight: 600;"><?php echo isset($member['created_at']) ? date('m/Y', strtotime($member['created_at'])) : 'N/A'; ?></div>
