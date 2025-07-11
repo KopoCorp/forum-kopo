@@ -201,4 +201,18 @@ function get_username(array $data) {
 
     return null;
 }
+
+/**
+ * Filter an array of items to only keep published content when available.
+ *
+ * Items without an `is_pub` flag are left untouched.
+ *
+ * @param array $items List of items returned by the API
+ * @return array Filtered list containing only published items
+ */
+function filter_published(array $items) {
+    return array_values(array_filter($items, function ($it) {
+        return !isset($it['is_pub']) || $it['is_pub'];
+    }));
+}
 ?>

@@ -15,7 +15,7 @@ class ArticlesController {
             if ($tag_id > 0) {
                 $query .= '&tag=' . $tag_id;
             }
-            $articles_data = $this->api->request($query);
+            $articles_data = filter_published($this->api->request($query));
             $count_query = '/articles/count';
             if ($tag_id > 0) {
                 $count_query .= '?tag=' . $tag_id;
@@ -49,7 +49,7 @@ class ArticlesController {
 
         // Charger quelques articles récents pour la sidebar, ignorer les erreurs
         try {
-            $recent_articles = $this->api->request('/articles?skip=0&limit=5');
+            $recent_articles = filter_published($this->api->request('/articles?skip=0&limit=5'));
         } catch (Exception $e) {
             $recent_articles = [];
         }
