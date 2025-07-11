@@ -1033,6 +1033,8 @@ textarea.form-control {
   margin-bottom: 1.5rem;
   border-left: 4px solid var(--accent-red);
   background-color: #fff7f8;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .security-alert h4 {
