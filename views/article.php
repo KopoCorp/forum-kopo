@@ -82,36 +82,9 @@
                 </div>
             </div>
             </article>
-            </div>
-            <aside class="sidebar">
-                <div class="widget">
-                    <div class="widget-header">
-                        <h3>Articles récents</h3>
-                    </div>
-                    <div class="widget-content">
-                        <ul style="list-style: none;">
-                            <?php if (!empty($recent_articles)): ?>
-                                <?php foreach ($recent_articles as $ra): ?>
-                                    <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--light-gray);">
-                                        <a href="index.php?route=article&id=<?php echo $ra['id']; ?>" style="font-weight: 500;">
-                                            <?php echo htmlspecialchars($ra['title']); ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <li style="padding: 1rem 0; text-align: center;">Aucun article</li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </div>
-</main>
-
-<!-- Comments Section -->
-<div class="container comments-section" id="comments">
-    <h2 style="margin-bottom: 1rem;">Commentaires</h2>
+            <!-- Comments Section -->
+            <div class="comments-section" id="comments">
+                <h2 style="margin-bottom: 1rem;">Commentaires</h2>
 
     <?php if (!empty($comments)): ?>
         <?php foreach ($comments as $comment): ?>
@@ -172,5 +145,30 @@
             </div>
         <?php endif; ?>
     </div>
-</div>
-
+            </div>
+            </div>
+            <aside class="sidebar">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3>Articles récents</h3>
+                    </div>
+                    <div class="widget-content">
+                        <ul style="list-style: none;">
+                            <?php if (!empty($recent_articles)): ?>
+                                <?php foreach ($recent_articles as $ra): ?>
+                                    <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--light-gray);">
+                                        <a href="index.php?route=article&id=<?php echo $ra['id']; ?>" style="font-weight: 500;">
+                                            <?php echo htmlspecialchars($ra['title']); ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li style="padding: 1rem 0; text-align: center;">Aucun article</li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</main>
