@@ -23,6 +23,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $article_id = sanitize_int($_GET['id']);
 $user = $api->getCurrentUser();
+$is_draft = false;
 
 try {
     // Get article details
@@ -46,14 +47,24 @@ try {
     }, $article_tags);
     
 } catch (Exception $e) {
-    $_SESSION['flash_message'] = "Erreur: " . $e->getMessage();
-    $_SESSION['flash_type'] = "error";
-    header('Location: my-content.php');
-    exit();
+    try {
+        $article = $api->request('/drafts/' . $article_id, 'GET', [], true);
+        $is_draft = true;
+        // Get available tags
+        $tags = $api->request('/tags');
+        $article_tags = isset($article['tags']) ? $article['tags'] : [];
+        $selected_tag_ids = array_map(function($tag) { return $tag['id']; }, $article_tags);
+    } catch (Exception $e2) {
+        $_SESSION['flash_message'] = "Erreur: " . $e2->getMessage();
+        $_SESSION['flash_type'] = "error";
+        header('Location: my-content.php');
+        exit();
+    }
 }
 
 $error = '';
 $success = false;
+$was_published = false;
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -63,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
     $selected_tags = isset($_POST['tags']) ? array_map('sanitize_int', (array)$_POST['tags']) : [];
     $new_tag = isset($_POST['new_tag']) ? sanitize_string($_POST['new_tag']) : '';
     $is_published = isset($_POST['is_published']) ? true : false;
+    $was_published = $is_published;
     $image_url = isset($_POST['image_url']) ? filter_var($_POST['image_url'], FILTER_SANITIZE_URL) : '';
 
     // Basic validation
@@ -93,7 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                 $article_data['tag_names'] = [$new_tag];
             }
 
-            $api->request('/articles/' . $article_id, 'PATCH', $article_data, true);
+            $endpoint = $is_draft ? '/drafts/' . $article_id : '/articles/' . $article_id;
+            $api->request($endpoint, 'PATCH', $article_data, true);
             
             // Handle image upload if present
             if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -112,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf_token($_POST['csrf_toke
                 
                 if (isset($attachment['id'])) {
                     // Associate the image with the article
-                    $api->request('/articles/' . $article_id, 'PATCH', [
+                    $api->request($endpoint, 'PATCH', [
                         'image_url' => '/attachments/' . $attachment['id']
                     ], true);
                 }
@@ -145,10 +158,19 @@ include 'header.php';
         <?php if ($success): ?>
             <div class="notification notification-success">
                 <i class="fas fa-check-circle"></i>
-                Votre article a été mis à jour avec succès!
+                <?php if ($was_published): ?>
+                    Votre article a été mis à jour avec succès!
+                <?php else: ?>
+                    Votre brouillon a été enregistré avec succès!
+                <?php endif; ?>
                 <div style="margin-top: 0.5rem;">
-                    <a href="article.php?id=<?php echo $article_id; ?>" class="btn btn-primary">Voir l'article</a>
-                    <a href="my-content.php" class="btn btn-outline">Retour à mes publications</a>
+                    <?php if ($was_published): ?>
+                        <a href="article.php?id=<?php echo $article_id; ?>" class="btn btn-primary">Voir l'article</a>
+                        <a href="my-content.php" class="btn btn-outline">Retour à mes publications</a>
+                    <?php else: ?>
+                        <a href="my-content.php?tab=drafts" class="btn btn-primary">Voir mes brouillons</a>
+                        <a href="my-content.php" class="btn btn-outline">Retour à mes publications</a>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php else: ?>
