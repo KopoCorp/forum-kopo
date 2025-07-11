@@ -16,6 +16,13 @@ class ArticlesController {
                 $query .= '&tag=' . $tag_id;
             }
             $articles_data = filter_published($this->api->request($query));
+            if (is_array($articles_data)) {
+                usort($articles_data, function ($a, $b) {
+                    $dateA = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
+                    $dateB = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
+                    return $dateB <=> $dateA; // newest first
+                });
+            }
             $count_query = '/articles/count';
             if ($tag_id > 0) {
                 $count_query .= '?tag=' . $tag_id;
@@ -50,6 +57,13 @@ class ArticlesController {
         // Charger quelques articles récents pour la sidebar, ignorer les erreurs
         try {
             $recent_articles = filter_published($this->api->request('/articles?skip=0&limit=5'));
+            if (is_array($recent_articles)) {
+                usort($recent_articles, function ($a, $b) {
+                    $dateA = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
+                    $dateB = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
+                    return $dateB <=> $dateA;
+                });
+            }
         } catch (Exception $e) {
             $recent_articles = [];
         }
