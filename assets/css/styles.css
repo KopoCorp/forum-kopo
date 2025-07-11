@@ -1029,8 +1029,8 @@ textarea.form-control {
 }
 
 .security-alert {
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
   border-left: 4px solid var(--accent-red);
   background-color: #fff7f8;
   border-radius: var(--border-radius);
@@ -1042,6 +1042,10 @@ textarea.form-control {
   align-items: center;
   gap: 0.5rem;
   color: var(--accent-red);
+  margin-bottom: 0.5rem;
+}
+
+.security-alert p {
   margin-bottom: 0.75rem;
 }
 
