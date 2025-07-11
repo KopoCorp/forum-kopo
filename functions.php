@@ -82,7 +82,8 @@ function calculate_forum_stats($api) {
     ];
 
     try {
-        $stats['user_count'] = (int)$api->request('/users/count');
+        $count_res = $api->request('/users/count');
+        $stats['user_count'] = $count_res['count'] ?? 0;
     } catch (Exception $e) {
         // ignore errors
     }
@@ -90,8 +91,18 @@ function calculate_forum_stats($api) {
     try {
         $categories = $api->request('/forum/categories');
         foreach ($categories as $cat) {
-            $stats['thread_count'] += $cat['thread_count'] ?? 0;
-            $stats['reply_count'] += $cat['reply_count'] ?? 0;
+            if (isset($cat['thread_count']) && isset($cat['reply_count'])) {
+                $stats['thread_count'] += $cat['thread_count'];
+                $stats['reply_count'] += $cat['reply_count'];
+            } else {
+                $threads = $api->request('/forum/threads?category_id=' . $cat['id']);
+                $stats['thread_count'] += is_array($threads) ? count($threads) : 0;
+                if (is_array($threads)) {
+                    foreach ($threads as $t) {
+                        $stats['reply_count'] += $t['reply_count'] ?? 0;
+                    }
+                }
+            }
         }
     } catch (Exception $e) {
         // ignore errors
@@ -101,14 +112,21 @@ function calculate_forum_stats($api) {
         try {
             $users = $api->request('/users?skip=0&limit=' . $stats['user_count']);
             $bestUser = null;
-            $bestScore = -1;
+            $maxArticles = -1;
             foreach ($users as $user) {
-                $score = ($user['thread_count'] ?? 0)
-                       + ($user['reply_count'] ?? 0)
-                       + ($user['article_count'] ?? 0);
-                if ($score > $bestScore) {
-                    $bestScore = $score;
+                $articleCount = $user['article_count'] ?? null;
+                if ($articleCount === null) {
+                    try {
+                        $arts = $api->request('/users/' . $user['id'] . '/articles');
+                        $articleCount = is_array($arts) ? count($arts) : 0;
+                    } catch (Exception $e) {
+                        $articleCount = 0;
+                    }
+                }
+                if ($articleCount > $maxArticles) {
+                    $maxArticles = $articleCount;
                     $bestUser = $user;
+                    $bestUser['article_count'] = $articleCount;
                 }
             }
             if ($bestUser) {

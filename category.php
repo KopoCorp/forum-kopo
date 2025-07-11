@@ -27,7 +27,17 @@ try {
     }
 
     $threads = $api->request('/forum/threads?category_id=' . $category_id . '&skip=' . $skip . '&limit=' . $limit);
-    $total_pages = isset($category['thread_count']) ? max(1, ceil($category['thread_count'] / $limit)) : 1;
+
+    $total_threads = $category['thread_count'] ?? null;
+    if ($total_threads === null) {
+        try {
+            $all_threads = $api->request('/forum/threads?category_id=' . $category_id);
+            $total_threads = is_array($all_threads) ? count($all_threads) : count($threads);
+        } catch (Exception $e) {
+            $total_threads = count($threads);
+        }
+    }
+    $total_pages = max(1, ceil($total_threads / $limit));
 
     $page_title = $category['name'];
     $page_description = isset($category['description']) ? $category['description'] : 'Discussions dans la catégorie ' . $category['name'];
