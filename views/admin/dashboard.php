@@ -33,6 +33,18 @@
         </div>
         <?php endif; ?>
 
+        <?php if (!empty($alert)): ?>
+        <div class="security-alert" style="background:#fff4f4;border-left:4px solid var(--accent-red);padding:1rem;margin-bottom:2rem;">
+            <strong>Dernière alerte sécurité&nbsp;:</strong>
+            <a href="<?php echo htmlspecialchars($alert['link']); ?>" target="_blank">
+                <?php echo htmlspecialchars($alert['title']); ?>
+            </a>
+            <?php if (!empty($alert['published'])): ?>
+                <span style="color:#666;">(<?php echo date('d/m/Y', strtotime($alert['published'])); ?>)</span>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
         <h2 style="margin-top:2rem;">Utilisateurs récents</h2>
         <div class="table-container">
             <table>
