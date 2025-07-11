@@ -230,7 +230,8 @@ INSERT INTO roles (name, description) VALUES
     ('moderator', 'Forum moderator');
 
 INSERT INTO users (username, email, pass_hash)
-VALUES ('admin', 'admin@example.com', '21232f297a57a5a743894a0e4a801fc3');
+VALUES ('admin', 'admin@example.com',
+        '$2b$12$CYXDW5KcsszuVP51iwZtsur8H2t22sPCVfxOOCS5kq4AhdK1adLgm');
 
 INSERT INTO user_roles (user_id, role_id)
 SELECT id, (SELECT id FROM roles WHERE name='moderator')
