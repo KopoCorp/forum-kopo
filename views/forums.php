@@ -22,8 +22,22 @@
                         $thread_count = 0;
                         $reply_count = 0;
                         foreach ($categories as $cat) {
-                            $thread_count += $cat['thread_count'] ?? 0;
-                            $reply_count += $cat['reply_count'] ?? 0;
+                            if (isset($cat['thread_count']) && isset($cat['reply_count'])) {
+                                $thread_count += $cat['thread_count'];
+                                $reply_count += $cat['reply_count'];
+                            } else {
+                                try {
+                                    $threads = $api->request('/forum/threads?category_id=' . $cat['id']);
+                                    $thread_count += is_array($threads) ? count($threads) : 0;
+                                    if (is_array($threads)) {
+                                        foreach ($threads as $t) {
+                                            $reply_count += $t['reply_count'] ?? 0;
+                                        }
+                                    }
+                                } catch (Exception $e) {
+                                    // ignore
+                                }
+                            }
                         }
                         ?>
                         &bull; <span><?php echo $thread_count; ?> Discussions</span> 
@@ -50,9 +64,28 @@
                                 <div class="forum-category">
                                     <div class="category-header">
                                         <h3 class="category-title"><?php echo htmlspecialchars($category['name']); ?></h3>
+                                        <?php
+                                            $catThread = $category['thread_count'] ?? null;
+                                            $catReply = $category['reply_count'] ?? null;
+                                            if ($catThread === null || $catReply === null) {
+                                                try {
+                                                    $allThreads = $api->request('/forum/threads?category_id=' . $category['id']);
+                                                    $catThread = is_array($allThreads) ? count($allThreads) : 0;
+                                                    $catReply = 0;
+                                                    if (is_array($allThreads)) {
+                                                        foreach ($allThreads as $th) {
+                                                            $catReply += $th['reply_count'] ?? 0;
+                                                        }
+                                                    }
+                                                } catch (Exception $e) {
+                                                    $catThread = 0;
+                                                    $catReply = 0;
+                                                }
+                                            }
+                                        ?>
                                         <span class="category-stats">
-                                            <?php echo $category['thread_count'] ?? 0; ?> discussions &bull; 
-                                            <?php echo $category['reply_count'] ?? 0; ?> messages
+                                            <?php echo $catThread; ?> discussions &bull;
+                                            <?php echo $catReply; ?> messages
                                         </span>
                                     </div>
                                     
