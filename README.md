@@ -84,4 +84,22 @@ The API will be available on port **8000** of the container. Replace
 - `GET /security/alerts` – list recent CERT-FR security alerts
 - `GET /security/alerts/latest` – fetch the latest CERT-FR alert
 
+### Admin-only endpoints (require moderator role)
+
+- `GET /admin/users` – list all users
+- `DELETE /admin/users/{id}` – remove any user
+- `GET /admin/users/{id}/roles` – list a user's roles
+- `POST /admin/users/{id}/roles` – assign a role to a user
+- `DELETE /admin/users/{id}/roles/{role_id}` – remove a role
+- `GET /admin/articles` – list all articles
+- `DELETE /admin/articles/{id}` – delete an article
+- `GET /admin/comments` – list all comments
+- `DELETE /admin/comments/{id}` – delete a comment
+- `GET /admin/threads` – list forum threads
+- `DELETE /admin/threads/{id}` – delete a thread
+- `POST /admin/categories` – create a forum category
+- `DELETE /admin/categories/{id}` – delete a forum category
+- `POST /admin/tags` – create a tag
+- `DELETE /admin/tags/{id}` – delete a tag
+
 This is only a starting point. More models and endpoints can be added following the same pattern.
