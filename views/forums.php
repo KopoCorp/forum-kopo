@@ -97,7 +97,13 @@
                                     // Get recent threads for this category
                                     $threads = [];
                                     try {
-                                        $threads = $api->request('/forum/threads?category_id=' . $category['id'] . '&limit=1&skip=0');
+                                        $threads = $api->request('/forum/threads?category_id=' . $category['id'] . '&limit=3&skip=0');
+                                        if (is_array($threads)) {
+                                            // Ensure threads actually belong to this category
+                                            $threads = array_values(array_filter($threads, function($t) use ($category) {
+                                                return isset($t['category_id']) && (int)$t['category_id'] === (int)$category['id'];
+                                            }));
+                                        }
                                     } catch (Exception $e) {
                                         // Silently fail if we can't get threads
                                     }
