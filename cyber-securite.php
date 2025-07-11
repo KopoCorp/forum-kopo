@@ -120,7 +120,7 @@ try {
                             <p><?php echo htmlspecialchars($alert['description']); ?></p>
                             
                             <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
-                                <span>Publié le <?php echo date('d/m/Y', strtotime($alert['created_at'])); ?></span>
+                                <span>Publié le <?php echo date('d/m/Y', strtotime($alert['published'] ?? $alert['created_at'])); ?></span>
                                 <a href="<?php echo htmlspecialchars($alert['link']); ?>" target="_blank" rel="noopener" class="btn btn-sm btn-outline">
                                     Voir sur CERT-FR
                                 </a>
