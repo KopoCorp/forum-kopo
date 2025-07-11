@@ -15,7 +15,7 @@ import os
 import uuid
 import shutil
 import html
-import requests
+import httpx
 import feedparser
 
 from . import models, schemas
@@ -27,9 +27,10 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Kopo Forum API")
 
 # Security configuration
-SECRET_KEY = "secret-key"  # In production use environment variable
+SECRET_KEY = os.getenv("SECRET_KEY", "secret-key")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Allow the token expiration to be tuned via an env var without code changes
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -51,7 +52,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     if token in revoked_tokens:
         raise HTTPException(status_code=401, detail="Token revoked")
     try:
@@ -69,12 +72,16 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 @app.post("/users", response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.username == user.username).first()
+    db_user = (
+        db.query(models.User).filter(models.User.username == user.username).first()
+    )
     db_usermail = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="This username already exist")
     if db_usermail:
-        raise HTTPException(status_code=400, detail="This email is already use by another account")
+        raise HTTPException(
+            status_code=400, detail="This email is already use by another account"
+        )
     db_user = models.User(
         username=user.username,
         email=user.email,
@@ -95,7 +102,9 @@ def delete_user(
     current_user: models.User = Depends(get_current_user),
 ):
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this user")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to delete this user"
+        )
     db_user = db.query(models.User).get(user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -104,12 +113,18 @@ def delete_user(
 
 
 @app.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.username == form_data.username).first()
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
+    user = (
+        db.query(models.User).filter(models.User.username == form_data.username).first()
+    )
     if not user or not verify_password(form_data.password, user.pass_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    token = create_access_token(data={"sub": str(user.id)}, expires_delta=access_token_expires)
+    token = create_access_token(
+        data={"sub": str(user.id)}, expires_delta=access_token_expires
+    )
     return {"access_token": token, "token_type": "bearer"}
 
 
@@ -158,19 +173,27 @@ def update_user(
     current_user: models.User = Depends(get_current_user),
 ):
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to modify this user")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to modify this user"
+        )
     db_user = db.query(models.User).get(user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
     if user_update.username and user_update.username != db_user.username:
-        if db.query(models.User).filter(models.User.username == user_update.username).first():
+        if (
+            db.query(models.User)
+            .filter(models.User.username == user_update.username)
+            .first()
+        ):
             raise HTTPException(status_code=400, detail="This username already exists")
         db_user.username = user_update.username
 
     if user_update.email and user_update.email != db_user.email:
         if db.query(models.User).filter(models.User.email == user_update.email).first():
-            raise HTTPException(status_code=400, detail="This email is already use by another account")
+            raise HTTPException(
+                status_code=400, detail="This email is already use by another account"
+            )
         db_user.email = user_update.email
 
     if user_update.password:
@@ -199,7 +222,9 @@ def update_user_bio(
     current_user: models.User = Depends(get_current_user),
 ):
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to modify this user")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to modify this user"
+        )
     db_user = db.query(models.User).get(user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -212,18 +237,28 @@ def update_user_bio(
 
 @app.get("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
 def read_profile(user_id: int, db: Session = Depends(get_db)):
-    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    profile = (
+        db.query(models.UserProfile)
+        .filter(models.UserProfile.user_id == user_id)
+        .first()
+    )
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
     return profile
 
 
 @app.put("/users/{user_id}/profile", response_model=schemas.UserProfileOut)
-def update_profile(user_id: int, data: schemas.UserProfileUpdate, db: Session = Depends(get_db)):
+def update_profile(
+    user_id: int, data: schemas.UserProfileUpdate, db: Session = Depends(get_db)
+):
     user = db.query(models.User).get(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    profile = (
+        db.query(models.UserProfile)
+        .filter(models.UserProfile.user_id == user_id)
+        .first()
+    )
     if profile:
         for key, value in data.dict(exclude_unset=True).items():
             setattr(profile, key, value)
@@ -253,6 +288,7 @@ def list_user_threads(
         .all()
     )
 
+
 @app.get("/users/{user_id}/articles", response_model=List[schemas.ArticleOut])
 def list_user_articles(
     user_id: int,
@@ -270,6 +306,7 @@ def list_user_articles(
         .limit(limit)
         .all()
     )
+
 
 @app.post("/articles", response_model=schemas.ArticleOut)
 def create_article(
@@ -296,7 +333,9 @@ def create_article(
         tag_ids.update(name_to_id[n] for n in tag_names)
 
     if tag_ids:
-        links = [models.ArticleTag(article_id=db_article.id, tag_id=tid) for tid in tag_ids]
+        links = [
+            models.ArticleTag(article_id=db_article.id, tag_id=tid) for tid in tag_ids
+        ]
         db.bulk_save_objects(links)
 
     db.commit()
@@ -408,9 +447,13 @@ def update_article(
         tags_to_set.update(name_to_id[n] for n in tag_names)
 
     if tags_specified:
-        db.query(models.ArticleTag).filter(models.ArticleTag.article_id == article_id).delete()
+        db.query(models.ArticleTag).filter(
+            models.ArticleTag.article_id == article_id
+        ).delete()
         if tags_to_set:
-            links = [models.ArticleTag(article_id=article_id, tag_id=t) for t in tags_to_set]
+            links = [
+                models.ArticleTag(article_id=article_id, tag_id=t) for t in tags_to_set
+            ]
             db.bulk_save_objects(links)
 
     db.commit()
@@ -449,7 +492,11 @@ def create_comment(
 
 @app.get("/articles/{article_id}/comments", response_model=List[schemas.CommentOut])
 def list_comments(article_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Comment).filter(models.Comment.post_id == article_id, models.Comment.parent_id == None).all()
+    return (
+        db.query(models.Comment)
+        .filter(models.Comment.post_id == article_id, models.Comment.parent_id == None)
+        .all()
+    )
 
 
 @app.put("/comments/{comment_id}", response_model=schemas.CommentOut)
@@ -498,7 +545,9 @@ def create_category(
 
 @app.get("/forum/categories", response_model=List[schemas.ForumCategoryOut])
 def list_categories(db: Session = Depends(get_db)):
-    return db.query(models.ForumCategory).order_by(models.ForumCategory.order_index).all()
+    return (
+        db.query(models.ForumCategory).order_by(models.ForumCategory.order_index).all()
+    )
 
 
 @app.post("/forum/threads", response_model=schemas.ForumThreadOut)
@@ -569,16 +618,27 @@ def create_reply(
 ):
     if not db.query(models.ForumThread).get(thread_id):
         raise HTTPException(status_code=404, detail="Thread not found")
-    db_reply = models.ForumReply(thread_id=thread_id, **reply.dict(exclude={"thread_id"}))
+    db_reply = models.ForumReply(
+        thread_id=thread_id, **reply.dict(exclude={"thread_id"})
+    )
     db.add(db_reply)
     db.commit()
     db.refresh(db_reply)
     return db_reply
 
 
-@app.get("/forum/threads/{thread_id}/replies", response_model=List[schemas.ForumReplyOut])
+@app.get(
+    "/forum/threads/{thread_id}/replies", response_model=List[schemas.ForumReplyOut]
+)
 def list_replies(thread_id: int, db: Session = Depends(get_db)):
-    return db.query(models.ForumReply).filter(models.ForumReply.thread_id == thread_id, models.ForumReply.parent_id == None).all()
+    return (
+        db.query(models.ForumReply)
+        .filter(
+            models.ForumReply.thread_id == thread_id,
+            models.ForumReply.parent_id == None,
+        )
+        .all()
+    )
 
 
 @app.put("/forum/replies/{reply_id}", response_model=schemas.ForumReplyOut)
@@ -630,13 +690,16 @@ _certfr_cache_lock = Lock()
 _certfr_cache_ttl = timedelta(minutes=5)
 
 
-def _fetch_certfr_feed(limit: int = 10):
+async def _fetch_certfr_feed(limit: int = 10):
     """Retrieve and parse the CERT-FR RSS feed."""
     try:
-        resp = requests.get(CERTFR_FEED_URL, timeout=10)
-        resp.raise_for_status()
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(CERTFR_FEED_URL)
+            resp.raise_for_status()
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Failed to fetch RSS feed: {exc}") from exc
+        raise HTTPException(
+            status_code=502, detail=f"Failed to fetch RSS feed: {exc}"
+        ) from exc
     feed = feedparser.parse(resp.text)
     alerts = [
         schemas.SecurityAlertOut(
@@ -650,26 +713,26 @@ def _fetch_certfr_feed(limit: int = 10):
     return alerts
 
 
-def _get_certfr_feed_cached(limit: int = 5):
+async def _get_certfr_feed_cached(limit: int = 5):
     """Return cached CERT-FR alerts, refreshing if expired."""
     with _certfr_cache_lock:
         now = datetime.utcnow()
         if now - _certfr_cache["timestamp"] > _certfr_cache_ttl:
-            _certfr_cache["data"] = _fetch_certfr_feed(limit=20)
+            _certfr_cache["data"] = await _fetch_certfr_feed(limit=20)
             _certfr_cache["timestamp"] = now
         return _certfr_cache["data"][:limit]
 
 
 @app.get("/security/alerts", response_model=list[schemas.SecurityAlertOut])
-def list_security_alerts(limit: int = 5):
+async def list_security_alerts(limit: int = 5):
     """Return the most recent security alerts from CERT-FR."""
-    return _get_certfr_feed_cached(limit)
+    return await _get_certfr_feed_cached(limit)
 
 
 @app.get("/security/alerts/latest", response_model=schemas.SecurityAlertOut)
-def latest_security_alert():
+async def latest_security_alert():
     """Return the latest security alert from CERT-FR."""
-    alerts = _get_certfr_feed_cached(1)
+    alerts = await _get_certfr_feed_cached(1)
     if not alerts:
         raise HTTPException(status_code=404, detail="No alerts found")
     return alerts[0]

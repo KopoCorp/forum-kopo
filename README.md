@@ -20,6 +20,16 @@ Set the `DATABASE_URL` environment variable to point to your PostgreSQL instance
 export DATABASE_URL=postgresql://user:password@localhost/forumdb
 ```
 
+The JWT `SECRET_KEY` can also be customised using an environment variable. The
+database connection pool size may be tuned with `DB_POOL_SIZE` and
+`DB_MAX_OVERFLOW` if needed:
+
+```bash
+export SECRET_KEY="your-secret"
+export DB_POOL_SIZE=10
+export DB_MAX_OVERFLOW=20
+```
+
 ## Running the API
 
 Start the API with `uvicorn`:
