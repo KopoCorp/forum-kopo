@@ -29,10 +29,10 @@ class CybersecuriteController {
         try {
             // Fetch articles using the security tag when available
             if ($security_tag_id !== null) {
-                $security_articles = $this->api->request('/articles?tag=' . $security_tag_id . '&limit=6');
+                $security_articles = filter_published($this->api->request('/articles?tag=' . $security_tag_id . '&limit=6'));
             } else {
                 // Fallback to keyword detection on recent articles
-                $all_articles = $this->api->request('/articles?limit=20');
+                $all_articles = filter_published($this->api->request('/articles?limit=20'));
                 $security_articles = [];
                 foreach ($all_articles as $article) {
                     $tag_names = [];

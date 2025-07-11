@@ -11,7 +11,7 @@ class HomeController {
         $page_description = "Forum de discussion et actualités sur l'informatique, la cybersécurité et les technologies";
         try {
             // Get latest articles and ensure newest first
-            $latest_articles = $this->api->request('/articles?skip=0&limit=3');
+            $latest_articles = filter_published($this->api->request('/articles?skip=0&limit=3'));
             if (is_array($latest_articles)) {
                 usort($latest_articles, function ($a, $b) {
                     $dateA = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
