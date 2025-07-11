@@ -10,14 +10,16 @@ class HomeController {
         $page_title = 'Accueil';
         $page_description = "Forum de discussion et actualités sur l'informatique, la cybersécurité et les technologies";
         try {
-            // Get latest articles and ensure newest first
-            $latest_articles = filter_published($this->api->request('/articles?skip=0&limit=3'));
+            // Get at least 3 published articles for the home page
+            $articles = $this->api->request('/articles?skip=0&limit=10');
+            $latest_articles = filter_published(is_array($articles) ? $articles : []);
             if (is_array($latest_articles)) {
                 usort($latest_articles, function ($a, $b) {
                     $dateA = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
                     $dateB = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
                     return $dateB <=> $dateA; // newest first
                 });
+                $latest_articles = array_slice($latest_articles, 0, 3);
             }
             // Get forum categories
             $categories = $this->api->request('/forum/categories');
