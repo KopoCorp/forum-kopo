@@ -15,14 +15,30 @@ try {
     // Get thread details
     $thread = $api->request('/forum/threads/' . $thread_id);
     
-    // Get thread replies
-    $replies = $api->request('/forum/threads/' . $thread_id . '/replies');
-    // API may return {items: [...]} or {replies: [...]} depending on version
-    if (isset($replies['items']) && is_array($replies['items'])) {
-        $replies = $replies['items'];
-    } elseif (isset($replies['replies']) && is_array($replies['replies'])) {
-        $replies = $replies['replies'];
+    // Get thread replies (handle API pagination)
+    $replies = [];
+    $skip = 0;
+    $limit = 50;
+    while (true) {
+        $page = $api->request('/forum/threads/' . $thread_id . '/replies?skip=' . $skip . '&limit=' . $limit);
+        if (isset($page['items']) && is_array($page['items'])) {
+            $items = $page['items'];
+        } elseif (isset($page['replies']) && is_array($page['replies'])) {
+            $items = $page['replies'];
+        } else {
+            $items = is_array($page) ? $page : [];
+        }
+        $replies = array_merge($replies, $items);
+        if (count($items) < $limit) {
+            break;
+        }
+        $skip += $limit;
     }
+
+    // Ensure replies are ordered chronologically
+    usort($replies, function($a, $b) {
+        return strtotime($a['created_at'] ?? 'now') <=> strtotime($b['created_at'] ?? 'now');
+    });
 
     // Organize replies by parent for nested display
     $replies_by_parent = [];
