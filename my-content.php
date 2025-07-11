@@ -24,6 +24,21 @@ $active_tab = isset($_GET['tab']) ? sanitize_string($_GET['tab']) : 'articles';
 try {
     // Get user's articles
     $my_articles = $api->request('/users/' . $user_id . '/articles', 'GET', [], true);
+
+    // Ensure each article has a comment_count
+    if (is_array($my_articles)) {
+        foreach ($my_articles as &$article) {
+            if (!isset($article['comment_count']) && isset($article['id'])) {
+                try {
+                    $comments = $api->request('/articles/' . $article['id'] . '/comments');
+                    $article['comment_count'] = is_array($comments) ? count($comments) : 0;
+                } catch (Exception $e) {
+                    $article['comment_count'] = 0;
+                }
+            }
+        }
+        unset($article);
+    }
     
     // Get user's threads
     $my_threads = $api->request('/users/' . $user_id . '/threads', 'GET', [], true);
