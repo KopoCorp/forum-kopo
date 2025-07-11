@@ -26,6 +26,12 @@ try {
     $recent_threads = array_slice($user_threads, 0, 5);
 
     $user_articles = $api->request('/users/' . $user_id . '/articles', 'GET', [], true);
+    $viewer = $api->getCurrentUser();
+    $is_owner = $api->isLoggedIn() && ($viewer['id'] ?? null) === $user_id;
+    $is_admin = $api->isLoggedIn() && ($viewer['is_admin'] ?? false);
+    if (!$is_owner && !$is_admin) {
+        $user_articles = filter_published($user_articles);
+    }
     $article_count = is_array($user_articles) ? count($user_articles) : 0;
     $recent_articles = array_slice($user_articles, 0, 5);
 

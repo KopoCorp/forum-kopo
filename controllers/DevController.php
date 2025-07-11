@@ -29,10 +29,10 @@ class DevController {
         try {
             // Fetch articles using the development tag when available
             if ($dev_tag_id !== null) {
-                $dev_articles = $this->api->request('/articles?tag=' . $dev_tag_id . '&limit=6');
+                $dev_articles = filter_published($this->api->request('/articles?tag=' . $dev_tag_id . '&limit=6'));
             } else {
                 // Fallback to keyword detection on recent articles
-                $all_articles = $this->api->request('/articles?limit=20');
+                $all_articles = filter_published($this->api->request('/articles?limit=20'));
                 $dev_articles = [];
                 foreach ($all_articles as $article) {
                     $tag_names = [];

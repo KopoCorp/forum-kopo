@@ -35,8 +35,9 @@ if (!empty($q)) {
         $all_results = $api->request($search_query);
 
         if ($search_articles && isset($all_results['articles'])) {
-            $articles = array_slice($all_results['articles'], $skip, $limit);
-            $total_results += count($all_results['articles']);
+            $pub_articles = filter_published($all_results['articles']);
+            $articles = array_slice($pub_articles, $skip, $limit);
+            $total_results += count($pub_articles);
         }
 
         if ($search_threads && isset($all_results['threads'])) {
