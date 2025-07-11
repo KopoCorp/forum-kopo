@@ -19,9 +19,6 @@ class MembersController {
             case 'activity':
                 $sort_param = '&sort=activity';
                 break;
-            case 'reputation':
-                $sort_param = '&sort=reputation';
-                break;
             case 'a-z':
                 $sort_param = '&sort=username';
                 break;
@@ -51,6 +48,26 @@ class MembersController {
             $_SESSION['flash_type'] = "error";
             $members_data = [];
         }
+
+        // Ensure post_count equals total threads + articles for each member
+        foreach ($members_data as &$member) {
+            $threads = [];
+            $articles = [];
+            try {
+                $threads = $this->api->request('/users/' . $member['id'] . '/threads');
+            } catch (Exception $e) {
+                $threads = [];
+            }
+            try {
+                $articles = $this->api->request('/users/' . $member['id'] . '/articles');
+            } catch (Exception $e) {
+                $articles = [];
+            }
+            $thread_count = is_array($threads) ? count($threads) : 0;
+            $article_count = is_array($articles) ? count($articles) : 0;
+            $member['post_count'] = $thread_count + $article_count;
+        }
+        unset($member);
 
         try {
             if (!empty($search)) {
