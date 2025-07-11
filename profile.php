@@ -56,7 +56,7 @@ include 'header.php';
     <div class="container">
         <div class="breadcrumb" style="margin-bottom: 0.5rem; color: #999;">
             <a href="index.php" style="color: #999;">Accueil</a> &raquo; 
-            <a href="membres.php" style="color: #999;">Membres</a> &raquo; 
+            <a href="index.php?route=members" style="color: #999;">Membres</a> &raquo; 
             <?php echo htmlspecialchars($profile['username']); ?>
         </div>
     </div>
