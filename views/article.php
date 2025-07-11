@@ -15,11 +15,9 @@
         <div class="grid grid-sidebar">
             <div>
                 <article class="article">
-            <?php if (isset($article['image_url']) && !empty($article['image_url'])): ?>
                 <div style="height: 400px; overflow: hidden;">
-                    <img src="<?php echo htmlspecialchars($article['image_url']); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?php echo htmlspecialchars(get_article_banner_url($article)); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-            <?php endif; ?>
             
             <div class="article-header">
                 
