@@ -38,6 +38,11 @@ Start the API with `uvicorn`:
 uvicorn backend.main:app --reload --host 0.0.0.0
 ```
 
+The application no longer creates database tables automatically. Make sure
+the schema exists beforehand (for example using migrations). Set the
+`AUTO_CREATE_TABLES` environment variable to `1` if you still want the API to
+attempt table creation on startup.
+
 The API will be available on port **8000** of the container. Replace
 `<container-ip>` with the actual address of your container, e.g.
 `http://<container-ip>:8000`.

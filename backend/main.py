@@ -21,8 +21,13 @@ import feedparser
 from . import models, schemas
 from .database import Base, engine, get_db
 
-# Create database tables if they don't exist
-Base.metadata.create_all(bind=engine)
+# Database tables should be created separately (e.g. via migrations).
+# The application no longer attempts to auto-create them on startup to
+# avoid permission errors when the connected user lacks CREATE privileges.
+# If automatic creation is still desired, set the environment variable
+# ``AUTO_CREATE_TABLES`` to ``1``.
+if os.getenv("AUTO_CREATE_TABLES") == "1":
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Kopo Forum API")
 
