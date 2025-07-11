@@ -33,6 +33,9 @@
         </div>
         <?php endif; ?>
         <div class="admin-links" style="margin-bottom:2rem;">
+            <a href="../admin/users.php" class="btn btn-secondary">Gérer les utilisateurs</a>
+            <a href="../admin/articles.php" class="btn btn-secondary">Gérer les articles</a>
+            <a href="../admin/threads.php" class="btn btn-secondary">Gérer les sujets</a>
             <a href="../admin/categories.php" class="btn btn-secondary">Gérer les catégories</a>
         </div>
 
