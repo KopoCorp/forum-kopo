@@ -6,6 +6,10 @@ define('API_BASE_URL', 'http://192.168.1.180:8000');
 define('SITE_NAME', 'Kopo Forum');
 define('SITE_DESCRIPTION', 'Discussions et Actualités sur l\'Informatique et la Cybersécurité');
 
+// Base URL of the site (set this to the subdirectory where the forum is hosted
+// or '/' if it is at the domain root)
+define('BASE_URL', '/');
+
 // Color Scheme
 define('COLOR_WHITE', '#FFFFFF');
 define('COLOR_LIGHT_GRAY', '#E8E8E8');

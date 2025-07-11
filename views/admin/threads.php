@@ -1,8 +1,8 @@
 <div class="page-header" style="background-color: var(--near-black); padding: 2rem 0;">
     <div class="container">
         <div class="breadcrumb" style="margin-bottom: 0.5rem; color: #999;">
-            <a href="../index.php" style="color: #999;">Accueil</a> &raquo;
-            <a href="../index.php?route=admin" style="color: #999;">Administration</a> &raquo;
+            <a href="<?php echo BASE_URL; ?>index.php" style="color: #999;">Accueil</a> &raquo;
+            <a href="<?php echo BASE_URL; ?>index.php?route=admin" style="color: #999;">Administration</a> &raquo;
             Discussions
         </div>
         <h1 style="color: var(--white); margin-bottom: 0.5rem;">Gestion des discussions</h1>

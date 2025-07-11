@@ -7,7 +7,7 @@
             
             <div style="padding: 2rem; display: flex; flex-wrap: wrap; gap: 2rem;">
                 <div style="flex: 1 1 200px; max-width: 300px;">
-                    <img src="/assets/favicon.ico" alt="Logo Kopo" style="width: 100%; height: auto; border-radius: 8px;">
+                    <img src="<?php echo BASE_URL; ?>assets/favicon.ico" alt="Logo Kopo" style="width: 100%; height: auto; border-radius: 8px;">
                 </div>
                 
                 <div style="flex: 2 1 400px; font-size: 1.1rem; line-height: 1.6;">
