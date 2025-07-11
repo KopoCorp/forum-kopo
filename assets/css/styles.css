@@ -658,7 +658,8 @@ pre code {
 
 /* Comments */
 .comments-section {
-  margin: 2rem 0;
+  margin: 2rem auto;
+  max-width: 800px;
 }
 
 .comment {
