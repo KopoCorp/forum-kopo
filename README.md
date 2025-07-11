@@ -54,6 +54,9 @@ DB_USER=monuser DB_PASS=monpass bash setup_db.sh
 ```
 Lorsqu'une base du même nom existe déjà, le script demande confirmation avant
 de la supprimer puis de la recréer.
+Par défaut, le schéma ajoute un utilisateur `admin` au mot de passe `admin` possédant le rôle `moderator`.
+Les rôles disponibles sont désormais simplement `user` et `moderator`.
+
 
 ## Activer l'accès réseau
 
