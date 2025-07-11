@@ -159,6 +159,38 @@ function get_username(array $data) {
     if (!empty($data['user']['username'])) {
         return $data['user']['username'];
     }
+
+    $user_id = null;
+    if (!empty($data['user_id'])) {
+        $user_id = $data['user_id'];
+    } elseif (!empty($data['user']['id'])) {
+        $user_id = $data['user']['id'];
+    } elseif (!empty($data['author_id'])) {
+        $user_id = $data['author_id'];
+    } elseif (!empty($data['author']['id'])) {
+        $user_id = $data['author']['id'];
+    }
+
+    if ($user_id) {
+        static $cache = [];
+        if (isset($cache[$user_id])) {
+            return $cache[$user_id];
+        }
+
+        global $api;
+        if ($api) {
+            try {
+                $user = $api->request('/users/' . $user_id);
+                if (isset($user['username'])) {
+                    $cache[$user_id] = $user['username'];
+                    return $cache[$user_id];
+                }
+            } catch (Exception $e) {
+                $cache[$user_id] = null;
+            }
+        }
+    }
+
     return null;
 }
 ?>
