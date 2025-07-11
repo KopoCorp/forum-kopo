@@ -81,6 +81,11 @@ def _user_has_role(db: Session, user: models.User, role_name: str) -> bool:
     )
 
 
+def _is_moderator(db: Session, user: models.User) -> bool:
+    """Return True if the given user has the moderator role."""
+    return _user_has_role(db, user, "moderator")
+
+
 def require_moderator(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -336,6 +341,9 @@ def create_article(
     current_user: models.User = Depends(get_current_user),
 ):
     data = article.dict()
+    if data.get("user_id") not in (None, current_user.id) and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Cannot create article for another user")
+    data["user_id"] = data.get("user_id") or current_user.id
     tag_ids = set(data.pop("tag_ids", []) or [])
     tag_names = data.pop("tag_names", []) or []
     db_article = models.Article(**data)
@@ -407,8 +415,11 @@ def add_tag_to_article(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    if not db.query(models.Article).get(article_id):
+    article = db.query(models.Article).get(article_id)
+    if not article:
         raise HTTPException(status_code=404, detail="Article not found")
+    if article.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to modify this article")
     if not db.query(models.Tag).get(article_tag.tag_id):
         raise HTTPException(status_code=404, detail="Tag not found")
     existing = (
@@ -447,6 +458,8 @@ def update_article(
     db_article = db.query(models.Article).get(article_id)
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
+    if db_article.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to modify this article")
     data = article.dict(exclude_unset=True)
     tag_ids = data.pop("tag_ids", None)
     tag_names = data.pop("tag_names", None)
@@ -491,6 +504,8 @@ def delete_article(
     db_article = db.query(models.Article).get(article_id)
     if not db_article:
         raise HTTPException(status_code=404, detail="Article not found")
+    if db_article.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this article")
     db.delete(db_article)
     db.commit()
 
@@ -504,7 +519,11 @@ def create_comment(
 ):
     if not db.query(models.Article).get(article_id):
         raise HTTPException(status_code=404, detail="Article not found")
-    db_comment = models.Comment(post_id=article_id, **comment.dict(exclude={"post_id"}))
+    data = comment.dict(exclude={"post_id"})
+    if data.get("user_id") not in (None, current_user.id) and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Cannot comment as another user")
+    data["user_id"] = data.get("user_id") or current_user.id
+    db_comment = models.Comment(post_id=article_id, **data)
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
@@ -531,6 +550,8 @@ def update_comment(
     db_comment = db.query(models.Comment).get(comment_id)
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
+    if db_comment.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to modify this comment")
     for key, value in comment.dict(exclude_unset=True).items():
         setattr(db_comment, key, value)
     db.commit()
@@ -547,6 +568,8 @@ def delete_comment(
     db_comment = db.query(models.Comment).get(comment_id)
     if not db_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
+    if db_comment.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
     db.delete(db_comment)
     db.commit()
 
@@ -578,6 +601,9 @@ def create_thread(
     current_user: models.User = Depends(get_current_user),
 ):
     data = thread.dict()
+    if data.get("user_id") not in (None, current_user.id) and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Cannot create thread for another user")
+    data["user_id"] = data.get("user_id") or current_user.id
     db_thread = models.ForumThread(**data)
     db.add(db_thread)
     db.commit()
@@ -609,6 +635,8 @@ def update_thread(
     db_thread = db.query(models.ForumThread).get(thread_id)
     if not db_thread:
         raise HTTPException(status_code=404, detail="Thread not found")
+    if db_thread.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to modify this thread")
     data = thread.dict(exclude_unset=True)
     for key, value in data.items():
         setattr(db_thread, key, value)
@@ -626,6 +654,8 @@ def delete_thread(
     db_thread = db.query(models.ForumThread).get(thread_id)
     if not db_thread:
         raise HTTPException(status_code=404, detail="Thread not found")
+    if db_thread.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this thread")
     db.delete(db_thread)
     db.commit()
 
@@ -639,9 +669,11 @@ def create_reply(
 ):
     if not db.query(models.ForumThread).get(thread_id):
         raise HTTPException(status_code=404, detail="Thread not found")
-    db_reply = models.ForumReply(
-        thread_id=thread_id, **reply.dict(exclude={"thread_id"})
-    )
+    data = reply.dict(exclude={"thread_id"})
+    if data.get("user_id") not in (None, current_user.id) and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Cannot reply as another user")
+    data["user_id"] = data.get("user_id") or current_user.id
+    db_reply = models.ForumReply(thread_id=thread_id, **data)
     db.add(db_reply)
     db.commit()
     db.refresh(db_reply)
@@ -673,6 +705,8 @@ def update_reply(
     db_reply = db.query(models.ForumReply).get(reply_id)
     if not db_reply:
         raise HTTPException(status_code=404, detail="Reply not found")
+    if db_reply.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to modify this reply")
     for key, value in reply.dict(exclude_unset=True).items():
         setattr(db_reply, key, value)
     db.commit()
@@ -689,6 +723,8 @@ def delete_reply(
     db_reply = db.query(models.ForumReply).get(reply_id)
     if not db_reply:
         raise HTTPException(status_code=404, detail="Reply not found")
+    if db_reply.user_id != current_user.id and not _is_moderator(db, current_user):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this reply")
     db.delete(db_reply)
     db.commit()
 
