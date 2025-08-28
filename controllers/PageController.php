@@ -17,6 +17,10 @@ class PageController {
         'privacy' => [
             'title' => 'Politique de confidentialité',
             'description' => 'Comment nous protégeons vos données personnelles'
+        ],
+        'game-systems' => [
+            'title' => 'Game Systems',
+            'description' => 'Découvrez les systèmes de jeux, moteurs et technologies du gaming'
         ]
     ];
 

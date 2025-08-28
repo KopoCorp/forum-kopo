@@ -16,6 +16,7 @@
                         <li><a href="index.php">Accueil</a></li>
                         <li><a href="forums.php">Forums</a></li>
                         <li><a href="articles.php">Articles</a></li>
+                        <li><a href="index.php?route=game-systems">Game Systems</a></li>
                         <li><a href="index.php?route=cyber-securite">Cybersécurité</a></li>
                         <li><a href="index.php?route=dev">Développement</a></li>
                     </ul>

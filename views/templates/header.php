@@ -42,6 +42,7 @@ global $api;
                     <li><a href="<?php echo BASE_URL; ?>index.php" <?php echo !isset($_GET['route']) || $_GET['route'] == 'home' ? 'class="active"' : ''; ?>>Accueil</a></li>
                     <li><a href="<?php echo BASE_URL; ?>index.php?route=forums" <?php echo isset($_GET['route']) && $_GET['route'] == 'forums' ? 'class="active"' : ''; ?>>Forums</a></li>
                     <li><a href="<?php echo BASE_URL; ?>index.php?route=articles" <?php echo isset($_GET['route']) && $_GET['route'] == 'articles' ? 'class="active"' : ''; ?>>Articles</a></li>
+                    <li><a href="<?php echo BASE_URL; ?>index.php?route=game-systems" <?php echo isset($_GET['route']) && $_GET['route'] == 'game-systems' ? 'class="active"' : ''; ?>>Game Systems</a></li>
                     <li><a href="<?php echo BASE_URL; ?>index.php?route=cyber-securite" <?php echo isset($_GET['route']) && $_GET['route'] == 'cyber-securite' ? 'class="active"' : ''; ?>>Cyber-Sécurité</a></li>
                     <li><a href="<?php echo BASE_URL; ?>index.php?route=dev" <?php echo isset($_GET['route']) && $_GET['route'] == 'dev' ? 'class="active"' : ''; ?>>Développement</a></li>
                     <li><a href="<?php echo BASE_URL; ?>index.php?route=members" <?php echo isset($_GET['route']) && $_GET['route'] == 'members' ? 'class="active"' : ''; ?>>Membres</a></li>
