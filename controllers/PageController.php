@@ -17,6 +17,10 @@ class PageController {
         'privacy' => [
             'title' => 'Politique de confidentialité',
             'description' => 'Comment nous protégeons vos données personnelles'
+        ],
+        'gallery' => [
+            'title' => 'Galerie Kopo',
+            'description' => 'Découvrez les créations et projets de la communauté'
         ]
     ];
 
