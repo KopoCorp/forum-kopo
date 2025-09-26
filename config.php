@@ -1,6 +1,6 @@
 <?php
 // API Configuration
-define('API_BASE_URL', 'http://192.168.1.180:8000');
+define('API_BASE_URL', 'http://fapi.kopo:8000');
 
 // Site Configuration
 define('SITE_NAME', 'Kopo Forum');
