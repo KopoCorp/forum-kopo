@@ -16,5 +16,5 @@ jobs:
 
       - name: Appel webhook Proxmox
         run: |
-          curl -X POST https://kopo.systems/deploy-api \
+          curl -X POST https://kopo.systems/api/forum/deploy-api \
                -H "X-Auth-Token: ${{ secrets.WEBHOOK_TOKEN_FRONT }}"
